@@ -1,0 +1,1 @@
+<view class="page"><block wx:for="{{a}}" wx:for-item="group"><yx-list wx:for="{{group.a}}" wx:for-item="d" wx:key="b" u-s="{{['suffix']}}" style="background-color:white" u-i="{{d.c}}" bind:__l="__l" u-p="{{d.d}}"><view slot="suffix">{{d.a}}</view></yx-list><yx-divider u-i="{{group.b}}" bind:__l="__l"></yx-divider></block></view>

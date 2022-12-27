@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/tabbar/find/find",
+    "pages/tabbar/user/user",
+    "pages/tabbar/chat/chat",
+    "pages/tabbar/friend/friend",
+    "pages/chat-detail/chat-detail"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "h5聊天系统开发",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "backgroundColor": "#f7f7f7",
+    "color": "#000000",
+    "selectedColor": "#08c261",
+    "list": [
+      {
+        "iconPath": "static/tabbar/chat.png",
+        "selectedIconPath": "static/tabbar/chat-active.png",
+        "text": "首页",
+        "pagePath": "pages/tabbar/chat/chat"
+      },
+      {
+        "iconPath": "static/tabbar/friend.png",
+        "selectedIconPath": "static/tabbar/friend-active.png",
+        "text": "朋友",
+        "pagePath": "pages/tabbar/friend/friend"
+      },
+      {
+        "iconPath": "static/tabbar/find.png",
+        "selectedIconPath": "static/tabbar/find-active.png",
+        "text": "发现",
+        "pagePath": "pages/tabbar/find/find"
+      },
+      {
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/user-active.png",
+        "text": "我的",
+        "pagePath": "pages/tabbar/user/user"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

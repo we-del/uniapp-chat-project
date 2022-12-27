@@ -1,0 +1,1 @@
+<view class="fixed-top flex justify-between p-2 align-center pr-4" style="background-color:#efefeb"><view class="font-lg">{{a}}</view><view><text class="iconfont icon-search font-lg pr-5 font-lg"></text><text class="iconfont icon-add font-lg" bindtap="{{b}}"></text></view></view><yx-popup wx:if="{{c}}" bindhide="{{d}}" u-i="7043c45c-0" bind:__l="__l" u-p="{{e}}"></yx-popup>

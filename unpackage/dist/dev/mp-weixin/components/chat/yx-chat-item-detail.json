@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "yx-chat-item-content": "./yx-chat-item-content"
+  }
+}

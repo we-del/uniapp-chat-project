@@ -1,0 +1,10 @@
+
+#badge{
+	margin-left:75rpx;margin-top: -10rpx;
+	height:15rpx;
+	font-size: 10rpx;
+	/* color: #ec242c; */
+	line-height: 15rpx;
+	text-align: center;
+	color: white;
+}

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "yx-tool-bar": "../../../components/yx-tool-bar",
+    "yx-list": "../../../components/yx-list"
+  }
+}

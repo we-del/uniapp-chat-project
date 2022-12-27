@@ -1,0 +1,1 @@
+<view id="badge" class="rounded-circle bg-danger font-sm p-1 position-absolute">{{a}}</view>

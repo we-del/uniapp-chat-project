@@ -1,0 +1,40 @@
+/* 1. 页面背景色 */
+.page{
+	background-color: #EDEDED;
+	/* #ifndef APP-PLUS-NVUE */
+	min-height: 100vh;
+	height: auto;
+	/* #endif */
+	/* #ifdef APP-PLUS-NVUE */
+	flex: 1;
+	/* #endif */
+}
+/* 2. 主背景色（原谅绿） */
+.main-bg-color{
+	background-color: #08C060;
+}
+.main-bg-hover-color{
+	background-color: #08d869;
+}
+/* 3. 主文字色（原谅绿） */
+.main-text-color{
+	color: #08C060;
+}
+
+.border-main{
+	border-color: #08C060!important;
+}
+
+.bg-chat-item{
+	background-color: #6BEE68;
+}
+.text-chat-item{
+	color: #6BEE68;
+}
+
+
+/* 4.移动端屏幕视距处理(在自定义导航栏时需要用到，否则应用会全屏显示) */
+.status_bar {
+	height: var(--status-bar-height);
+	width: 100%;
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "yx-nav-bar": "../../components/yx-nav-bar",
+    "yx-chat-item-detail": "../../components/chat/yx-chat-item-detail",
+    "yx-chat-detail-input": "../../components/chat/yx-chat-detail-input",
+    "yx-popup": "../../components/yx-popup"
+  }
+}

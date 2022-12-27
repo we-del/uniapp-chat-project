@@ -1,0 +1,1 @@
+<view bindtouchstart="{{e}}" style="overflow:auto"><view wx:if="{{a}}" class="text-overflow-line"><view><rich-text nodes="{{b}}"/></view></view><image wx:if="{{c}}" mode="aspectFill" src="{{d}}" style="height:250rpx;width:140rpx"></image></view>

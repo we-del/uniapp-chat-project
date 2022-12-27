@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "yx-card": "../../../components/yx-card",
+    "yx-divider": "../../../components/yx-divider",
+    "yx-list": "../../../components/yx-list"
+  }
+}

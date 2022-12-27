@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "yx-tool-bar": "../../../components/yx-tool-bar",
+    "chat-item": "../../../components/chat-item",
+    "yx-popup": "../../../components/yx-popup"
+  }
+}

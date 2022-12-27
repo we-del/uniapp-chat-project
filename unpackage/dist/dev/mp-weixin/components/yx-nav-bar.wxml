@@ -1,0 +1,1 @@
+<view class="flex justify-between align-center p-2 bg-white fixed-top"><view id="back-sign" class="icon-left iconfont mr-2" bindtap="{{a}}"></view><view id="user-view" class="flex-1">{{b}}</view><view id="more-detail" class="icon-ellipsis iconfont"></view></view>

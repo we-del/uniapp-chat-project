@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "yx-badge": "./yx-badge"
+  }
+}
