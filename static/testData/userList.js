@@ -1,3 +1,6 @@
+/**
+ * @description 好友列表，用于主页显示
+ */
 export default [
 					
 					{

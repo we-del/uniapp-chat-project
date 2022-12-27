@@ -104,12 +104,12 @@ if (uni.restoreGlobal) {
     },
     methods: {
       handleReactive(item) {
-        formatAppLog("log", "at components/yx-popup.vue:76", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
+        formatAppLog("log", "at components/yx-popup.vue:78", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
         this.$emit("action", item.event);
         this.$emit("hide");
       },
       hide() {
-        formatAppLog("log", "at components/yx-popup.vue:82", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
+        formatAppLog("log", "at components/yx-popup.vue:84", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
         this.$emit("hide");
       }
     },
@@ -131,6 +131,7 @@ if (uni.restoreGlobal) {
         class: vue.normalizeClass([$options.styleCustom, "zTop border-dark border p-2 flex flex-column position-fixed rounded font-md"]),
         style: vue.normalizeStyle($props.show ? `display:block;${$options.position}` : `display:none;${$options.position}`)
       }, [
+        vue.createCommentVNode(" \u666E\u901A\u529F\u80FD\u6846 "),
         !$props.isBottom ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
           (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.popItem, (item, i) => {
             return vue.openBlock(), vue.createElementBlock("view", {
@@ -150,11 +151,14 @@ if (uni.restoreGlobal) {
             ], 12, ["onClick"]);
           }), 128))
         ])) : vue.createCommentVNode("v-if", true),
+        vue.createCommentVNode(" \u5E95\u90E8\u529F\u80FD\u6846 "),
         $props.isBottom ? (vue.openBlock(), vue.createElementBlock("view", {
           key: 1,
           style: vue.normalizeStyle(`height:${$props.popHeight}rpx;width:100%;`),
           class: "bg-danger"
-        }, null, 4)) : vue.createCommentVNode("v-if", true)
+        }, [
+          vue.renderSlot(_ctx.$slots, "bottom-content")
+        ], 4)) : vue.createCommentVNode("v-if", true)
       ], 6),
       vue.createElementVNode("view", {
         onClick: _cache[0] || (_cache[0] = (...args) => $options.hide && $options.hide(...args)),
@@ -1375,9 +1379,6 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
-      gobackOriginSize() {
-        this.chatInputHeight = this.originVal;
-      },
       getInputHeight(event = "keyboard") {
         switch (event) {
           case "keyboard":
@@ -1394,7 +1395,7 @@ if (uni.restoreGlobal) {
             this.chatInputHeight = this.activeKeyboardHeight + this.originVal + this.stepVal;
             break;
           default:
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:98", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:96", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
             break;
         }
         this.$emit("syn");
@@ -1410,22 +1411,24 @@ if (uni.restoreGlobal) {
         this.getInputHeight("util");
       },
       textareaLineChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:118", "lineChange", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:116", "lineChange", e);
         this.curLine = e.detail.lineCount;
         this.inputChangeHeight = e.detail.height;
         this.getInputHeight();
+      },
+      handleFocus() {
+        this.isOpenEmo = false;
+        this.isOpenSwipeUtil = false;
+        this.$emit("hide");
       },
       textareaInputChange(e) {
       },
       sendMessage() {
         if (!this.inputContent)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:133", "@content---", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:136", "@content---", this.inputContent);
         this.$emit("addMessage", this.inputContent);
         this.inputContent = "";
-        this.isOpenEmo = false;
-        this.isOpenSwipeUtil = false;
-        this.$emit("hide");
       },
       keyboardHeightChangeHandle(e) {
         formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:141", "@keyboard", e);
@@ -1451,7 +1454,7 @@ if (uni.restoreGlobal) {
     watch: {
       inputContent: {
         handler() {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:171", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:170", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
           this.isText = this.inputContent.length > 0;
         },
         deep: true,
@@ -1494,8 +1497,9 @@ if (uni.restoreGlobal) {
           "auto-height": "",
           class: "flex-1 bg-white-one-deep p-1 rounded",
           onLinechange: _cache[1] || (_cache[1] = (...args) => $options.textareaLineChangeHandle && $options.textareaLineChangeHandle(...args)),
-          onInput: _cache[2] || (_cache[2] = (...args) => $options.textareaInputChange && $options.textareaInputChange(...args)),
-          onKeyboardheightchange: _cache[3] || (_cache[3] = (...args) => $options.keyboardHeightChangeHandle && $options.keyboardHeightChangeHandle(...args)),
+          onFocus: _cache[2] || (_cache[2] = (...args) => $options.handleFocus && $options.handleFocus(...args)),
+          onInput: _cache[3] || (_cache[3] = (...args) => $options.textareaInputChange && $options.textareaInputChange(...args)),
+          onKeyboardheightchange: _cache[4] || (_cache[4] = (...args) => $options.keyboardHeightChangeHandle && $options.keyboardHeightChangeHandle(...args)),
           style: vue.normalizeStyle(`min-height: ${$options.minHeight}rpx;max-height:${$options.maxHeight}rpx;width: 95%;overflow:auto`),
           maxlength: -1,
           "placeholder-style": "color:#F76260",
@@ -1510,17 +1514,17 @@ if (uni.restoreGlobal) {
       }, [
         vue.createElementVNode("text", {
           class: "iconfont icon-smile font-lg mr-1 vertical-middle",
-          onClick: _cache[4] || (_cache[4] = (...args) => $options.activeEmot && $options.activeEmot(...args))
+          onClick: _cache[5] || (_cache[5] = (...args) => $options.activeEmot && $options.activeEmot(...args))
         }),
         !$data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
           key: 0,
           class: "iconfont icon-add font-lg p-1 vertical-middle",
-          onClick: _cache[5] || (_cache[5] = (...args) => $options.activeUtilSwiper && $options.activeUtilSwiper(...args))
+          onClick: _cache[6] || (_cache[6] = (...args) => $options.activeUtilSwiper && $options.activeUtilSwiper(...args))
         })) : vue.createCommentVNode("v-if", true),
         $data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
           key: 1,
           class: "iconfont font-sm main-bg-color p-1 text-white",
-          onClick: _cache[6] || (_cache[6] = (...args) => $options.sendMessage && $options.sendMessage(...args))
+          onClick: _cache[7] || (_cache[7] = (...args) => $options.sendMessage && $options.sendMessage(...args))
         }, "\u53D1\u9001")) : vue.createCommentVNode("v-if", true)
       ])
     ], 4);
@@ -1596,6 +1600,57 @@ if (uni.restoreGlobal) {
       showTime: true
     }
   ];
+  var chatUtils = [
+    [
+      {
+        id: "001",
+        text: "\u76F8\u518C",
+        img_src: "/static/images/pic.png"
+      },
+      {
+        id: "002",
+        text: "\u62CD\u6444",
+        img_src: "/static/images/pic.png"
+      },
+      {
+        id: "003",
+        text: "\u8BED\u97F3\u901A\u8BDD",
+        img_src: "/static/images/phone.png"
+      },
+      {
+        id: "004",
+        text: "\u4F4D\u7F6E",
+        img_src: "/static/images/location.png"
+      },
+      {
+        id: "005",
+        text: "\u8BED\u97F3\u8F93\u5165",
+        img_src: "/static/images/voice.png"
+      },
+      {
+        id: "006",
+        text: "\u6536\u85CF",
+        img_src: "/static/images/star.png"
+      },
+      {
+        id: "007",
+        text: "\u7EA2\u5305",
+        img_src: "/static/images/hongbao.png"
+      },
+      {
+        id: "008",
+        text: "\u540D\u7247",
+        img_src: "/static/images/man.png"
+      }
+    ],
+    [
+      {
+        id: "009",
+        text: "\u76F8\u518C",
+        img_src: "/static/images/pic.png"
+      }
+    ]
+  ];
   const _sfc_main$1 = {
     components: {
       YxNavBar,
@@ -1610,11 +1665,12 @@ if (uni.restoreGlobal) {
     },
     onLoad(query) {
       this.name = query.name;
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:40", "@\u663E\u793A\u5F97\u4E3A", query);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:57", "@\u663E\u793A\u5F97\u4E3A", query);
     },
     mounted() {
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:45", "@scrollView-mounted", this.$refs.inputBar.chatInputHeight);
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:46", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:62", "@scrollView-mounted", this.$refs.inputBar.chatInputHeight);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:63", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:64", "@wwwww", this.popupContentOfUtilInBottom);
     },
     data() {
       return {
@@ -1631,26 +1687,29 @@ if (uni.restoreGlobal) {
         touchTarget: "",
         touchStartTime: 0,
         isBottom: false,
-        popupHeight: 0
+        popupHeight: 0,
+        popupMode: "",
+        popupContentOfUtilInBottom: chatUtils
       };
     },
     methods: {
       changeInputState(event) {
         this.isBottom = true;
         this.popShow = true;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:86", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:108", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
         this.popupHeight = this.$refs.inputBar.activeKeyboardHeight;
         this.popPosition = { x: 0, y: 0 };
         switch (event) {
           case "utils":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:92", "utils\u64CD\u4F5C");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:114", "utils\u64CD\u4F5C");
             break;
           case "emo":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:95", "emo\u64CD\u4F5C");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:117", "emo\u64CD\u4F5C");
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:98", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:120", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
         }
+        this.popupMode = event;
       },
       addMessage(message) {
         const m = {
@@ -1668,7 +1727,7 @@ if (uni.restoreGlobal) {
         const preTime = this.userMessage[lastIndex].message_time;
         const timeLimit = 1e3 * 60 * 10;
         m.showTime = m.message_time - preTime > timeLimit;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:131", "\u6ED1\u52A8");
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:154", "\u6ED1\u52A8");
         this.scrollBottom();
         this.userMessage.push(m);
       },
@@ -1698,7 +1757,7 @@ if (uni.restoreGlobal) {
             this.curUserMessage.isDel = true;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:173", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:196", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
             break;
         }
       },
@@ -1769,7 +1828,7 @@ if (uni.restoreGlobal) {
       synMoveDistance() {
         this.scrollViewHeight = this.$refs.inputBar.chatInputHeight;
         this.scrollBottom();
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:271", "\u5B8C\u6210\u53D8\u5316\u540C\u6B65", this.scrollViewHeight);
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:294", "\u5B8C\u6210\u53D8\u5316\u540C\u6B65", this.scrollViewHeight);
       }
     },
     computed: {
@@ -1801,7 +1860,7 @@ if (uni.restoreGlobal) {
         "scroll-y": "true",
         onScroll: _cache[0] || (_cache[0] = (...args) => $options.scroll && $options.scroll(...args)),
         "scroll-top": $data.scrollHeight,
-        class: "position-fixed",
+        class: "position-fixed transition-ease-fast",
         style: vue.normalizeStyle(`top:95rpx;bottom:${$data.scrollViewHeight}rpx`)
       }, [
         vue.createCommentVNode(' \r\n		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"\r\n		class="position-fixed" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`"> '),
@@ -1831,7 +1890,34 @@ if (uni.restoreGlobal) {
         isBottom: $data.isBottom,
         onHide: $options.handlePopHide,
         onAction: $options.actionHandle
-      }, null, 8, ["show", "popPosittion", "popHeight", "isDark", "popItem", "isBottom", "onHide", "onAction"])
+      }, {
+        "bottom-content": vue.withCtx(() => [
+          $data.popupMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, " \u6211\u6765\u5C55\u793Aemo ")) : vue.createCommentVNode("v-if", true),
+          $data.popupMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", {
+            key: 1,
+            class: "flex p-2"
+          }, [
+            vue.createTextVNode(" \u6211\u6765\u5C55\u793Autils "),
+            vue.createElementVNode("swiper", {
+              style: { "height": "300rpx" },
+              circular: "",
+              "indicator-dots": true,
+              duration: 1e3
+            }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.popupContentOfUtilInBottom, (itemArr) => {
+                return vue.openBlock(), vue.createElementBlock("swiper-item", { style: { "height": "300rpx", "background-color": "pink" } }, [
+                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                    return vue.openBlock(), vue.createElementBlock("view", {
+                      key: item.id
+                    }, "12");
+                  }), 128))
+                ]);
+              }), 256))
+            ])
+          ])) : vue.createCommentVNode("v-if", true)
+        ]),
+        _: 1
+      }, 8, ["show", "popPosittion", "popHeight", "isDark", "popItem", "isBottom", "onHide", "onAction"])
     ]);
   }
   var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);

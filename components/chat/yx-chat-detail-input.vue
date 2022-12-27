@@ -7,7 +7,7 @@
 		<view id="input" class="flex-1 p-1">
 			
 			<textarea v-model="inputContent"  auto-height class="flex-1 bg-white-one-deep p-1 rounded"
-			@linechange="textareaLineChangeHandle"  @input="textareaInputChange" @keyboardheightchange="keyboardHeightChangeHandle"
+			@linechange="textareaLineChangeHandle" @focus="handleFocus" @input="textareaInputChange" @keyboardheightchange="keyboardHeightChangeHandle"
 			:style="`min-height: ${minHeight}rpx;max-height:${maxHeight}rpx;width: 95%;overflow:auto`" :maxlength="-1"
 			 placeholder-style="color:#F76260" :adjust-position="false" />
 		</view>
@@ -72,9 +72,7 @@
 			};
 		},
 		methods:{
-			gobackOriginSize(){
-				this.chatInputHeight = this.originVal
-			},
+			
 			//得到当前键盘高度
 			// 根据不同获取高度的策略设置不同的高度 ，如果是keyboard则按此计算，如果为util则为activeKeyBoard计算
 			getInputHeight(event='keyboard'){
@@ -120,6 +118,11 @@
 				this.inputChangeHeight = e.detail.height
 				this.getInputHeight()
 			},
+			handleFocus(){
+				this.isOpenEmo = false
+				this.isOpenSwipeUtil = false
+				this.$emit('hide')
+			},
 			//每次改变输入时调用
 			textareaInputChange(e){
 				// if(this.inputContent.length > 0) {
@@ -133,14 +136,10 @@
 				console.log('@content---',this.inputContent)
 				this.$emit('addMessage',this.inputContent)
 				this.inputContent = ''
-				this.isOpenEmo = false
-				this.isOpenSwipeUtil = false
-				this.$emit('hide')
 			},
 			keyboardHeightChangeHandle(e){
 				console.log('@keyboard',e)
 				const height = e.detail.height
-				
 			
 				if(!this.keyboardHeight && height){
 					// 缓存keyboard的高度

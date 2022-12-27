@@ -1,4 +1,6 @@
-
+/**
+ * @description 聊天信息，用于聊天页面，充当数据填充，具体字段如下
+ */
 export default [
 	{
 		id:'a1',

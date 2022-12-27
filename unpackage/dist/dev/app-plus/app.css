@@ -160,7 +160,7 @@
 }
 /* 过渡 */
 .transition-ease-fast{
-	 transition: .2s all cubic-bezier(0,1.16,.4,.95);
+	 transition: .4s all cubic-bezier(0,1.16,.4,.95);
 }
 .transition-linear{
 	 transition: 1s all linear;

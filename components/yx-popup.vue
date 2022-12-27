@@ -2,6 +2,7 @@
 	<view :class="styleCustom" 
 	class="zTop border-dark  border p-2 flex flex-column  position-fixed  rounded font-md" 
 	:style="show ? `display:block;${position}`:`display:none;${position}`">
+		<!-- 普通功能框 -->
 		<view v-if="!isBottom">
 			<view @click="handleReactive(item)" class="flex-1 "
 			 v-for="(item,i) in popItem" :key="item.id"
@@ -10,8 +11,9 @@
 				<text v-if="item.content" class="font-md">{{item.content}}</text>
 			</view>
 		</view>
+		<!-- 底部功能框 -->
 		<view v-if="isBottom" :style="`height:${popHeight}rpx;width:100%;`" class="bg-danger">
-			
+			<slot name="bottom-content"></slot>
 		</view>
 	</view>
 	<view @click="hide" :style="show ? 'display:block':'display:none'"  id="mask" class="fill-screen  position-absolute" style="left:0;top:0;"></view>

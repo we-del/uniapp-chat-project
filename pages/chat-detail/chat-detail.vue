@@ -4,7 +4,7 @@
 		<yx-nav-bar :title="this.name"/>
 		<!-- 滑动内容 -->
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
-		class="position-fixed" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`"><!-- 
+		class="position-fixed transition-ease-fast" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`"><!-- 
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
 		class="position-fixed" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`"> -->
 			<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message" @touchstart="(e)=>handleTouch(message,e)"
@@ -14,7 +14,23 @@
 		<yx-chat-detail-input @addMessage="addMessage" ref="inputBar" @hide="handlePopHide" @syn="synMoveDistance" @activeUtil="changeInputState"></yx-chat-detail-input>
 		<yx-popup :show="popShow" :popPosittion="popPosition" :popHeight="popupHeight"
 		:isDark="popIsDark" :popItem="popData" :isBottom="isBottom"
-		@hide="handlePopHide" @action="actionHandle"></yx-popup>
+		@hide="handlePopHide" @action="actionHandle">
+			<template #bottom-content>
+				<view v-if="popupMode=='emo'">
+					我来展示emo
+				</view>
+				<view v-if="popupMode=='utils'" class="flex p-2">
+					我来展示utils
+					<swiper style="height:300rpx" circular :indicator-dots="true"  
+						:duration="1000">
+						<swiper-item style="height:300rpx;background-color: pink;"  v-for="itemArr in popupContentOfUtilInBottom">
+							<view v-for="item in itemArr" :key="item.id">12</view>
+						</swiper-item>
+						
+					</swiper>
+				</view>
+			</template>
+		</yx-popup>
 		
 	</view>
 </template>
@@ -25,6 +41,7 @@
 	import YxChatDetailInput from '@/components/chat/yx-chat-detail-input.vue'
 	import YxPopup from '@/components/yx-popup.vue'
 	import chatMesssage from '@/static/testData/chatMessage.js'
+	import chatUtils from '@/static/testData/chatUtils.js'
 	export default {
 		components:{
 			YxNavBar,YxChatItemDetail,YxChatDetailInput,YxPopup
@@ -44,7 +61,7 @@
 			//因此在他们内部无法得到refs收集的子组件(类)信息，需要在mounted中才能访问
 			console.log('@scrollView-mounted', this.$refs.inputBar.chatInputHeight)
 			console.log('@键盘激活的高度', this.$refs.inputBar.activeKeyboardHeight)
-		
+			console.log('@wwwww',this.popupContentOfUtilInBottom)
 		},
 		data() {
 			return {
@@ -75,7 +92,12 @@
 				touchStartTime:0,
 				// popup是否处于底部，如果为底部则说明是功能框，需要指定高度
 				isBottom:false,
-				popupHeight:0
+				// 在底部的情况下popup的高度
+				popupHeight:0,
+				// 在底部的情况下popup的展示内容，为 util | emo
+				popupMode: '',
+				// 在popup在底部时，展示的内容
+				popupContentOfUtilInBottom:chatUtils
 			}
 		},
 		methods: {
@@ -96,7 +118,8 @@
 					break
 					default:
 					console.log('没有命中事件')
-				}
+				}				
+				this.popupMode = event
 			},
 			
 			// 输入框添加消息信息
