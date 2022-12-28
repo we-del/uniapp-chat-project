@@ -97,19 +97,24 @@ if (uni.restoreGlobal) {
       },
       popHeight: {
         type: Number
-      }
+      },
+      popupContentOfUtilInBottom: [Array],
+      utilArr: [Array],
+      emoArr: [Array],
+      bottomMode: [String],
+      bottomClickTransition: [Boolean]
     },
     data() {
       return {};
     },
     methods: {
       handleReactive(item) {
-        formatAppLog("log", "at components/yx-popup.vue:78", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
+        formatAppLog("log", "at components/yx-popup.vue:86", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
         this.$emit("action", item.event);
         this.$emit("hide");
       },
       hide() {
-        formatAppLog("log", "at components/yx-popup.vue:84", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
+        formatAppLog("log", "at components/yx-popup.vue:92", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
         this.$emit("hide");
       }
     },
@@ -119,8 +124,11 @@ if (uni.restoreGlobal) {
       },
       styleCustom() {
         let res = "";
-        res += this.isDark ? " bg-dark text-white " : "bg-white text-dark ";
-        res += this.isBottom ? " fixed-bottom " : "";
+        if (this.isBottom) {
+          res += this.isBottom ? " fixed-bottom  bg-common " : " border ";
+        } else {
+          res += this.isDark ? " bg-dark text-white " : "bg-white text-dark ";
+        }
         return res;
       }
     }
@@ -128,17 +136,17 @@ if (uni.restoreGlobal) {
   function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
-        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark border p-2 flex flex-column position-fixed rounded font-md"]),
-        style: vue.normalizeStyle($props.show ? `display:block;${$options.position}` : `display:none;${$options.position}`)
+        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex flex-column position-fixed rounded font-md"]),
+        style: vue.normalizeStyle($props.show ? `display:block;${$options.position}` : `display:none;${$options.position};`)
       }, [
         vue.createCommentVNode(" \u666E\u901A\u529F\u80FD\u6846 "),
         !$props.isBottom ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.popItem, (item, i) => {
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.popItem, (item, i2) => {
             return vue.openBlock(), vue.createElementBlock("view", {
               onClick: ($event) => $options.handleReactive(item),
               class: "flex-1",
               key: item.id,
-              style: vue.normalizeStyle(i !== $props.popItem.length - 1 && item.content ? "margin-bottom:30rpx" : "")
+              style: vue.normalizeStyle(i2 !== $props.popItem.length - 1 && item.content ? "margin-bottom:30rpx" : "")
             }, [
               item.icon ? (vue.openBlock(), vue.createElementBlock("text", {
                 key: 0,
@@ -154,10 +162,11 @@ if (uni.restoreGlobal) {
         vue.createCommentVNode(" \u5E95\u90E8\u529F\u80FD\u6846 "),
         $props.isBottom ? (vue.openBlock(), vue.createElementBlock("view", {
           key: 1,
-          style: vue.normalizeStyle(`height:${$props.popHeight}rpx;width:100%;`),
-          class: "bg-danger"
+          class: "transition-ease-fast",
+          style: vue.normalizeStyle(`height:${$props.popHeight}rpx;width:100%;`)
         }, [
-          vue.renderSlot(_ctx.$slots, "bottom-content")
+          vue.renderSlot(_ctx.$slots, "util"),
+          vue.renderSlot(_ctx.$slots, "emo")
         ], 4)) : vue.createCommentVNode("v-if", true)
       ], 6),
       vue.createElementVNode("view", {
@@ -168,7 +177,7 @@ if (uni.restoreGlobal) {
       }, null, 4)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
+  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
   const _sfc_main$f = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
@@ -269,31 +278,31 @@ if (uni.restoreGlobal) {
       }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
+  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
     !function(t, e) {
       module.exports = e();
     }(commonjsGlobal, function() {
-      var t = 1e3, e = 6e4, n = 36e5, r = "millisecond", i = "second", s = "minute", u = "hour", a = "day", o = "week", f = "month", h = "quarter", c = "year", d = "date", l = "Invalid Date", $ = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/, y = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g, M = { name: "en", weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), ordinal: function(t2) {
+      var t = 1e3, e = 6e4, n = 36e5, r = "millisecond", i2 = "second", s = "minute", u = "hour", a = "day", o = "week", f = "month", h = "quarter", c = "year", d = "date", l = "Invalid Date", $ = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/, y = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g, M = { name: "en", weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), ordinal: function(t2) {
         var e2 = ["th", "st", "nd", "rd"], n2 = t2 % 100;
         return "[" + t2 + (e2[(n2 - 20) % 10] || e2[n2] || e2[0]) + "]";
       } }, m = function(t2, e2, n2) {
         var r2 = String(t2);
         return !r2 || r2.length >= e2 ? t2 : "" + Array(e2 + 1 - r2.length).join(n2) + t2;
       }, v = { s: m, z: function(t2) {
-        var e2 = -t2.utcOffset(), n2 = Math.abs(e2), r2 = Math.floor(n2 / 60), i2 = n2 % 60;
-        return (e2 <= 0 ? "+" : "-") + m(r2, 2, "0") + ":" + m(i2, 2, "0");
+        var e2 = -t2.utcOffset(), n2 = Math.abs(e2), r2 = Math.floor(n2 / 60), i3 = n2 % 60;
+        return (e2 <= 0 ? "+" : "-") + m(r2, 2, "0") + ":" + m(i3, 2, "0");
       }, m: function t2(e2, n2) {
         if (e2.date() < n2.date())
           return -t2(n2, e2);
-        var r2 = 12 * (n2.year() - e2.year()) + (n2.month() - e2.month()), i2 = e2.clone().add(r2, f), s2 = n2 - i2 < 0, u2 = e2.clone().add(r2 + (s2 ? -1 : 1), f);
-        return +(-(r2 + (n2 - i2) / (s2 ? i2 - u2 : u2 - i2)) || 0);
+        var r2 = 12 * (n2.year() - e2.year()) + (n2.month() - e2.month()), i3 = e2.clone().add(r2, f), s2 = n2 - i3 < 0, u2 = e2.clone().add(r2 + (s2 ? -1 : 1), f);
+        return +(-(r2 + (n2 - i3) / (s2 ? i3 - u2 : u2 - i3)) || 0);
       }, a: function(t2) {
         return t2 < 0 ? Math.ceil(t2) || 0 : Math.floor(t2);
       }, p: function(t2) {
-        return { M: f, y: c, w: o, d: a, D: d, h: u, m: s, s: i, ms: r, Q: h }[t2] || String(t2 || "").toLowerCase().replace(/s$/, "");
+        return { M: f, y: c, w: o, d: a, D: d, h: u, m: s, s: i2, ms: r, Q: h }[t2] || String(t2 || "").toLowerCase().replace(/s$/, "");
       }, u: function(t2) {
         return t2 === void 0;
       } }, g = "en", D = {};
@@ -301,20 +310,20 @@ if (uni.restoreGlobal) {
       var p = function(t2) {
         return t2 instanceof _;
       }, S = function t2(e2, n2, r2) {
-        var i2;
+        var i3;
         if (!e2)
           return g;
         if (typeof e2 == "string") {
           var s2 = e2.toLowerCase();
-          D[s2] && (i2 = s2), n2 && (D[s2] = n2, i2 = s2);
+          D[s2] && (i3 = s2), n2 && (D[s2] = n2, i3 = s2);
           var u2 = e2.split("-");
-          if (!i2 && u2.length > 1)
+          if (!i3 && u2.length > 1)
             return t2(u2[0]);
         } else {
           var a2 = e2.name;
-          D[a2] = e2, i2 = a2;
+          D[a2] = e2, i3 = a2;
         }
-        return !r2 && i2 && (g = i2), i2 || !r2 && g;
+        return !r2 && i3 && (g = i3), i3 || !r2 && g;
       }, w = function(t2, e2) {
         if (p(t2))
           return t2.clone();
@@ -341,8 +350,8 @@ if (uni.restoreGlobal) {
             if (typeof e2 == "string" && !/Z$/i.test(e2)) {
               var r2 = e2.match($);
               if (r2) {
-                var i2 = r2[2] - 1 || 0, s2 = (r2[7] || "0").substring(0, 3);
-                return n2 ? new Date(Date.UTC(r2[1], i2, r2[3] || 1, r2[4] || 0, r2[5] || 0, r2[6] || 0, s2)) : new Date(r2[1], i2, r2[3] || 1, r2[4] || 0, r2[5] || 0, r2[6] || 0, s2);
+                var i3 = r2[2] - 1 || 0, s2 = (r2[7] || "0").substring(0, 3);
+                return n2 ? new Date(Date.UTC(r2[1], i3, r2[3] || 1, r2[4] || 0, r2[5] || 0, r2[6] || 0, s2)) : new Date(r2[1], i3, r2[3] || 1, r2[4] || 0, r2[5] || 0, r2[6] || 0, s2);
               }
             }
             return new Date(e2);
@@ -369,8 +378,8 @@ if (uni.restoreGlobal) {
           return this.$d.getTime();
         }, m2.startOf = function(t2, e2) {
           var n2 = this, r2 = !!O.u(e2) || e2, h2 = O.p(t2), l2 = function(t3, e3) {
-            var i2 = O.w(n2.$u ? Date.UTC(n2.$y, e3, t3) : new Date(n2.$y, e3, t3), n2);
-            return r2 ? i2 : i2.endOf(a);
+            var i3 = O.w(n2.$u ? Date.UTC(n2.$y, e3, t3) : new Date(n2.$y, e3, t3), n2);
+            return r2 ? i3 : i3.endOf(a);
           }, $2 = function(t3, e3) {
             return O.w(n2.toDate()[t3].apply(n2.toDate("s"), (r2 ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(e3)), n2);
           }, y2 = this.$W, M3 = this.$M, m3 = this.$D, v2 = "set" + (this.$u ? "UTC" : "");
@@ -389,7 +398,7 @@ if (uni.restoreGlobal) {
               return $2(v2 + "Minutes", 1);
             case s:
               return $2(v2 + "Seconds", 2);
-            case i:
+            case i2:
               return $2(v2 + "Milliseconds", 3);
             default:
               return this.clone();
@@ -397,7 +406,7 @@ if (uni.restoreGlobal) {
         }, m2.endOf = function(t2) {
           return this.startOf(t2, false);
         }, m2.$set = function(t2, e2) {
-          var n2, o2 = O.p(t2), h2 = "set" + (this.$u ? "UTC" : ""), l2 = (n2 = {}, n2[a] = h2 + "Date", n2[d] = h2 + "Date", n2[f] = h2 + "Month", n2[c] = h2 + "FullYear", n2[u] = h2 + "Hours", n2[s] = h2 + "Minutes", n2[i] = h2 + "Seconds", n2[r] = h2 + "Milliseconds", n2)[o2], $2 = o2 === a ? this.$D + (e2 - this.$W) : e2;
+          var n2, o2 = O.p(t2), h2 = "set" + (this.$u ? "UTC" : ""), l2 = (n2 = {}, n2[a] = h2 + "Date", n2[d] = h2 + "Date", n2[f] = h2 + "Month", n2[c] = h2 + "FullYear", n2[u] = h2 + "Hours", n2[s] = h2 + "Minutes", n2[i2] = h2 + "Seconds", n2[r] = h2 + "Milliseconds", n2)[o2], $2 = o2 === a ? this.$D + (e2 - this.$W) : e2;
           if (o2 === f || o2 === c) {
             var y2 = this.clone().set(d, 1);
             y2.$d[l2]($2), y2.init(), this.$d = y2.set(d, Math.min(this.$D, y2.daysInMonth())).$d;
@@ -423,7 +432,7 @@ if (uni.restoreGlobal) {
             return y2(1);
           if ($2 === o)
             return y2(7);
-          var M3 = (d2 = {}, d2[s] = e, d2[u] = n, d2[i] = t, d2)[$2] || 1, m3 = this.$d.getTime() + r2 * M3;
+          var M3 = (d2 = {}, d2[s] = e, d2[u] = n, d2[i2] = t, d2)[$2] || 1, m3 = this.$d.getTime() + r2 * M3;
           return O.w(m3, this);
         }, m2.subtract = function(t2, e2) {
           return this.add(-1 * t2, e2);
@@ -431,22 +440,22 @@ if (uni.restoreGlobal) {
           var e2 = this, n2 = this.$locale();
           if (!this.isValid())
             return n2.invalidDate || l;
-          var r2 = t2 || "YYYY-MM-DDTHH:mm:ssZ", i2 = O.z(this), s2 = this.$H, u2 = this.$m, a2 = this.$M, o2 = n2.weekdays, f2 = n2.months, h2 = function(t3, n3, i3, s3) {
-            return t3 && (t3[n3] || t3(e2, r2)) || i3[n3].slice(0, s3);
+          var r2 = t2 || "YYYY-MM-DDTHH:mm:ssZ", i3 = O.z(this), s2 = this.$H, u2 = this.$m, a2 = this.$M, o2 = n2.weekdays, f2 = n2.months, h2 = function(t3, n3, i4, s3) {
+            return t3 && (t3[n3] || t3(e2, r2)) || i4[n3].slice(0, s3);
           }, c2 = function(t3) {
             return O.s(s2 % 12 || 12, t3, "0");
           }, d2 = n2.meridiem || function(t3, e3, n3) {
             var r3 = t3 < 12 ? "AM" : "PM";
             return n3 ? r3.toLowerCase() : r3;
-          }, $2 = { YY: String(this.$y).slice(-2), YYYY: this.$y, M: a2 + 1, MM: O.s(a2 + 1, 2, "0"), MMM: h2(n2.monthsShort, a2, f2, 3), MMMM: h2(f2, a2), D: this.$D, DD: O.s(this.$D, 2, "0"), d: String(this.$W), dd: h2(n2.weekdaysMin, this.$W, o2, 2), ddd: h2(n2.weekdaysShort, this.$W, o2, 3), dddd: o2[this.$W], H: String(s2), HH: O.s(s2, 2, "0"), h: c2(1), hh: c2(2), a: d2(s2, u2, true), A: d2(s2, u2, false), m: String(u2), mm: O.s(u2, 2, "0"), s: String(this.$s), ss: O.s(this.$s, 2, "0"), SSS: O.s(this.$ms, 3, "0"), Z: i2 };
+          }, $2 = { YY: String(this.$y).slice(-2), YYYY: this.$y, M: a2 + 1, MM: O.s(a2 + 1, 2, "0"), MMM: h2(n2.monthsShort, a2, f2, 3), MMMM: h2(f2, a2), D: this.$D, DD: O.s(this.$D, 2, "0"), d: String(this.$W), dd: h2(n2.weekdaysMin, this.$W, o2, 2), ddd: h2(n2.weekdaysShort, this.$W, o2, 3), dddd: o2[this.$W], H: String(s2), HH: O.s(s2, 2, "0"), h: c2(1), hh: c2(2), a: d2(s2, u2, true), A: d2(s2, u2, false), m: String(u2), mm: O.s(u2, 2, "0"), s: String(this.$s), ss: O.s(this.$s, 2, "0"), SSS: O.s(this.$ms, 3, "0"), Z: i3 };
           return r2.replace(y, function(t3, e3) {
-            return e3 || $2[t3] || i2.replace(":", "");
+            return e3 || $2[t3] || i3.replace(":", "");
           });
         }, m2.utcOffset = function() {
           return 15 * -Math.round(this.$d.getTimezoneOffset() / 15);
         }, m2.diff = function(r2, d2, l2) {
           var $2, y2 = O.p(d2), M3 = w(r2), m3 = (M3.utcOffset() - this.utcOffset()) * e, v2 = this - M3, g2 = O.m(this, M3);
-          return g2 = ($2 = {}, $2[c] = g2 / 12, $2[f] = g2, $2[h] = g2 / 3, $2[o] = (v2 - m3) / 6048e5, $2[a] = (v2 - m3) / 864e5, $2[u] = v2 / n, $2[s] = v2 / e, $2[i] = v2 / t, $2)[y2] || v2, l2 ? g2 : O.a(g2);
+          return g2 = ($2 = {}, $2[c] = g2 / 12, $2[f] = g2, $2[h] = g2 / 3, $2[o] = (v2 - m3) / 6048e5, $2[a] = (v2 - m3) / 864e5, $2[u] = v2 / n, $2[s] = v2 / e, $2[i2] = v2 / t, $2)[y2] || v2, l2 ? g2 : O.a(g2);
         }, m2.daysInMonth = function() {
           return this.endOf(f).$D;
         }, m2.$locale = function() {
@@ -468,7 +477,7 @@ if (uni.restoreGlobal) {
           return this.$d.toUTCString();
         }, M2;
       }(), T = _.prototype;
-      return w.prototype = T, [["$ms", r], ["$s", i], ["$m", s], ["$H", u], ["$W", a], ["$M", f], ["$y", c], ["$D", d]].forEach(function(t2) {
+      return w.prototype = T, [["$ms", r], ["$s", i2], ["$m", s], ["$H", u], ["$W", a], ["$M", f], ["$y", c], ["$D", d]].forEach(function(t2) {
         T[t2[1]] = function(e2) {
           return this.$g(e2, t2[0], t2[1]);
         };
@@ -503,7 +512,7 @@ if (uni.restoreGlobal) {
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
+  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
   const _sfc_main$d = {
     name: "chat-item",
     components: { YxBadge },
@@ -557,11 +566,11 @@ if (uni.restoreGlobal) {
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
+  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
   var userList = [
     {
       id: 1,
-      image_src: "../../../static/logo.png",
+      image_src: "/static/logo.png",
       messagge_count: 7,
       user_name: "\u65E0\u5948",
       user_message: "\u4F60\u4ECA\u5929\u5403\u7684\u662F\u4EC0\u4E48",
@@ -570,7 +579,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 2,
-      image_src: "../../../static/logo1.png",
+      image_src: "/static/logo1.png",
       messagge_count: 3,
       user_name: "\u6B66\u57CE",
       user_message: "\u57CE\u5899\u539A\u5B9E",
@@ -579,7 +588,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 3,
-      image_src: "../../../static/logo.png",
+      image_src: "/static/logo.png",
       messagge_count: 1,
       user_name: "\u4E4C\u6765",
       user_message: "\u4E4C\u62C9",
@@ -588,7 +597,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 4,
-      image_src: "../../../static/logo1.png",
+      image_src: "/static/logo1.png",
       messagge_count: 0,
       user_name: "\u8389\u5A1C",
       user_message: "\u6211\u6765\u8FA3",
@@ -597,7 +606,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 5,
-      image_src: "../../../static/logo.png",
+      image_src: "/static/logo.png",
       messagge_count: 1,
       user_name: "\u963F\u82B3",
       user_message: "\u4F60\u597D\uFF0C\u6211\u54E6\u662F\u963F\u82B3",
@@ -606,7 +615,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 6,
-      image_src: "../../../static/logo1.png",
+      image_src: "/static/logo1.png",
       messagge_count: 0,
       user_name: "\u73CD\u59AE\u7279",
       user_message: "\u8D77\u98DE",
@@ -615,7 +624,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 7,
-      image_src: "../../../static/logo.png",
+      image_src: "/static/logo.png",
       messagge_count: 1,
       user_name: "\u874E\u5B50\u83B1\u83B1",
       user_message: "\u6211\u4F1A\u53D8\u8EAB",
@@ -624,7 +633,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 8,
-      image_src: "../../../static/logo1.png",
+      image_src: "/static/logo1.png",
       messagge_count: 0,
       user_name: "\u708E\u9F99\u94E0\u7532",
       user_message: "\u708E\u9F99\u4E4B\u529B",
@@ -818,7 +827,7 @@ if (uni.restoreGlobal) {
       }, null, 8, ["show", "popPosittion", "isDark", "popItem", "onAction", "onHide"])
     ]);
   }
-  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
+  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
   const _sfc_main$b = {
     name: "yx-list",
     props: {
@@ -871,7 +880,7 @@ if (uni.restoreGlobal) {
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
+  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
   const _sfc_main$a = {
     name: "yx-divider",
     data() {
@@ -881,7 +890,7 @@ if (uni.restoreGlobal) {
   function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
+  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
   const _sfc_main$9 = {
     components: { YxList, YxDivider },
     data() {
@@ -967,7 +976,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
+  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
   const _sfc_main$8 = {
     name: "yx-card",
     props: {
@@ -999,7 +1008,7 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
+  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
   const _sfc_main$7 = {
     components: { YxCard, YxDivider, YxList },
     data() {
@@ -1095,7 +1104,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
+  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
   const _sfc_main$6 = {
     components: { YxToolBar, YxList },
     data() {
@@ -1180,7 +1189,7 @@ if (uni.restoreGlobal) {
       }), 128))
     ]);
   }
-  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
+  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
   const _sfc_main$5 = {
     name: "yx-nav-bar",
     props: {
@@ -1217,7 +1226,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(' <view style="margin-top: 90rpx;"></view> ')
     ], 2112);
   }
-  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
+  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
   const _sfc_main$4 = {
     name: "yx-chat-item-content",
     inject: ["isValidSetTouch"],
@@ -1248,13 +1257,13 @@ if (uni.restoreGlobal) {
       ])) : vue.createCommentVNode("v-if", true),
       $props.chatMessage.type === "image" ? (vue.openBlock(), vue.createElementBlock("image", {
         key: 1,
-        mode: "aspectFill",
+        mode: "scaleToFill",
         src: $props.chatMessage.data,
-        style: { "height": "250rpx", "width": "140rpx" }
+        style: { "height": "250rpx", "width": "200rpx" }
       }, null, 8, ["src"])) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
+  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
   const _sfc_main$3 = {
     name: "yx-chat-item-detail",
     components: {
@@ -1349,7 +1358,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
+  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
   const _sfc_main$2 = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
@@ -1426,12 +1435,13 @@ if (uni.restoreGlobal) {
       sendMessage() {
         if (!this.inputContent)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:136", "@content---", this.inputContent);
-        this.$emit("addMessage", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:137", "@content---", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:138", this.inputContent);
+        this.$emit("addMessage", this.inputContent, "text");
         this.inputContent = "";
       },
       keyboardHeightChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:141", "@keyboard", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:143", "@keyboard", e);
         const height = e.detail.height;
         if (!this.keyboardHeight && height) {
           this.keyboardHeight = height + 200;
@@ -1454,7 +1464,7 @@ if (uni.restoreGlobal) {
     watch: {
       inputContent: {
         handler() {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:170", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:172", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
           this.isText = this.inputContent.length > 0;
         },
         deep: true,
@@ -1529,7 +1539,7 @@ if (uni.restoreGlobal) {
       ])
     ], 4);
   }
-  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
+  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
   var chatMesssage = [
     {
       id: "a1",
@@ -1594,7 +1604,7 @@ if (uni.restoreGlobal) {
       type: "image",
       isUndone: false,
       isDel: false,
-      message_time: Date.now() + 2e7,
+      message_time: Date.now(),
       data: "/static/images/nothing/no_pay.png",
       user_image: "/static/logo.png",
       showTime: true
@@ -1605,52 +1615,63 @@ if (uni.restoreGlobal) {
       {
         id: "001",
         text: "\u76F8\u518C",
-        img_src: "/static/images/pic.png"
+        img_src: "/static/images/extends/pic.png",
+        event: "uploadImage"
       },
       {
         id: "002",
         text: "\u62CD\u6444",
-        img_src: "/static/images/pic.png"
+        img_src: "/static/images/extends/camera.png"
       },
       {
         id: "003",
         text: "\u8BED\u97F3\u901A\u8BDD",
-        img_src: "/static/images/phone.png"
+        img_src: "/static/images/extends/phone.png"
       },
       {
         id: "004",
         text: "\u4F4D\u7F6E",
-        img_src: "/static/images/location.png"
+        img_src: "/static/images/extends/location.png"
       },
       {
         id: "005",
         text: "\u8BED\u97F3\u8F93\u5165",
-        img_src: "/static/images/voice.png"
+        img_src: "/static/images/extends/voice.png"
       },
       {
         id: "006",
         text: "\u6536\u85CF",
-        img_src: "/static/images/star.png"
+        img_src: "/static/images/extends/star.png"
       },
       {
         id: "007",
         text: "\u7EA2\u5305",
-        img_src: "/static/images/hongbao.png"
+        img_src: "/static/images/extends/hongbao.png"
       },
       {
         id: "008",
         text: "\u540D\u7247",
-        img_src: "/static/images/man.png"
+        img_src: "/static/images/extends/man.png"
       }
     ],
     [
       {
         id: "009",
-        text: "\u76F8\u518C",
-        img_src: "/static/images/pic.png"
+        text: "\u56FE\u7247",
+        img_src: "/static/images/extends/pic.png"
       }
     ]
   ];
+  const data = [];
+  const nMax = 19;
+  for (var i = 0; i <= nMax; i++) {
+    const obj = {
+      id: `00${i}`,
+      text: `\u8868\u60C5${i}`,
+      img_src: `/static/images/emoticon/5497/${i}.gif`
+    };
+    data.push(obj);
+  }
   const _sfc_main$1 = {
     components: {
       YxNavBar,
@@ -1665,16 +1686,17 @@ if (uni.restoreGlobal) {
     },
     onLoad(query) {
       this.name = query.name;
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:57", "@\u663E\u793A\u5F97\u4E3A", query);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:74", "@\u663E\u793A\u5F97\u4E3A", query);
     },
     mounted() {
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:62", "@scrollView-mounted", this.$refs.inputBar.chatInputHeight);
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:63", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:64", "@wwwww", this.popupContentOfUtilInBottom);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:79", "@scrollView-mounted", this.$refs.inputBar.chatInputHeight);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:80", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:81", "@wwwww", this.popupContentOfUtilInBottom);
     },
     data() {
       return {
         name: "",
+        isCompleteConvert: false,
         scrollHeight: 1,
         scrollViewHeight: 0,
         userMessage: chatMesssage,
@@ -1688,38 +1710,67 @@ if (uni.restoreGlobal) {
         touchStartTime: 0,
         isBottom: false,
         popupHeight: 0,
-        popupMode: "",
-        popupContentOfUtilInBottom: chatUtils
+        bottomMode: "",
+        utilArr: chatUtils,
+        emoArr: data,
+        bottomClickTransition: false,
+        popupBottomData: chatUtils
       };
     },
     methods: {
-      changeInputState(event) {
-        this.isBottom = true;
-        this.popShow = true;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:108", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
-        this.popupHeight = this.$refs.inputBar.activeKeyboardHeight;
-        this.popPosition = { x: 0, y: 0 };
+      utilEventHandle(event) {
+        const self2 = this;
         switch (event) {
-          case "utils":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:114", "utils\u64CD\u4F5C");
-            break;
-          case "emo":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:117", "emo\u64CD\u4F5C");
+          case "uploadImage":
+            uni.chooseImage({
+              count: 4,
+              success(e) {
+                formatAppLog("log", "at pages/chat-detail/chat-detail.vue:135", "\u56FE\u7247\u8DEF\u5F84", e);
+                e.tempFilePaths.forEach((path) => {
+                  self2.addMessage(path, "image");
+                });
+              }
+            });
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:120", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:144", "utils event err");
+            break;
         }
-        this.popupMode = event;
       },
-      addMessage(message) {
+      changeInputState(event) {
+        switch (event) {
+          case "utils":
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:153", "utils\u64CD\u4F5C");
+            this.popupBottomData = chatUtils;
+            break;
+          case "emo":
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:157", "emo\u64CD\u4F5C");
+            this.popupBottomData = data;
+            break;
+          default:
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:161", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
+        }
+        this.bottomClickTransition = true;
+        this.bottomMode = event;
+        this.isBottom = true;
+        this.popShow = true;
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:167", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
+        this.popupHeight = this.$refs.inputBar.activeKeyboardHeight;
+        this.popPosition = { x: 0, y: 0 };
+        setTimeout(() => {
+          this.bottomClickTransition = false;
+          formatAppLog("log", "at pages/chat-detail/chat-detail.vue:173", "\u5207\u6362\u663E\u793Asssss");
+        }, 100);
+      },
+      addMessage(message, type) {
         const m = {
           id: Date.now(),
           user_id: 0,
-          type: "text",
+          type,
           message_time: Date.now(),
           isUndone: false,
           isDel: false,
-          data: this.convertln(message),
+          data: type === "text" ? this.convertln(message) : message,
           user_image: "/static/logo.png",
           showTime: true
         };
@@ -1727,7 +1778,6 @@ if (uni.restoreGlobal) {
         const preTime = this.userMessage[lastIndex].message_time;
         const timeLimit = 1e3 * 60 * 10;
         m.showTime = m.message_time - preTime > timeLimit;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:154", "\u6ED1\u52A8");
         this.scrollBottom();
         this.userMessage.push(m);
       },
@@ -1741,8 +1791,11 @@ if (uni.restoreGlobal) {
       },
       convertln(target) {
         let res = "";
-        const pattern = /\n/g;
-        res = target.replace(pattern, "<p></p>");
+        const patternln = /\n/g;
+        const patternls = /\s/g;
+        res = target.replace(patternln, "<p></p>");
+        res = res.replace(patternls, "&nbsp;");
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:255", "\u52A0\u5DE5\u5B57\u7B26\u4E32", target);
         return res;
       },
       scroll(e) {
@@ -1757,7 +1810,7 @@ if (uni.restoreGlobal) {
             this.curUserMessage.isDel = true;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:196", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:273", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
             break;
         }
       },
@@ -1828,18 +1881,21 @@ if (uni.restoreGlobal) {
       synMoveDistance() {
         this.scrollViewHeight = this.$refs.inputBar.chatInputHeight;
         this.scrollBottom();
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:294", "\u5B8C\u6210\u53D8\u5316\u540C\u6B65", this.scrollViewHeight);
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:371", "\u5B8C\u6210\u53D8\u5316\u540C\u6B65", this.scrollViewHeight);
       }
     },
     computed: {
       userChatMessage() {
-        this.userMessage[0].data = this.convertln(this.userMessage[0].data);
-        for (let i = 1; i < this.userMessage.length; i++) {
-          const curTime = this.userMessage[i].message_time;
-          const preTime = this.userMessage[i - 1].message_time;
-          const timeLimit = 1e3 * 60 * 10;
-          this.userMessage[i].showTime = curTime - preTime > timeLimit;
-          this.userMessage[i].data = this.convertln(this.userMessage[i].data);
+        if (!this.isCompleteConvert) {
+          this.userMessage[0].data = this.convertln(this.userMessage[0].data);
+          for (let i2 = 1; i2 < this.userMessage.length; i2++) {
+            const curTime = this.userMessage[i2].message_time;
+            const preTime = this.userMessage[i2 - 1].message_time;
+            const timeLimit = 1e3 * 60 * 10;
+            this.userMessage[i2].showTime = curTime - preTime > timeLimit;
+            this.userMessage[i2].data = this.convertln(this.userMessage[i2].data);
+          }
+          this.isCompleteConvert = true;
         }
         return this.userMessage;
       }
@@ -1863,7 +1919,6 @@ if (uni.restoreGlobal) {
         class: "position-fixed transition-ease-fast",
         style: vue.normalizeStyle(`top:95rpx;bottom:${$data.scrollViewHeight}rpx`)
       }, [
-        vue.createCommentVNode(' \r\n		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"\r\n		class="position-fixed" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`"> '),
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userChatMessage, (message) => {
           return vue.openBlock(), vue.createBlock(_component_yx_chat_item_detail, {
             key: message.id,
@@ -1885,42 +1940,89 @@ if (uni.restoreGlobal) {
         show: $data.popShow,
         popPosittion: $data.popPosition,
         popHeight: $data.popupHeight,
+        utilArr: $data.utilArr,
+        emoArr: $data.emoArr,
+        bottomMode: $data.bottomMode,
+        bottomClickTransition: $data.bottomClickTransition,
         isDark: $data.popIsDark,
         popItem: $data.popData,
         isBottom: $data.isBottom,
+        popupContentOfUtilInBottom: $data.popupBottomData,
         onHide: $options.handlePopHide,
         onAction: $options.actionHandle
       }, {
-        "bottom-content": vue.withCtx(() => [
-          $data.popupMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, " \u6211\u6765\u5C55\u793Aemo ")) : vue.createCommentVNode("v-if", true),
-          $data.popupMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", {
-            key: 1,
-            class: "flex p-2"
-          }, [
-            vue.createTextVNode(" \u6211\u6765\u5C55\u793Autils "),
+        util: vue.withCtx(() => [
+          $data.bottomMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
             vue.createElementVNode("swiper", {
-              style: { "height": "300rpx" },
+              style: { "height": "500rpx", "width": "100%" },
               circular: "",
               "indicator-dots": true,
-              duration: 1e3
+              duration: 100
             }, [
-              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.popupContentOfUtilInBottom, (itemArr) => {
-                return vue.openBlock(), vue.createElementBlock("swiper-item", { style: { "height": "300rpx", "background-color": "pink" } }, [
-                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
-                    return vue.openBlock(), vue.createElementBlock("view", {
-                      key: item.id
-                    }, "12");
-                  }), 128))
-                ]);
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.utilArr, (itemArr) => {
+                return vue.openBlock(), vue.createElementBlock("swiper-item", {
+                  style: { "height": "100%" },
+                  class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
+                }, [
+                  vue.createElementVNode("view", { class: "flex justify-between zTop flex-wrap" }, [
+                    (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                      return vue.openBlock(), vue.createElementBlock("view", {
+                        onClick: ($event) => $options.utilEventHandle(item.event),
+                        key: item.id,
+                        style: { "flex": "0 0 25%", "height": "200rpx" },
+                        class: "justify-center flex flex-column align-center mt-1"
+                      }, [
+                        vue.createElementVNode("image", {
+                          src: item.img_src,
+                          mode: "aspectFit",
+                          style: { "height": "70%", "width": "70%" }
+                        }, null, 8, ["src"]),
+                        vue.createElementVNode("text", null, vue.toDisplayString(item.text), 1)
+                      ], 8, ["onClick"]);
+                    }), 128))
+                  ])
+                ], 2);
               }), 256))
             ])
           ])) : vue.createCommentVNode("v-if", true)
         ]),
+        emo: vue.withCtx(() => [
+          $data.bottomMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+            vue.createElementVNode("scroll-view", {
+              "scroll-y": true,
+              class: "transition-ease-fast",
+              style: { "height": "550rpx" }
+            }, [
+              vue.createElementVNode("view", {
+                style: { "height": "100%" },
+                class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
+              }, [
+                vue.createElementVNode("view", { class: "grid justify-between zTop grid-3" }, [
+                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.emoArr, (emoItem) => {
+                    return vue.openBlock(), vue.createElementBlock("view", {
+                      onClick: ($event) => $options.addMessage(emoItem.img_src, "image"),
+                      key: emoItem.id,
+                      style: { "flex": "0 0 25%", "height": "200rpx" },
+                      class: "justify-center flex flex-column align-center mt-1"
+                    }, [
+                      vue.createElementVNode("image", {
+                        src: emoItem.img_src,
+                        mode: "aspectFit",
+                        style: { "height": "50%", "width": "50%" }
+                      }, null, 8, ["src"]),
+                      vue.createElementVNode("text", null, vue.toDisplayString(emoItem.text), 1)
+                    ], 8, ["onClick"]);
+                  }), 128))
+                ])
+              ], 2)
+            ])
+          ])) : vue.createCommentVNode("v-if", true)
+        ]),
         _: 1
-      }, 8, ["show", "popPosittion", "popHeight", "isDark", "popItem", "isBottom", "onHide", "onAction"])
+      }, 8, ["show", "popPosittion", "popHeight", "utilArr", "emoArr", "bottomMode", "bottomClickTransition", "isDark", "popItem", "isBottom", "popupContentOfUtilInBottom", "onHide", "onAction"])
     ]);
   }
-  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
+  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
@@ -1937,7 +2039,7 @@ if (uni.restoreGlobal) {
       formatAppLog("log", "at App.vue:10", "App Hide");
     }
   };
-  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/\u804A\u5929/App.vue"]]);
+  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/uniapp-chat-project/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
     return {

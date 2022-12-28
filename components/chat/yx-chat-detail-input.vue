@@ -130,11 +130,13 @@
 				// }else{
 				// 	this.isText = false
 				// }
+
 			},
 			sendMessage(){
 				if(!this.inputContent) return
 				console.log('@content---',this.inputContent)
-				this.$emit('addMessage',this.inputContent)
+				console.log(this.inputContent)
+				this.$emit('addMessage',this.inputContent,'text')
 				this.inputContent = ''
 			},
 			keyboardHeightChangeHandle(e){

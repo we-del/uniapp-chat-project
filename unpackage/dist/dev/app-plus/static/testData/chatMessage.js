@@ -117,7 +117,7 @@ export default [
 		isDel:false,
 		// 标识消息发送时间  number | null 用于标识是否出现时间文本
 		// message_time:1671783711881,
-		message_time:Date.now()+20000000,
+		message_time:Date.now(),
 		// 用于存储用户数据
 		// data: '我是数据',
 		data: '/static/images/nothing/no_pay.png',

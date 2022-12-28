@@ -4,7 +4,7 @@
 		<view v-html="chatMessage.data"></view>
 		<!-- {{}} -->
 		</view>
-		<image v-if="chatMessage.type==='image'" mode="aspectFill" :src="chatMessage.data" style="height:250rpx;width:140rpx"></image>
+		<image v-if="chatMessage.type==='image'" mode="scaleToFill" :src="chatMessage.data" style="height:250rpx;width:200rpx"></image>
 		
 	</view>
 </template>

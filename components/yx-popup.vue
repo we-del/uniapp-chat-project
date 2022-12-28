@@ -1,7 +1,7 @@
 <template>
 	<view :class="styleCustom" 
-	class="zTop border-dark  border p-2 flex flex-column  position-fixed  rounded font-md" 
-	:style="show ? `display:block;${position}`:`display:none;${position}`">
+	class="zTop border-dark  p-2 flex flex-column  position-fixed  rounded font-md" 
+	:style="show ? `display:block;${position}`:`display:none;${position};`">
 		<!-- 普通功能框 -->
 		<view v-if="!isBottom">
 			<view @click="handleReactive(item)" class="flex-1 "
@@ -12,8 +12,9 @@
 			</view>
 		</view>
 		<!-- 底部功能框 -->
-		<view v-if="isBottom" :style="`height:${popHeight}rpx;width:100%;`" class="bg-danger">
-			<slot name="bottom-content"></slot>
+		<view v-if="isBottom" class="transition-ease-fast" :style="`height:${popHeight}rpx;width:100%;`" >
+			<slot name="util"></slot>
+			<slot name="emo"></slot>
 		</view>
 	</view>
 	<view @click="hide" :style="show ? 'display:block':'display:none'"  id="mask" class="fill-screen  position-absolute" style="left:0;top:0;"></view>
@@ -66,7 +67,14 @@
 			// 在底部显示的情况下需要输入显示高度
 			popHeight:{
 				type:Number
-			}
+			},
+			popupContentOfUtilInBottom:[Array],
+			utilArr:[Array],
+			emoArr:[Array],
+			// bottom显示下的模式 ，  util | emo
+			bottomMode:[String],
+			// 功能框点击过渡
+			bottomClickTransition:[Boolean]
 		},
 		data() {
 			return {
@@ -97,8 +105,13 @@
 			},
 			styleCustom(){
 				let res = ''
-				res +=this.isDark? ' bg-dark text-white ':'bg-white text-dark '
-				res+=this.isBottom? ' fixed-bottom ' : ''
+				if(this.isBottom){
+					
+					res+=this.isBottom ? ' fixed-bottom  bg-common ' : ' border '
+				}else{
+					
+					res +=this.isDark ? ' bg-dark text-white ':'bg-white text-dark '
+				}
 				return res
 			}
 		}
