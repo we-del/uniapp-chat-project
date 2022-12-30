@@ -7,14 +7,14 @@
 			</text>
 			
 			<!-- 我方信息 -->
-			<view class="flex justify-end p-2 position-relative" 
-			v-if="chatMessage.user_id == 0 && !chatMessage.isDel && !chatMessage.isUndone" >
+			<view class="flex justify-end p-2 position-relative " 
+				v-if="chatMessage.user_id == 0 && !chatMessage.isDel && !chatMessage.isUndone" >
 				<!-- 三角 -->
 				<view id="me-triangle" class="position-absolute left-triangle"
 					style="top:40rpx;right:81rpx;border-left-color:#08c060"></view>
 					
 				<view class="mr-2 font-small main-bg-color p-1 rounded " 
-				style="line-height: 38rpx;min-height:40rpx;max-width:600rpx">
+				style="line-height: 38rpx;min-height:40rpx;max-width:500rpx">
 					<yx-chat-item-content :chatMessage="chatMessage"></yx-chat-item-content>
 				</view>
 			
@@ -23,13 +23,13 @@
 			
 			<!-- 对方信息 -->
 			<view class="flex justify-start p-2 position-relative" 
-			v-if="chatMessage.user_id != 0   && !chatMessage.isDel && !chatMessage.isUndone" >
+				v-if="chatMessage.user_id != 0   && !chatMessage.isDel && !chatMessage.isUndone" >
 				<!-- 三角 -->
 				<view id="other-triangle" class="position-absolute right-triangle" 
 				style="top:40rpx;left:81rpx;border-right-color:white"></view>
 				<image :src="chatMessage.user_image" mode="scaleToFill" style="width: 60rpx;height:60rpx;"></image>
 								
-				<view class="ml-2 font-small bg-white p-1 rounded" style="line-height: 38rpx;min-height:40rpx;max-width:600rpx">
+				<view class="ml-2 font-small bg-white p-1 rounded" style="line-height: 38rpx;min-height:40rpx;max-width:500rpx">
 					<yx-chat-item-content :chatMessage="chatMessage"></yx-chat-item-content>
 				</view>
 			</view>

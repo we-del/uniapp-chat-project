@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/tabbar/chat/chat",
     "pages/tabbar/find/find",
     "pages/tabbar/user/user",
-    "pages/tabbar/chat/chat",
     "pages/tabbar/friend/friend",
     "pages/chat-detail/chat-detail"
   ],

@@ -63,7 +63,7 @@ var chatMesssage = [
     type: "image",
     isUndone: false,
     isDel: false,
-    message_time: Date.now() + 2e7,
+    message_time: Date.now(),
     data: "/static/images/nothing/no_pay.png",
     user_image: "/static/logo.png",
     showTime: true

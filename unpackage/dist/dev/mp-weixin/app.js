@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports[Symbol.toStringTag] = "Module";
 var common_vendor = require("./common/vendor.js");
 if (!Math) {
+  "./pages/tabbar/chat/chat.js";
   "./pages/tabbar/find/find.js";
   "./pages/tabbar/user/user.js";
-  "./pages/tabbar/chat/chat.js";
   "./pages/tabbar/friend/friend.js";
   "./pages/chat-detail/chat-detail.js";
 }

@@ -32,7 +32,19 @@ const _sfc_main = {
       type: Boolean,
       default: false
     },
-    show: [Boolean]
+    show: [Boolean],
+    isBottom: {
+      type: Boolean,
+      default: false
+    },
+    popHeight: {
+      type: Number
+    },
+    popupContentOfUtilInBottom: [Array],
+    utilArr: [Array],
+    emoArr: [Array],
+    bottomMode: [String],
+    bottomClickTransition: [Boolean]
   },
   data() {
     return {};
@@ -50,13 +62,24 @@ const _sfc_main = {
   },
   computed: {
     position() {
-      return `left:${this.popPosittion.x}px;top:${this.popPosittion.y}px`;
+      return !this.isBottom ? `left:${this.popPosittion.x}px;top:${this.popPosittion.y}px` : `left:${this.popPosittion.x}px;bottom:${this.popPosittion.y}px`;
+    },
+    styleCustom() {
+      let res = "";
+      if (this.isBottom) {
+        res += this.isBottom ? " fixed-bottom  bg-common " : " border ";
+      } else {
+        res += this.isDark ? " bg-dark text-white " : "bg-white text-dark ";
+      }
+      return res;
     }
   }
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return {
-    a: common_vendor.f($props.popItem, (item, i, i0) => {
+  return common_vendor.e({
+    a: !$props.isBottom
+  }, !$props.isBottom ? {
+    b: common_vendor.f($props.popItem, (item, i, i0) => {
       return common_vendor.e({
         a: item.icon
       }, item.icon ? {
@@ -70,12 +93,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         f: item.id,
         g: common_vendor.s(i !== $props.popItem.length - 1 && item.content ? "margin-bottom:30rpx" : "")
       });
-    }),
-    b: common_vendor.n($props.isDark ? "bg-dark text-white" : "bg-white text-dark"),
-    c: common_vendor.s($props.show ? `display:block;${$options.position}` : `display:none;${$options.position}`),
-    d: common_vendor.o((...args) => $options.hide && $options.hide(...args)),
-    e: common_vendor.s($props.show ? "display:block" : "display:none")
-  };
+    })
+  } : {}, {
+    c: $props.isBottom
+  }, $props.isBottom ? {
+    d: common_vendor.s(`height:${$props.popHeight}rpx;width:100%;`)
+  } : {}, {
+    e: common_vendor.n($options.styleCustom),
+    f: common_vendor.s($props.show ? `display:block;${$options.position}` : `display:none;${$options.position};`),
+    g: common_vendor.o((...args) => $options.hide && $options.hide(...args)),
+    h: common_vendor.s($props.show ? "display:block" : "display:none")
+  });
 }
 var Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
 wx.createComponent(Component);

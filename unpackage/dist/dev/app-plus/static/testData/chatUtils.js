@@ -15,7 +15,8 @@ export default [
 		{
 			id: '002',
 			text: '拍摄',
-			img_src: '/static/images/extends/camera.png'
+			img_src: '/static/images/extends/camera.png',
+			event:'camera'
 		},
 		{
 			id: '003',

@@ -107,7 +107,7 @@
 				let res = ''
 				if(this.isBottom){
 					
-					res+=this.isBottom ? ' fixed-bottom  bg-common ' : ' border '
+					res+=this.isBottom ? ' fixed-bottom  bg-gray ' : ' border '
 				}else{
 					
 					res +=this.isDark ? ' bg-dark text-white ':'bg-white text-dark '

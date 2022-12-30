@@ -125,7 +125,7 @@ if (uni.restoreGlobal) {
       styleCustom() {
         let res = "";
         if (this.isBottom) {
-          res += this.isBottom ? " fixed-bottom  bg-common " : " border ";
+          res += this.isBottom ? " fixed-bottom  bg-gray " : " border ";
         } else {
           res += this.isDark ? " bg-dark text-white " : "bg-white text-dark ";
         }
@@ -177,7 +177,7 @@ if (uni.restoreGlobal) {
       }, null, 4)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
+  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
   const _sfc_main$f = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
@@ -278,7 +278,7 @@ if (uni.restoreGlobal) {
       }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
+  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -512,7 +512,7 @@ if (uni.restoreGlobal) {
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
+  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
   const _sfc_main$d = {
     name: "chat-item",
     components: { YxBadge },
@@ -566,7 +566,7 @@ if (uni.restoreGlobal) {
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
+  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
   var userList = [
     {
       id: 1,
@@ -827,7 +827,7 @@ if (uni.restoreGlobal) {
       }, null, 8, ["show", "popPosittion", "isDark", "popItem", "onAction", "onHide"])
     ]);
   }
-  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
+  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
   const _sfc_main$b = {
     name: "yx-list",
     props: {
@@ -880,7 +880,7 @@ if (uni.restoreGlobal) {
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
+  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
   const _sfc_main$a = {
     name: "yx-divider",
     data() {
@@ -890,7 +890,7 @@ if (uni.restoreGlobal) {
   function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
+  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
   const _sfc_main$9 = {
     components: { YxList, YxDivider },
     data() {
@@ -976,7 +976,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
+  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
   const _sfc_main$8 = {
     name: "yx-card",
     props: {
@@ -1008,7 +1008,7 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
+  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
   const _sfc_main$7 = {
     components: { YxCard, YxDivider, YxList },
     data() {
@@ -1104,7 +1104,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
+  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
   const _sfc_main$6 = {
     components: { YxToolBar, YxList },
     data() {
@@ -1189,7 +1189,7 @@ if (uni.restoreGlobal) {
       }), 128))
     ]);
   }
-  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
+  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
   const _sfc_main$5 = {
     name: "yx-nav-bar",
     props: {
@@ -1226,10 +1226,10 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(' <view style="margin-top: 90rpx;"></view> ')
     ], 2112);
   }
-  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
+  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
   const _sfc_main$4 = {
     name: "yx-chat-item-content",
-    inject: ["isValidSetTouch"],
+    inject: ["validPreviewOfImage", "touchMessageOfChat", "touchLeaveMessageOfChat"],
     props: {
       chatMessage: [Object]
     },
@@ -1238,11 +1238,29 @@ if (uni.restoreGlobal) {
     data() {
       return {};
     },
-    methods: {}
+    methods: {},
+    computed: {
+      recordWidth() {
+        let time = this.chatMessage.record_time;
+        if (time) {
+          if (time <= 6) {
+            return 130;
+          }
+          let resWidth = 130;
+          time -= 6;
+          while (time > 0) {
+            resWidth += 30;
+            time -= 6;
+          }
+          return resWidth;
+        }
+      }
+    }
   };
   function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
-      onTouchstart: _cache[0] || (_cache[0] = ($event) => $options.isValidSetTouch($props.chatMessage)),
+      onTouchstart: _cache[1] || (_cache[1] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
+      onTouchend: _cache[2] || (_cache[2] = (e) => $options.touchLeaveMessageOfChat($props.chatMessage, e)),
       style: { "overflow": "auto" },
       class: "font-md"
     }, [
@@ -1257,13 +1275,38 @@ if (uni.restoreGlobal) {
       ])) : vue.createCommentVNode("v-if", true),
       $props.chatMessage.type === "image" ? (vue.openBlock(), vue.createElementBlock("image", {
         key: 1,
+        onClick: _cache[0] || (_cache[0] = ($event) => $options.validPreviewOfImage($props.chatMessage.data)),
         mode: "scaleToFill",
         src: $props.chatMessage.data,
         style: { "height": "250rpx", "width": "200rpx" }
-      }, null, 8, ["src"])) : vue.createCommentVNode("v-if", true)
+      }, null, 8, ["src"])) : vue.createCommentVNode("v-if", true),
+      $props.chatMessage.type === "audio" ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 2,
+        class: "p-1",
+        style: vue.normalizeStyle([{ "min-width": "130rpx", "max-width": "440rpx" }, `width:${$options.recordWidth}rpx`])
+      }, [
+        vue.createCommentVNode(" \u5224\u65AD\u662F\u54EA\u4E00\u65B9\u7684\u4FE1\u606F\uFF0C\u4FBF\u4E8E\u5728\u6B63\u786E\u7684\u4F4D\u7F6E\u4E0A\u663E\u793A "),
+        vue.createCommentVNode(" \u6211\u65B9\u5F55\u97F3\u6D88\u606F "),
+        $props.chatMessage.user_id == 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+          key: 0,
+          class: "flex justify-end"
+        }, [
+          vue.createTextVNode(' 4" '),
+          vue.createElementVNode("text", { class: "iconfont icon-wifi rotate-right-90 ml-2" })
+        ])) : vue.createCommentVNode("v-if", true),
+        vue.createCommentVNode(" \u5BF9\u65B9\u5F55\u97F3\u6D88\u606F "),
+        $props.chatMessage.user_id != 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+          key: 1,
+          class: "flex justify-start"
+        }, [
+          vue.createElementVNode("text", { class: "iconfont icon-wifi rotate-left-90 mr-2" }),
+          vue.createTextVNode(" " + vue.toDisplayString($props.chatMessage.record_time) + '" ', 1)
+        ])) : vue.createCommentVNode("v-if", true)
+      ], 4)) : vue.createCommentVNode("v-if", true),
+      $props.chatMessage.type === "video" ? (vue.openBlock(), vue.createElementBlock("view", { key: 3 })) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
+  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
   const _sfc_main$3 = {
     name: "yx-chat-item-detail",
     components: {
@@ -1317,7 +1360,7 @@ if (uni.restoreGlobal) {
         }),
         vue.createElementVNode("view", {
           class: "mr-2 font-small main-bg-color p-1 rounded",
-          style: { "line-height": "38rpx", "min-height": "40rpx", "max-width": "600rpx" }
+          style: { "line-height": "38rpx", "min-height": "40rpx", "max-width": "500rpx" }
         }, [
           vue.createVNode(_component_yx_chat_item_content, { chatMessage: $props.chatMessage }, null, 8, ["chatMessage"])
         ]),
@@ -1345,7 +1388,7 @@ if (uni.restoreGlobal) {
         }, null, 8, ["src"]),
         vue.createElementVNode("view", {
           class: "ml-2 font-small bg-white p-1 rounded",
-          style: { "line-height": "38rpx", "min-height": "40rpx", "max-width": "600rpx" }
+          style: { "line-height": "38rpx", "min-height": "40rpx", "max-width": "500rpx" }
         }, [
           vue.createVNode(_component_yx_chat_item_content, { chatMessage: $props.chatMessage }, null, 8, ["chatMessage"])
         ])
@@ -1358,7 +1401,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
+  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
   const _sfc_main$2 = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
@@ -1366,12 +1409,14 @@ if (uni.restoreGlobal) {
     mounted() {
       this.getInputHeight();
       this.autoFocus = true;
+      this.recordManager = uni.getRecorderManager();
     },
     data() {
       return {
         chatInputHeight: 0,
         curLine: 1,
         inputContent: "",
+        inputContentCache: "",
         textareaParams: {
           minHeight: 40,
           maxHeight: 150
@@ -1384,10 +1429,50 @@ if (uni.restoreGlobal) {
         isText: false,
         isOpenSwipeUtil: false,
         isOpenEmo: false,
-        isFocus: false
+        isFocus: false,
+        inputMode: "keyboard",
+        getFocusOnKeyboard: false,
+        recordManager: null,
+        touchPosition: {},
+        isRecording: false,
+        isClickUtil: false
       };
     },
     methods: {
+      startRecord(e) {
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:108", "\u5F00\u59CB\u5F55\u97F3", e);
+        this.touchPosition = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
+        this.isRecording = true;
+      },
+      moveRecord(e) {
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:116", "\u79FB\u52A8", e);
+        const y = e.touches[0].clientY;
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:119", "move");
+        if (this.touchPosition.y - y >= 130)
+          ;
+      },
+      endRecord(e) {
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:126", "\u7ED3\u675F", e);
+        const y = e.changedTouches[0].clientY;
+        if (this.touchPosition.y - y >= 130)
+          ;
+        this.isRecording = false;
+      },
+      toggleMode() {
+        if (this.inputMode === "keyboard") {
+          this.inputContent = "";
+          this.handleFocus();
+          this.getInputHeight("audio");
+          this.inputMode = "audio";
+          this.getFocusOnKeyboard = false;
+        } else {
+          this.inputMode = "keyboard";
+          this.getFocusOnKeyboard = true;
+        }
+      },
       getInputHeight(event = "keyboard") {
         switch (event) {
           case "keyboard":
@@ -1402,25 +1487,36 @@ if (uni.restoreGlobal) {
             break;
           case "util":
             this.chatInputHeight = this.activeKeyboardHeight + this.originVal + this.stepVal;
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:173", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
+            break;
+          case "audio":
+            this.chatInputHeight = this.originVal;
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:179", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
             break;
           default:
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:96", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:182", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
             break;
         }
         this.$emit("syn");
       },
       activeUtilSwiper() {
         this.isOpenSwipeUtil = true;
+        this.inputMode = "keyboard";
+        this.isClickUtil = true;
         this.$emit("activeUtil", "utils");
         this.getInputHeight("util");
       },
       activeEmot() {
         this.isOpenEmo = true;
+        this.inputMode = "keyboard";
+        this.isClickUtil = true;
         this.$emit("activeUtil", "emo");
         this.getInputHeight("util");
       },
       textareaLineChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:116", "lineChange", e);
+        if (this.isClickUtil)
+          return;
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:216", "lineChange", e);
         this.curLine = e.detail.lineCount;
         this.inputChangeHeight = e.detail.height;
         this.getInputHeight();
@@ -1435,13 +1531,13 @@ if (uni.restoreGlobal) {
       sendMessage() {
         if (!this.inputContent)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:137", "@content---", this.inputContent);
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:138", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:237", "@content---", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:238", this.inputContent);
         this.$emit("addMessage", this.inputContent, "text");
         this.inputContent = "";
       },
       keyboardHeightChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:143", "@keyboard", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:243", "@keyboard", e);
         const height = e.detail.height;
         if (!this.keyboardHeight && height) {
           this.keyboardHeight = height + 200;
@@ -1464,11 +1560,14 @@ if (uni.restoreGlobal) {
     watch: {
       inputContent: {
         handler() {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:172", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:272", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
           this.isText = this.inputContent.length > 0;
-        },
-        deep: true,
-        immediate: true
+          if (this.isText) {
+            this.isClickUtil = false;
+          } else {
+            this.curLine = 1;
+          }
+        }
       }
     },
     computed: {
@@ -1488,58 +1587,89 @@ if (uni.restoreGlobal) {
     }
   };
   function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-    return vue.openBlock(), vue.createElementBlock("view", {
-      class: "fixed-bottom bg-white-four-deep flex justify-between align-center p-1",
-      style: vue.normalizeStyle(`min-height:60rpx;bottom:${$options.inputHeight}rpx`),
-      ref: "inputRef",
-      id: "chat-input"
-    }, [
+    return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
-        id: "record-sign",
-        class: vue.normalizeClass(["icon-keyboard iconfont mr-1 font-lg", "icon-keyboard"])
-      }),
-      vue.createElementVNode("view", {
-        id: "input",
-        class: "flex-1 p-1"
+        class: "fixed-bottom transition-ease-fast-plus bg-white-four-deep flex justify-between align-center p-1",
+        style: vue.normalizeStyle(`min-height:60rpx;bottom:${$options.inputHeight}rpx`),
+        ref: "inputRef",
+        id: "chat-input"
       }, [
-        vue.withDirectives(vue.createElementVNode("textarea", {
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.inputContent = $event),
-          "auto-height": "",
-          class: "flex-1 bg-white-one-deep p-1 rounded",
-          onLinechange: _cache[1] || (_cache[1] = (...args) => $options.textareaLineChangeHandle && $options.textareaLineChangeHandle(...args)),
-          onFocus: _cache[2] || (_cache[2] = (...args) => $options.handleFocus && $options.handleFocus(...args)),
-          onInput: _cache[3] || (_cache[3] = (...args) => $options.textareaInputChange && $options.textareaInputChange(...args)),
-          onKeyboardheightchange: _cache[4] || (_cache[4] = (...args) => $options.keyboardHeightChangeHandle && $options.keyboardHeightChangeHandle(...args)),
-          style: vue.normalizeStyle(`min-height: ${$options.minHeight}rpx;max-height:${$options.maxHeight}rpx;width: 95%;overflow:auto`),
-          maxlength: -1,
-          "placeholder-style": "color:#F76260",
-          "adjust-position": false
-        }, null, 36), [
-          [vue.vModelText, $data.inputContent]
+        vue.createElementVNode("view", {
+          id: "record-sign",
+          class: vue.normalizeClass(["icon-keyboard iconfont mr-1 font-lg", $data.inputMode !== "keyboard" ? "icon-record" : "icon-keyboard"]),
+          onClick: _cache[0] || (_cache[0] = (...args) => $options.toggleMode && $options.toggleMode(...args))
+        }, null, 2),
+        vue.createElementVNode("view", {
+          id: "input",
+          class: "flex-1 p-1"
+        }, [
+          $data.inputMode == "keyboard" ? vue.withDirectives((vue.openBlock(), vue.createElementBlock("textarea", {
+            key: 0,
+            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.inputContent = $event),
+            focus: $data.getFocusOnKeyboard,
+            "auto-height": "",
+            class: "flex-1 bg-white-one-deep p-1 rounded",
+            onLinechange: _cache[2] || (_cache[2] = (...args) => $options.textareaLineChangeHandle && $options.textareaLineChangeHandle(...args)),
+            onFocus: _cache[3] || (_cache[3] = (...args) => $options.handleFocus && $options.handleFocus(...args)),
+            onInput: _cache[4] || (_cache[4] = (...args) => $options.textareaInputChange && $options.textareaInputChange(...args)),
+            onKeyboardheightchange: _cache[5] || (_cache[5] = (...args) => $options.keyboardHeightChangeHandle && $options.keyboardHeightChangeHandle(...args)),
+            style: vue.normalizeStyle(`min-height: ${$options.minHeight}rpx;max-height:${$options.maxHeight}rpx;width: 95%;overflow:auto`),
+            maxlength: -1,
+            "placeholder-style": "color:#F76260",
+            "adjust-position": false
+          }, null, 44, ["focus"])), [
+            [vue.vModelText, $data.inputContent]
+          ]) : vue.createCommentVNode("v-if", true),
+          $data.inputMode == "audio" ? (vue.openBlock(), vue.createElementBlock("view", {
+            key: 1,
+            class: vue.normalizeClass(["grid grid-center-by-el font-md p-1 mr-1 rounded", $data.isRecording ? "bg-white-three-deep" : "bg-white "]),
+            onTouchstart: _cache[6] || (_cache[6] = (...args) => $options.startRecord && $options.startRecord(...args)),
+            onTouchmove: _cache[7] || (_cache[7] = (...args) => $options.moveRecord && $options.moveRecord(...args)),
+            onTouchend: _cache[8] || (_cache[8] = (...args) => $options.endRecord && $options.endRecord(...args))
+          }, "\u6309\u4F4F \u8BF4\u8BDD", 34)) : vue.createCommentVNode("v-if", true)
+        ]),
+        vue.createElementVNode("view", {
+          id: "more-operate",
+          class: "mr-2"
+        }, [
+          vue.createElementVNode("text", {
+            class: "iconfont icon-smile font-lg mr-1 vertical-middle",
+            onClick: _cache[9] || (_cache[9] = (...args) => $options.activeEmot && $options.activeEmot(...args))
+          }),
+          !$data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
+            key: 0,
+            class: "iconfont icon-add font-lg p-1 vertical-middle",
+            onClick: _cache[10] || (_cache[10] = (...args) => $options.activeUtilSwiper && $options.activeUtilSwiper(...args))
+          })) : vue.createCommentVNode("v-if", true),
+          $data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
+            key: 1,
+            class: "iconfont font-sm main-bg-color p-1 text-white",
+            onClick: _cache[11] || (_cache[11] = (...args) => $options.sendMessage && $options.sendMessage(...args))
+          }, "\u53D1\u9001")) : vue.createCommentVNode("v-if", true)
         ])
-      ]),
-      vue.createElementVNode("view", {
-        id: "more-operate",
-        class: "mr-2"
+      ], 4),
+      vue.createCommentVNode(" \u5F00\u542F\u5F55\u97F3\u65F6\u7684\u906E\u7F69\u5C42 "),
+      vue.createCommentVNode(" grid grid-center-by-grid-and-ele "),
+      $data.isRecording ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        id: "record-mask",
+        class: "grid grid-center-by-grid-and-ele lucency-5 bg-gray-shallow fill-screen"
       }, [
-        vue.createElementVNode("text", {
-          class: "iconfont icon-smile font-lg mr-1 vertical-middle",
-          onClick: _cache[5] || (_cache[5] = (...args) => $options.activeEmot && $options.activeEmot(...args))
-        }),
-        !$data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
-          key: 0,
-          class: "iconfont icon-add font-lg p-1 vertical-middle",
-          onClick: _cache[6] || (_cache[6] = (...args) => $options.activeUtilSwiper && $options.activeUtilSwiper(...args))
-        })) : vue.createCommentVNode("v-if", true),
-        $data.isText ? (vue.openBlock(), vue.createElementBlock("text", {
-          key: 1,
-          class: "iconfont font-sm main-bg-color p-1 text-white",
-          onClick: _cache[7] || (_cache[7] = (...args) => $options.sendMessage && $options.sendMessage(...args))
-        }, "\u53D1\u9001")) : vue.createCommentVNode("v-if", true)
-      ])
-    ], 4);
+        vue.createElementVNode("view", {
+          class: "rounded p-2 zTop bg-white grid grid-center-by-el",
+          style: { "opacity": "1", "width": "340rpx", "height": "300rpx" }
+        }, [
+          vue.createElementVNode("image", {
+            style: { "width": "150rpx", "height": "260rpx" },
+            src: "/static/audio/play.gif",
+            mode: "aspectFill"
+          }),
+          vue.createElementVNode("view", null, "\u5F55\u97F3\u4E2D")
+        ])
+      ])) : vue.createCommentVNode("v-if", true)
+    ], 64);
   }
-  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
+  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
   var chatMesssage = [
     {
       id: "a1",
@@ -1608,6 +1738,54 @@ if (uni.restoreGlobal) {
       data: "/static/images/nothing/no_pay.png",
       user_image: "/static/logo.png",
       showTime: true
+    },
+    {
+      id: "a8",
+      user_id: 0,
+      type: "audio",
+      isUndone: false,
+      isDel: false,
+      message_time: Date.now(),
+      data: "/static/images/nothing/no_pay.png",
+      record_time: "5",
+      user_image: "/static/logo.png",
+      showTime: true
+    },
+    {
+      id: "a9",
+      user_id: 1,
+      type: "audio",
+      isUndone: false,
+      isDel: false,
+      message_time: Date.now(),
+      data: "/static/images/nothing/no_pay.png",
+      record_time: "14",
+      user_image: "/static/logo.png",
+      showTime: true
+    },
+    {
+      id: "a10",
+      user_id: 1,
+      type: "audio",
+      isUndone: false,
+      isDel: false,
+      message_time: Date.now(),
+      data: "/static/images/nothing/no_pay.png",
+      record_time: "39",
+      user_image: "/static/logo.png",
+      showTime: true
+    },
+    {
+      id: "a11",
+      user_id: 1,
+      type: "audio",
+      isUndone: false,
+      isDel: false,
+      message_time: Date.now(),
+      data: "/static/images/nothing/no_pay.png",
+      record_time: "59",
+      user_image: "/static/logo.png",
+      showTime: true
     }
   ];
   var chatUtils = [
@@ -1621,7 +1799,8 @@ if (uni.restoreGlobal) {
       {
         id: "002",
         text: "\u62CD\u6444",
-        img_src: "/static/images/extends/camera.png"
+        img_src: "/static/images/extends/camera.png",
+        event: "camera"
       },
       {
         id: "003",
@@ -1681,17 +1860,17 @@ if (uni.restoreGlobal) {
     },
     provide() {
       return {
-        isValidSetTouch: this.isValidSetTouch
+        touchMessageOfChat: this.handleTouch,
+        touchLeaveMessageOfChat: this.handleLeave,
+        validPreviewOfImage: this.previewImage
       };
     },
     onLoad(query) {
       this.name = query.name;
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:74", "@\u663E\u793A\u5F97\u4E3A", query);
+      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:81", "@\u663E\u793A\u5F97\u4E3A", query);
     },
     mounted() {
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:79", "@scrollView-mounted", this.$refs.inputBar.chatInputHeight);
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:80", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:81", "@wwwww", this.popupContentOfUtilInBottom);
+      this.scrollBottom();
     },
     data() {
       return {
@@ -1705,7 +1884,6 @@ if (uni.restoreGlobal) {
         popPosition: {},
         popIsDark: false,
         popShow: false,
-        isValidTouch: false,
         touchTarget: "",
         touchStartTime: 0,
         isBottom: false,
@@ -1718,49 +1896,69 @@ if (uni.restoreGlobal) {
       };
     },
     methods: {
+      previewImage(path) {
+        uni.previewImage({
+          current: path,
+          indicator: "number",
+          urls: this.imageArr,
+          longPressActions: {
+            itemList: ["\u53D1\u9001\u7ED9\u670B\u53CB", "\u4FDD\u5B58\u56FE\u7247", "\u6536\u85CF"],
+            success: function(data2) {
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:145", "\u6267\u884C\u957F\u6309\u64CD\u4F5C", data2);
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:146", "\u9009\u4E2D\u4E86\u7B2C" + (data2.tapIndex + 1) + "\u4E2A\u6309\u94AE,\u7B2C" + (data2.index + 1) + "\u5F20\u56FE\u7247");
+            },
+            fail: function(err) {
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:149", err.errMsg);
+            }
+          }
+        });
+      },
       utilEventHandle(event) {
-        const self2 = this;
         switch (event) {
           case "uploadImage":
             uni.chooseImage({
               count: 4,
               success(e) {
-                formatAppLog("log", "at pages/chat-detail/chat-detail.vue:135", "\u56FE\u7247\u8DEF\u5F84", e);
                 e.tempFilePaths.forEach((path) => {
                   self2.addMessage(path, "image");
                 });
               }
             });
             break;
+          case "camera":
+            const self2 = this;
+            uni.chooseVideo({
+              sourceType: ["camera", "album"],
+              success: function(res) {
+                self2.addMessage(res.tempFilePath, "video");
+              }
+            });
+            break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:144", "utils event err");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:181", "utils event err");
             break;
         }
       },
       changeInputState(event) {
         switch (event) {
           case "utils":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:153", "utils\u64CD\u4F5C");
             this.popupBottomData = chatUtils;
             break;
           case "emo":
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:157", "emo\u64CD\u4F5C");
             this.popupBottomData = data;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:161", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:196", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
         }
         this.bottomClickTransition = true;
         this.bottomMode = event;
         this.isBottom = true;
         this.popShow = true;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:167", "@\u952E\u76D8\u6FC0\u6D3B\u7684\u9AD8\u5EA6", this.$refs.inputBar.activeKeyboardHeight);
         this.popupHeight = this.$refs.inputBar.activeKeyboardHeight;
         this.popPosition = { x: 0, y: 0 };
         setTimeout(() => {
           this.bottomClickTransition = false;
-          formatAppLog("log", "at pages/chat-detail/chat-detail.vue:173", "\u5207\u6362\u663E\u793Asssss");
-        }, 100);
+        }, 50);
       },
       addMessage(message, type) {
         const m = {
@@ -1778,16 +1976,12 @@ if (uni.restoreGlobal) {
         const preTime = this.userMessage[lastIndex].message_time;
         const timeLimit = 1e3 * 60 * 10;
         m.showTime = m.message_time - preTime > timeLimit;
-        this.scrollBottom();
         this.userMessage.push(m);
+        this.scrollBottom();
       },
       scrollBottom() {
-        setTimeout(() => {
-          this.scrollHeight += 100;
-        }, 1);
-        setTimeout(() => {
-          this.scrollHeight -= 100;
-        }, 2);
+        this.scrollHeight -= 100;
+        setTimeout(() => this.scrollHeight += 100, 5);
       },
       convertln(target) {
         let res = "";
@@ -1795,11 +1989,10 @@ if (uni.restoreGlobal) {
         const patternls = /\s/g;
         res = target.replace(patternln, "<p></p>");
         res = res.replace(patternls, "&nbsp;");
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:255", "\u52A0\u5DE5\u5B57\u7B26\u4E32", target);
         return res;
       },
       scroll(e) {
-        this.scrollHeight = e.detail.scrollHeight;
+        setTimeout(() => this.scrollHeight = e.detail.scrollHeight, 10);
       },
       actionHandle(event) {
         switch (event) {
@@ -1810,18 +2003,13 @@ if (uni.restoreGlobal) {
             this.curUserMessage.isDel = true;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:273", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:280", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
             break;
         }
       },
-      isValidSetTouch(target) {
+      handleTouch(target, e) {
+        this.touchStartTime = e.timeStamp;
         this.touchTarget = target;
-        this.isValidTouch = true;
-      },
-      handleTouch(user, e) {
-        if (this.isValidTouch) {
-          this.touchStartTime = e.timeStamp;
-        }
         let x = e.touches[0].clientX;
         let y = e.touches[0].clientY;
         const device = uni.getSystemInfoSync();
@@ -1865,7 +2053,6 @@ if (uni.restoreGlobal) {
           ];
           this.popShow = true;
           this.touchStartTime = 0;
-          this.isValidTouch = false;
         } else {
           this.popShow = false;
         }
@@ -1880,8 +2067,8 @@ if (uni.restoreGlobal) {
       },
       synMoveDistance() {
         this.scrollViewHeight = this.$refs.inputBar.chatInputHeight;
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:365", "\u5F53\u524D\u79FB\u52A8\u7684\u9AD8\u5EA6", this.scrollViewHeight);
         this.scrollBottom();
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:371", "\u5B8C\u6210\u53D8\u5316\u540C\u6B65", this.scrollViewHeight);
       }
     },
     computed: {
@@ -1898,6 +2085,15 @@ if (uni.restoreGlobal) {
           this.isCompleteConvert = true;
         }
         return this.userMessage;
+      },
+      imageArr() {
+        const imageUrlStore = [];
+        this.userMessage.forEach((o) => {
+          if (o.type === "image") {
+            imageUrlStore.push(o.data);
+          }
+        });
+        return imageUrlStore;
       }
     }
   };
@@ -1906,123 +2102,126 @@ if (uni.restoreGlobal) {
     const _component_yx_chat_item_detail = vue.resolveComponent("yx-chat-item-detail");
     const _component_yx_chat_detail_input = vue.resolveComponent("yx-chat-detail-input");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
-    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
-      vue.createCommentVNode(" \u5BFC\u822A\u680F "),
-      vue.createVNode(_component_yx_nav_bar, {
-        title: this.name
-      }, null, 8, ["title"]),
-      vue.createCommentVNode(" \u6ED1\u52A8\u5185\u5BB9 "),
-      vue.createElementVNode("scroll-view", {
-        "scroll-y": "true",
-        onScroll: _cache[0] || (_cache[0] = (...args) => $options.scroll && $options.scroll(...args)),
-        "scroll-top": $data.scrollHeight,
-        class: "position-fixed transition-ease-fast",
-        style: vue.normalizeStyle(`top:95rpx;bottom:${$data.scrollViewHeight}rpx`)
-      }, [
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userChatMessage, (message) => {
-          return vue.openBlock(), vue.createBlock(_component_yx_chat_item_detail, {
-            key: message.id,
-            chatMessage: message,
-            onTouchstart: (e) => $options.handleTouch(message, e),
-            onTouchend: (e) => $options.handleLeave(message, e)
-          }, null, 8, ["chatMessage", "onTouchstart", "onTouchend"]);
-        }), 128))
-      ], 44, ["scroll-top"]),
-      vue.createCommentVNode(" \u8F93\u5165\u6846 "),
-      vue.createVNode(_component_yx_chat_detail_input, {
-        onAddMessage: $options.addMessage,
-        ref: "inputBar",
-        onHide: $options.handlePopHide,
-        onSyn: $options.synMoveDistance,
-        onActiveUtil: $options.changeInputState
-      }, null, 8, ["onAddMessage", "onHide", "onSyn", "onActiveUtil"]),
-      vue.createVNode(_component_yx_popup, {
-        show: $data.popShow,
-        popPosittion: $data.popPosition,
-        popHeight: $data.popupHeight,
-        utilArr: $data.utilArr,
-        emoArr: $data.emoArr,
-        bottomMode: $data.bottomMode,
-        bottomClickTransition: $data.bottomClickTransition,
-        isDark: $data.popIsDark,
-        popItem: $data.popData,
-        isBottom: $data.isBottom,
-        popupContentOfUtilInBottom: $data.popupBottomData,
-        onHide: $options.handlePopHide,
-        onAction: $options.actionHandle
-      }, {
-        util: vue.withCtx(() => [
-          $data.bottomMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-            vue.createElementVNode("swiper", {
-              style: { "height": "500rpx", "width": "100%" },
-              circular: "",
-              "indicator-dots": true,
-              duration: 100
-            }, [
-              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.utilArr, (itemArr) => {
-                return vue.openBlock(), vue.createElementBlock("swiper-item", {
+    return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+      vue.createCommentVNode(" \u5F97\u5230\u6700\u65B0\u7684\u70B9\u51FB\u65F6\u95F4\uFF0C\u907F\u514D\u51FA\u73B0\u70B9\u51FB\u6D88\u606F\uFF0C\u677E\u5F00\uFF0C\u53C8\u957F\u6309\u89E6\u53D1\u7684\u9519\u8BEF\u8BA1\u6570\u884C\u4E3A "),
+      vue.createCommentVNode(' <view class="page" @touchstart="touchStartTime=Date.now()"> '),
+      vue.createElementVNode("view", { class: "page" }, [
+        vue.createCommentVNode(" \u5BFC\u822A\u680F "),
+        vue.createVNode(_component_yx_nav_bar, {
+          title: this.name
+        }, null, 8, ["title"]),
+        vue.createCommentVNode(" \u6ED1\u52A8\u5185\u5BB9 "),
+        vue.createElementVNode("scroll-view", {
+          "scroll-y": "true",
+          onScroll: _cache[0] || (_cache[0] = (...args) => $options.scroll && $options.scroll(...args)),
+          "scroll-top": $data.scrollHeight,
+          class: "position-fixed",
+          style: vue.normalizeStyle(`top:95rpx;bottom:${$data.scrollViewHeight}rpx`)
+        }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userChatMessage, (message) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_chat_item_detail, {
+              key: message.id,
+              chatMessage: message
+            }, null, 8, ["chatMessage"]);
+          }), 128)),
+          vue.createCommentVNode(' 	<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"\r\n				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail> ')
+        ], 44, ["scroll-top"]),
+        vue.createCommentVNode(" \u8F93\u5165\u6846 "),
+        vue.createVNode(_component_yx_chat_detail_input, {
+          onAddMessage: $options.addMessage,
+          ref: "inputBar",
+          onHide: $options.handlePopHide,
+          onSyn: $options.synMoveDistance,
+          onActiveUtil: $options.changeInputState
+        }, null, 8, ["onAddMessage", "onHide", "onSyn", "onActiveUtil"]),
+        vue.createVNode(_component_yx_popup, {
+          show: $data.popShow,
+          popPosittion: $data.popPosition,
+          popHeight: $data.popupHeight,
+          utilArr: $data.utilArr,
+          emoArr: $data.emoArr,
+          bottomMode: $data.bottomMode,
+          bottomClickTransition: $data.bottomClickTransition,
+          isDark: $data.popIsDark,
+          popItem: $data.popData,
+          isBottom: $data.isBottom,
+          popupContentOfUtilInBottom: $data.popupBottomData,
+          onHide: $options.handlePopHide,
+          onAction: $options.actionHandle
+        }, {
+          util: vue.withCtx(() => [
+            $data.bottomMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+              vue.createElementVNode("swiper", {
+                style: { "height": "500rpx", "width": "100%" },
+                circular: "",
+                "indicator-dots": true,
+                duration: 100
+              }, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.utilArr, (itemArr) => {
+                  return vue.openBlock(), vue.createElementBlock("swiper-item", {
+                    style: { "height": "100%" },
+                    class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
+                  }, [
+                    vue.createElementVNode("view", { class: "flex justify-between zTop flex-wrap" }, [
+                      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                        return vue.openBlock(), vue.createElementBlock("view", {
+                          onClick: ($event) => $options.utilEventHandle(item.event),
+                          key: item.id,
+                          style: { "flex": "0 0 25%", "height": "200rpx" },
+                          class: "justify-center flex flex-column align-center mt-1"
+                        }, [
+                          vue.createElementVNode("image", {
+                            src: item.img_src,
+                            mode: "aspectFit",
+                            style: { "height": "70%", "width": "70%" }
+                          }, null, 8, ["src"]),
+                          vue.createElementVNode("text", null, vue.toDisplayString(item.text), 1)
+                        ], 8, ["onClick"]);
+                      }), 128))
+                    ])
+                  ], 2);
+                }), 256))
+              ])
+            ])) : vue.createCommentVNode("v-if", true)
+          ]),
+          emo: vue.withCtx(() => [
+            $data.bottomMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+              vue.createElementVNode("scroll-view", {
+                "scroll-y": true,
+                class: "transition-ease-fast",
+                style: { "height": "550rpx" }
+              }, [
+                vue.createElementVNode("view", {
                   style: { "height": "100%" },
                   class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
                 }, [
-                  vue.createElementVNode("view", { class: "flex justify-between zTop flex-wrap" }, [
-                    (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                  vue.createElementVNode("view", { class: "grid justify-between zTop grid-3" }, [
+                    (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.emoArr, (emoItem) => {
                       return vue.openBlock(), vue.createElementBlock("view", {
-                        onClick: ($event) => $options.utilEventHandle(item.event),
-                        key: item.id,
+                        onClick: ($event) => $options.addMessage(emoItem.img_src, "image"),
+                        key: emoItem.id,
                         style: { "flex": "0 0 25%", "height": "200rpx" },
                         class: "justify-center flex flex-column align-center mt-1"
                       }, [
                         vue.createElementVNode("image", {
-                          src: item.img_src,
+                          src: emoItem.img_src,
                           mode: "aspectFit",
-                          style: { "height": "70%", "width": "70%" }
+                          style: { "height": "50%", "width": "50%" }
                         }, null, 8, ["src"]),
-                        vue.createElementVNode("text", null, vue.toDisplayString(item.text), 1)
+                        vue.createElementVNode("text", null, vue.toDisplayString(emoItem.text), 1)
                       ], 8, ["onClick"]);
                     }), 128))
                   ])
-                ], 2);
-              }), 256))
-            ])
-          ])) : vue.createCommentVNode("v-if", true)
-        ]),
-        emo: vue.withCtx(() => [
-          $data.bottomMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-            vue.createElementVNode("scroll-view", {
-              "scroll-y": true,
-              class: "transition-ease-fast",
-              style: { "height": "550rpx" }
-            }, [
-              vue.createElementVNode("view", {
-                style: { "height": "100%" },
-                class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
-              }, [
-                vue.createElementVNode("view", { class: "grid justify-between zTop grid-3" }, [
-                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.emoArr, (emoItem) => {
-                    return vue.openBlock(), vue.createElementBlock("view", {
-                      onClick: ($event) => $options.addMessage(emoItem.img_src, "image"),
-                      key: emoItem.id,
-                      style: { "flex": "0 0 25%", "height": "200rpx" },
-                      class: "justify-center flex flex-column align-center mt-1"
-                    }, [
-                      vue.createElementVNode("image", {
-                        src: emoItem.img_src,
-                        mode: "aspectFit",
-                        style: { "height": "50%", "width": "50%" }
-                      }, null, 8, ["src"]),
-                      vue.createElementVNode("text", null, vue.toDisplayString(emoItem.text), 1)
-                    ], 8, ["onClick"]);
-                  }), 128))
-                ])
-              ], 2)
-            ])
-          ])) : vue.createCommentVNode("v-if", true)
-        ]),
-        _: 1
-      }, 8, ["show", "popPosittion", "popHeight", "utilArr", "emoArr", "bottomMode", "bottomClickTransition", "isDark", "popItem", "isBottom", "popupContentOfUtilInBottom", "onHide", "onAction"])
-    ]);
+                ], 2)
+              ])
+            ])) : vue.createCommentVNode("v-if", true)
+          ]),
+          _: 1
+        }, 8, ["show", "popPosittion", "popHeight", "utilArr", "emoArr", "bottomMode", "bottomClickTransition", "isDark", "popItem", "isBottom", "popupContentOfUtilInBottom", "onHide", "onAction"])
+      ])
+    ], 2112);
   }
-  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
+  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
@@ -2039,7 +2238,7 @@ if (uni.restoreGlobal) {
       formatAppLog("log", "at App.vue:10", "App Hide");
     }
   };
-  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/uniapp-chat-project/App.vue"]]);
+  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/\u804A\u5929/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
     return {

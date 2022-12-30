@@ -103,7 +103,17 @@
 .col-offset-2 {margin-left: 125rpx;}
 .col-offset-1 {margin-left: 62.5rpx;}
 .col-offset-0 {margin-left: 0;}
-/* flex 布局 */
+/* grid 布局 二维布局 */
+.grid{display:grid}
+/* 两个元素一行 */
+.grid-2{grid-template-columns: repeat(2, 1fr);}
+/* 三个元素一行 */
+.grid-3{grid-template-columns: repeat(3, 1fr);}
+/* 四个元素一行 */
+.grid-4{grid-template-columns: repeat(4, 1fr);}
+/* 五个元素一行 */
+.grid-5{grid-template-columns: repeat(5, 1fr);}
+/* flex 布局 一维布局 */
 .flex{
 
 	display:flex;
@@ -150,6 +160,28 @@
 .flex-5{ flex: 5;
 }
 .flex-shrink{ flex-shrink: 0;
+}
+
+/* 显示与隐藏 */
+.opacity-0{
+	opacity: 0;
+}
+.opacity-1{
+	opacity: 1;
+}
+/* 对齐方式 */
+.vertical-middle{
+	vertical-align: middle;
+}
+/* 过渡 */
+.transition-ease-fast{
+	 transition: .4s all cubic-bezier(0,1.16,.4,.95);
+}
+.transition-ease-fast-plus{
+	 transition: .2s all cubic-bezier(0,1.16,.4,.95);
+}
+.transition-linear{
+	 transition: 1s all linear;
 }
 .container {
   padding-right: 20rpx;
@@ -387,7 +419,7 @@
 .font-italic { font-style: italic;}
 /*斜体*/
 /* 文字颜色 */
-.text-common{color:#cecfca;}
+.text-common{color:#cecfca!important;}
 .text-white {color: #ffffff;}
 .text-primary {color: #007bff;}
 .text-hover-primary { color: #0056b3;}

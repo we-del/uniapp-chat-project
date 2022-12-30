@@ -7,7 +7,6 @@ const _sfc_main = {
     chatMessage: [Object]
   },
   mounted() {
-    console.log("content", this);
   },
   data() {
     return {};

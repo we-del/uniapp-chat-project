@@ -123,5 +123,95 @@ export default [
 		data: '/static/images/nothing/no_pay.png',
 		user_image:'/static/logo.png',
 		showTime: true
+	},
+	{
+		id:'a8',
+		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
+		user_id:0,
+		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
+		// type:'text',
+		type:'audio',
+		// 信息是否被撤销
+		isUndone: false,
+		// 信息是否被删除
+		isDel:false,
+		// 标识消息发送时间  number | null 用于标识是否出现时间文本
+		// message_time:1671783711881,
+		message_time:Date.now(),
+		// 用于存储用户数据
+		// data: '我是数据',
+		data: '/static/images/nothing/no_pay.png',
+		// 录音时长
+		record_time:'5', 
+		// 用户图片
+		user_image:'/static/logo.png',
+		// 是否显示时间，后续计算得出
+		showTime: true
+	},
+	{
+		id:'a9',
+		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
+		user_id:1,
+		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
+		// type:'text',
+		type:'audio',
+		// 信息是否被撤销
+		isUndone: false,
+		// 信息是否被删除
+		isDel:false,
+		// 标识消息发送时间  number | null 用于标识是否出现时间文本
+		// message_time:1671783711881,
+		message_time:Date.now(),
+		// 用于存储用户数据
+		// data: '我是数据',
+		data: '/static/images/nothing/no_pay.png',
+		// 录音时长
+		record_time:'14', 
+		user_image:'/static/logo.png',
+		showTime: true
+	},
+	{
+		id:'a10',
+		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
+		user_id:1,
+		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
+		// type:'text',
+		type:'audio',
+		// 信息是否被撤销
+		isUndone: false,
+		// 信息是否被删除
+		isDel:false,
+		// 标识消息发送时间  number | null 用于标识是否出现时间文本
+		// message_time:1671783711881,
+		message_time:Date.now(),
+		// 用于存储用户数据
+		// data: '我是数据',
+		data: '/static/images/nothing/no_pay.png',
+		// 录音时长
+		record_time:'39', 
+		user_image:'/static/logo.png',
+		showTime: true
+	},
+	{
+		id:'a11',
+		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
+		user_id:1,
+		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
+		// type:'text',
+		type:'audio',
+		// 信息是否被撤销
+		isUndone: false,
+		// 信息是否被删除
+		isDel:false,
+		// 标识消息发送时间  number | null 用于标识是否出现时间文本
+		// message_time:1671783711881,
+		message_time:Date.now(),
+		// 用于存储用户数据
+		// data: '我是数据',
+		data: '/static/images/nothing/no_pay.png',
+		// 录音时长
+		record_time:'59', 
+		user_image:'/static/logo.png',
+		showTime: true
 	}
 ]

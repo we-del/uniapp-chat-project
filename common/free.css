@@ -97,6 +97,10 @@
 
 /* grid 布局 二维布局 */
 .grid{display:grid}
+/* grid 元素完成布局后以自己为单位进行居中 */
+.grid-center-by-el{place-items: center;}
+/* grid 元素完成布局后以grid和自己元素为参考进行居中(先grid居中,在元素居中) */
+.grid-center-by-grid-and-ele{place-items: center;place-content: center;}
  /* 两个元素一行 */
 .grid-2{grid-template-columns: repeat(2, 1fr);}
  /* 三个元素一行 */
@@ -159,16 +163,30 @@
 
  /* 过渡 */
  .transition-ease-fast{
-	 transition: .4s all cubic-bezier(0,1.16,.4,.95);
+	 transition: .3s all cubic-bezier(0,1,0,1);
+ }
+ .transition-ease-fast-plus{
+	 transition: .2s all cubic-bezier(0,1.16,.4,.95);
  }
  .transition-linear{
 	 transition: 1s all linear;
  }
-
+.flex-box{
+	box-sizing:border-box;
+}
 .container {
   padding-right: 20rpx;
   padding-left: 20rpx;
 }
+
+/* 旋转 */
+.rotate-left-90{
+	transform: rotateZ(90deg);
+}
+.rotate-right-90{
+	transform: rotateZ(-90deg);
+}
+
 /*  -- 内外边距 -- */
 .m-0 { margin: 0; }
 /* #ifndef APP-PLUS-NVUE */
@@ -353,7 +371,18 @@
 .text-light-black { color: rgba(0, 0, 0, 0.5);}
 .text-light-white { color: rgba(255, 255, 255, 0.5);}
 
+
+/* 透明度 */
+
+.lucency-hide{opacity:0}
+.lucency-3{opacity:.3}
+.lucency-5{opacity:.5}
+.lucency-7{opacity:.7}
+.lucency-show{opacity:1}
+
 /* 背景颜色 */
+.bg-gray{background-color: #f7f5f7;}
+.bg-gray-shallow{background-color: #595959;}
 .bg-white-one-deep{background-color: #ffffff;}
 .bg-white-two-deep{background-color: #fafafa;}
 .bg-white-three-deep{background-color: #f5f5f5;}
@@ -449,6 +478,14 @@
 .position-relative { position: relative;}
 .position-absolute { position: absolute;}
 .position-fixed { position: fixed;}
+
+/* 绝对定位居中屏幕 */
+.position-absolute-center{
+	position: absolute;
+	top:0;right:0;bottom:0;left:0;
+	margin: auto;
+}
+
 /* 定位 - 固定顶部 */
 .fixed-top {
   position: fixed;

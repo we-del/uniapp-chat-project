@@ -1,19 +1,22 @@
 <template>
+	<!-- 得到最新的点击时间，避免出现点击消息，松开，又长按触发的错误计数行为 -->
+	<!-- <view class="page" @touchstart="touchStartTime=Date.now()"> -->
 	<view class="page">
 		 <!-- 导航栏 -->
 		<yx-nav-bar :title="this.name"/>
 		<!-- 滑动内容 -->
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
-		class="position-fixed transition-ease-fast" :style="`top:95rpx;bottom:${scrollViewHeight}rpx`">
-			<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message" @touchstart="(e)=>handleTouch(message,e)"
-				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail>
+		class="position-fixed " :style="`top:95rpx;bottom:${scrollViewHeight}rpx`">
+			<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"></yx-chat-item-detail>
+		<!-- 	<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"
+				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail> -->
 		</scroll-view>
 		<!-- 输入框 -->
 		<yx-chat-detail-input @addMessage="addMessage" ref="inputBar" @hide="handlePopHide" @syn="synMoveDistance" @activeUtil="changeInputState"></yx-chat-detail-input>
 		<yx-popup :show="popShow" :popPosittion="popPosition" :popHeight="popupHeight" 
-		:utilArr="utilArr" :emoArr="emoArr" :bottomMode="bottomMode" :bottomClickTransition="bottomClickTransition"
-		:isDark="popIsDark" :popItem="popData" :isBottom="isBottom" :popupContentOfUtilInBottom="popupBottomData"
-		@hide="handlePopHide" @action="actionHandle" >
+			:utilArr="utilArr" :emoArr="emoArr" :bottomMode="bottomMode" :bottomClickTransition="bottomClickTransition"
+			:isDark="popIsDark" :popItem="popData" :isBottom="isBottom" :popupContentOfUtilInBottom="popupBottomData"
+			@hide="handlePopHide" @action="actionHandle" >
 			<!-- 由于android移动端无法兼容两个滑动块共用一个组件，因此要分开写 -->
 			<template #util>
 				<view v-if="bottomMode=='utils'">
@@ -46,6 +49,8 @@
 					</scroll-view>
 				</view>
 			</template>
+		
+			
 		</yx-popup>
 		
 	</view>
@@ -65,8 +70,10 @@
 		},
 		provide(){
 			return {
-				// 判断是否点击的是消息框
-				isValidSetTouch:this.isValidSetTouch
+				// 判断是否点击的是消息框 , 单一职责原则，数据在哪里，就在哪里进行操控，可以将方法传给组件实例，使其完成修改调用
+				touchMessageOfChat:this.handleTouch,
+				touchLeaveMessageOfChat:this.handleLeave,
+				validPreviewOfImage:this.previewImage
 			}
 		},
 		onLoad(query){
@@ -76,9 +83,10 @@
 		mounted(){
 			// data,methods,computed的初始化在模板解析之前，
 			//因此在他们内部无法得到refs收集的子组件(类)信息，需要在mounted中才能访问
-			console.log('@scrollView-mounted', this.$refs.inputBar.chatInputHeight)
-			console.log('@键盘激活的高度', this.$refs.inputBar.activeKeyboardHeight)
-			console.log('@wwwww',this.popupContentOfUtilInBottom)
+			// console.log('@scrollView-mounted', this.$refs.inputBar.chatInputHeight)
+			// console.log('@键盘激活的高度', this.$refs.inputBar.activeKeyboardHeight)
+			// console.log('@wwwww',this.popupContentOfUtilInBottom)
+			this.scrollBottom()
 		},
 		data() {
 			return {
@@ -102,8 +110,6 @@
 				popIsDark:false,
 				// pop框是否展示
 				popShow:false,
-				// 当前点击得是否为消息框
-				isValidTouch:false,
 				// 点击得消息对象
 				touchTarget:'',
 				// 记录touchTime时间， 使用结束点击时间减去当前触摸时间即可判断执行什么操作
@@ -124,6 +130,28 @@
 			}
 		},
 		methods: {
+			// 预览图片
+			previewImage(path){
+				uni.previewImage({
+					// 可以优化，得到当前点击的在加载聊天时的所有图片的索引，即可预览正确的图片
+					// 否则如果有多个重复路径的图片会无法找到正确的图，不过后期所有图片指定唯一路径后可以处理
+					current:path,
+					indicator:'number',
+					// 长按图片时产生的操作
+					urls:this.imageArr,
+					longPressActions:{
+						itemList: ['发送给朋友', '保存图片', '收藏'],
+						success: function(data) {
+							console.log('执行长按操作',data)
+							console.log('选中了第' + (data.tapIndex + 1) + '个按钮,第' + (data.index + 1) + '张图片');
+						},
+						fail: function(err) {
+							console.log(err.errMsg);
+						}
+					}
+				})
+			},
+			
 			// 从相册选择图片发送
 			utilEventHandle(event){
 				const self = this
@@ -132,7 +160,6 @@
 						uni.chooseImage({
 							count:4, // 最多选择图片个数
 							success(e){
-								console.log('图片路径',e)
 								e.tempFilePaths.forEach(path=>{
 									// 底层掉用的函数，因此this的指向不能满足我们的预期，需要进行缓存
 									self.addMessage(path,'image')
@@ -140,6 +167,16 @@
 							}
 						})
 						break;
+					case 'camera':
+						const self = this;
+						uni.chooseVideo({
+							sourceType: ['camera', 'album'],
+							success: function (res) {
+								self.addMessage(res.tempFilePath,'video')
+							}
+						});
+						break;
+						
 					default:
 					console.log('utils event err')
 						break;
@@ -150,11 +187,9 @@
 				
 				switch(event){
 					case 'utils':
-					console.log('utils操作')
 					this.popupBottomData = chatUtils
 					break
 					case 'emo':
-					console.log('emo操作')
 					this.popupBottomData = chatEmo
 					break
 					default:
@@ -164,14 +199,13 @@
 				this.bottomMode = event
 				this.isBottom = true
 				this.popShow = true
-				console.log('@键盘激活的高度', this.$refs.inputBar.activeKeyboardHeight)
 				this.popupHeight = this.$refs.inputBar.activeKeyboardHeight
 				this.popPosition={x:0,y:0}
 				
+				// 切换时的过渡显示
 				setTimeout(()=>{
 					this.bottomClickTransition=false
-					console.log('切换显示sssss')
-				},100)
+				},50)
 			},
 			
 			// 输入框添加消息信息
@@ -197,51 +231,25 @@
 					user_image:'/static/logo.png',
 					showTime: true
 				}
-				// switch(type){
-				// 	case 'text':
-				// 	m.type = 'text'
-				// 		break
-				// 	case 'image':
-				// 	m.type = 'text'
-				// 		console.log('处理发送图片')
-				// 		break
-				// 	case 'audio':
-					
-				// 	m.type = 'text'
-				// 		console.log('处理发送音频')
-				// 		break
-				// 	case 'video':
-					
-				// 	m.type = 'text'
-				// 		console.log('处理发送视频')
-				// 		break
-				// 	default:
-				// 		console.log('发送消息失败，没有对应事件处理')
-				// }
 				// 判断此次消息发送时间距离上次时间的间隔(抽象一个方法来完成判断)
 				const lastIndex = this.userMessage.length -1
 				const preTime = this.userMessage[lastIndex].message_time
 				const timeLimit = 1000 * 60 * 10
 				m.showTime =  m.message_time - preTime > timeLimit
 				
-				// 滑动到底部
-				this.scrollBottom()
 
 				// 添加信息
 				this.userMessage.push(m)
+				
+				// 滑动到底部
+				this.scrollBottom()
 			},
 			
-			// 滚动到底部
+			// 滚动到底部（有一个滑动行为即可）
 			scrollBottom(){
-				setTimeout(()=>{
-					
-					this.scrollHeight+=100
-				},1)
-				setTimeout(()=>{
-					
-					this.scrollHeight-=100
-				},2)
-				
+				// 解决滚动异常bug，两次滚动需要有时间差，以此完成二次滚动来解决滚动不到底部问题
+				this.scrollHeight-=100
+				setTimeout(()=>this.scrollHeight+=100,5)
 			},
 			// 转换输入(由于输入的\n实际渲染时会被识别为空格，因此我们可以手动来\n转换为p标签，然后进行v-html渲染)
 			convertln(target){
@@ -252,13 +260,12 @@
 				res = target.replace(patternln,'<p></p>')
 				// 转换空格
 				res = res.replace(patternls,'&nbsp;')
-				console.log('加工字符串',target)
 				return res
 			},
-			// 初次挂载时，页面滑动到底部
+			// 初次挂载时，页面滑动到底部(存在滑动行为即可调用)
 			scroll(e){
 				// 滑动到页面底部
-				this.scrollHeight = e.detail.scrollHeight
+				setTimeout(()=> this.scrollHeight = e.detail.scrollHeight,10)
 			},
 			actionHandle(event){
 				switch (event){
@@ -276,17 +283,10 @@
 			},
 			// 是一个有效得触摸(点击到了聊天框上)
 			// target为点击得消息对象
-			isValidSetTouch(target){
-				// console.log('点击设置touch',target)
-				this.touchTarget = target
-				this.isValidTouch = true
-			},
 			// 触摸聊天框时调用
-			handleTouch(user,e){
-				if(this.isValidTouch){
-					this.touchStartTime = e.timeStamp
-					// console.log('收集时间')
-				}
+			handleTouch(target,e){ 
+				this.touchStartTime = e.timeStamp
+				this.touchTarget = target
 				let x = e.touches[0].clientX
 				let y = e.touches[0].clientY 
 				
@@ -299,24 +299,20 @@
 				this.popPosition={x,y}
 				
 			},
+			// 在聊天盒子内即可调用，可能出现怪异行为，即点击聊天信息记录开启时间，点击聊天盒子触发popup,尝试解决：将离开时间绑定到聊天框中
 			handleLeave(message,e){
-				// user.is_touch = false
-				// console.log('我离开了,当前popShow状态',this.popShow)
 				
 				const endTime = e.timeStamp
 				if(this.touchStartTime && endTime - this.touchStartTime>400){
 					// 功能框展示模式
 					this.isBottom = false
-					// console.log('选择得message',message)
 					// 有效的touch呼出popup
-					// console.log('展示pop')
 					this.curUserMessage = message
 					// 设置撤回时间(3分钟以内)
 					const undoLimitTime = 1000*60*3
 					// 小于撤回时间，且当前得消息是自己得
 					const allowUndo = (Date.now() - this.touchTarget.message_time < undoLimitTime) 
 					&& (this.touchTarget.user_id === 0);
-					// console.log('允许撤回吗？',allowUndo)
 					// 设置内容
 					this.popData = [
 					{
@@ -347,7 +343,6 @@
 					
 					// 重置触摸状态
 					this.touchStartTime = 0
-					this.isValidTouch = false
 				}else{
 					this.popShow= false
 				}
@@ -364,11 +359,11 @@
 					// this.$refs.inputBar.chatInputHeight = this.$refs.inputBar.originVal
 				}
 			},
-			// 同步移动距离
+			// 同步移动距离(添加过渡后，第一次同步滚动会有一小段距离无法完成同步，不添加则无此问题)
 			synMoveDistance(){
 					this.scrollViewHeight = this.$refs.inputBar.chatInputHeight
+					console.log('当前移动的高度',this.scrollViewHeight)
 					this.scrollBottom()
-					console.log('完成变化同步',this.scrollViewHeight)
 			}
 		},
 		computed:{
@@ -389,6 +384,16 @@
 				}
 				
 				return this.userMessage
+			},
+			imageArr(){
+				const imageUrlStore = []
+				
+				this.userMessage.forEach(o=>{
+					if(o.type === 'image'){
+						imageUrlStore.push(o.data)
+					}
+				})
+				return imageUrlStore
 			}
 		}
 	}
