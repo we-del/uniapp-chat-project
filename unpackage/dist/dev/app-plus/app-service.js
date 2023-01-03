@@ -1,25 +1,12 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
 if (typeof Promise !== "undefined" && !Promise.prototype.finally) {
   Promise.prototype.finally = function(callback) {
     const promise = this.constructor;
-    return this.then((value) => promise.resolve(callback()).then(() => value), (reason) => promise.resolve(callback()).then(() => {
-      throw reason;
-    }));
+    return this.then(
+      (value) => promise.resolve(callback()).then(() => value),
+      (reason) => promise.resolve(callback()).then(() => {
+        throw reason;
+      })
+    );
   };
 }
 ;
@@ -51,7 +38,7 @@ if (uni.restoreGlobal) {
       console[type].apply(console, [...args, filename]);
     }
   }
-  var _export_sfc = (sfc, props) => {
+  const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
       target[key] = val;
@@ -177,7 +164,7 @@ if (uni.restoreGlobal) {
       }, null, 4)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
+  const YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
   const _sfc_main$f = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
@@ -278,7 +265,7 @@ if (uni.restoreGlobal) {
       }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
+  const YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -304,7 +291,7 @@ if (uni.restoreGlobal) {
       }, p: function(t2) {
         return { M: f, y: c, w: o, d: a, D: d, h: u, m: s, s: i2, ms: r, Q: h }[t2] || String(t2 || "").toLowerCase().replace(/s$/, "");
       }, u: function(t2) {
-        return t2 === void 0;
+        return void 0 === t2;
       } }, g = "en", D = {};
       D[g] = M;
       var p = function(t2) {
@@ -313,7 +300,7 @@ if (uni.restoreGlobal) {
         var i3;
         if (!e2)
           return g;
-        if (typeof e2 == "string") {
+        if ("string" == typeof e2) {
           var s2 = e2.toLowerCase();
           D[s2] && (i3 = s2), n2 && (D[s2] = n2, i3 = s2);
           var u2 = e2.split("-");
@@ -327,7 +314,7 @@ if (uni.restoreGlobal) {
       }, w = function(t2, e2) {
         if (p(t2))
           return t2.clone();
-        var n2 = typeof e2 == "object" ? e2 : {};
+        var n2 = "object" == typeof e2 ? e2 : {};
         return n2.date = t2, n2.args = arguments, new _(n2);
       }, O = v;
       O.l = S, O.i = p, O.w = function(t2, e2) {
@@ -341,13 +328,13 @@ if (uni.restoreGlobal) {
         return m2.parse = function(t2) {
           this.$d = function(t3) {
             var e2 = t3.date, n2 = t3.utc;
-            if (e2 === null)
+            if (null === e2)
               return new Date(NaN);
             if (O.u(e2))
               return new Date();
             if (e2 instanceof Date)
               return new Date(e2);
-            if (typeof e2 == "string" && !/Z$/i.test(e2)) {
+            if ("string" == typeof e2 && !/Z$/i.test(e2)) {
               var r2 = e2.match($);
               if (r2) {
                 var i3 = r2[2] - 1 || 0, s2 = (r2[7] || "0").substring(0, 3);
@@ -488,7 +475,7 @@ if (uni.restoreGlobal) {
       }, w.en = D[g], w.Ls = D, w.p = {}, w;
     });
   })(dayjs_min);
-  var dayjs = dayjs_min.exports;
+  const dayjs = dayjs_min.exports;
   const _sfc_main$e = {
     name: "yx-badge",
     props: {
@@ -512,7 +499,7 @@ if (uni.restoreGlobal) {
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
+  const YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-ab87c323"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
   const _sfc_main$d = {
     name: "chat-item",
     components: { YxBadge },
@@ -566,8 +553,8 @@ if (uni.restoreGlobal) {
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
-  var userList = [
+  const chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
+  const userList = [
     {
       id: 1,
       image_src: "/static/logo.png",
@@ -721,7 +708,7 @@ if (uni.restoreGlobal) {
             return;
           case "setTop":
             this.curUser.is_top = true;
-            this.userTopList.unshift(__spreadValues({}, this.curUser));
+            this.userTopList.unshift({ ...this.curUser });
             this.userList.forEach((user) => {
               if (user.id === this.curUser.id)
                 user.is_top = true;
@@ -827,7 +814,7 @@ if (uni.restoreGlobal) {
       }, null, 8, ["show", "popPosittion", "isDark", "popItem", "onAction", "onHide"])
     ]);
   }
-  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
+  const PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
   const _sfc_main$b = {
     name: "yx-list",
     props: {
@@ -880,7 +867,7 @@ if (uni.restoreGlobal) {
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
+  const YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
   const _sfc_main$a = {
     name: "yx-divider",
     data() {
@@ -890,7 +877,7 @@ if (uni.restoreGlobal) {
   function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
+  const YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
   const _sfc_main$9 = {
     components: { YxList, YxDivider },
     data() {
@@ -976,7 +963,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
+  const PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
   const _sfc_main$8 = {
     name: "yx-card",
     props: {
@@ -1008,7 +995,7 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
+  const YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
   const _sfc_main$7 = {
     components: { YxCard, YxDivider, YxList },
     data() {
@@ -1104,7 +1091,7 @@ if (uni.restoreGlobal) {
       }), 256))
     ]);
   }
-  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
+  const PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
   const _sfc_main$6 = {
     components: { YxToolBar, YxList },
     data() {
@@ -1189,7 +1176,7 @@ if (uni.restoreGlobal) {
       }), 128))
     ]);
   }
-  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
+  const PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
   const _sfc_main$5 = {
     name: "yx-nav-bar",
     props: {
@@ -1226,7 +1213,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(' <view style="margin-top: 90rpx;"></view> ')
     ], 2112);
   }
-  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
+  const YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
   const _sfc_main$4 = {
     name: "yx-chat-item-content",
     inject: ["validPreviewOfImage", "touchMessageOfChat", "touchLeaveMessageOfChat"],
@@ -1236,9 +1223,19 @@ if (uni.restoreGlobal) {
     mounted() {
     },
     data() {
-      return {};
+      return {
+        audioManager: plus.audio.createPlayer({})
+      };
     },
-    methods: {},
+    methods: {
+      handleAudio() {
+        if (this.chatMessage.type !== "audio")
+          return;
+        formatAppLog("log", "at components/chat/yx-chat-item-content.vue:51", "\u64AD\u653E\u5F55\u97F3", this.chatMessage);
+        this.audioManager.setStyles({ src: this.chatMessage.data });
+        this.audioManager.play();
+      }
+    },
     computed: {
       recordWidth() {
         let time = this.chatMessage.record_time;
@@ -1259,8 +1256,9 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
-      onTouchstart: _cache[1] || (_cache[1] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
-      onTouchend: _cache[2] || (_cache[2] = (e) => $options.touchLeaveMessageOfChat($props.chatMessage, e)),
+      onClick: _cache[1] || (_cache[1] = (...args) => $options.handleAudio && $options.handleAudio(...args)),
+      onTouchstart: _cache[2] || (_cache[2] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
+      onTouchend: _cache[3] || (_cache[3] = (e) => $options.touchLeaveMessageOfChat($props.chatMessage, e)),
       style: { "overflow": "auto" },
       class: "font-md"
     }, [
@@ -1291,7 +1289,7 @@ if (uni.restoreGlobal) {
           key: 0,
           class: "flex justify-end"
         }, [
-          vue.createTextVNode(' 4" '),
+          vue.createTextVNode(vue.toDisplayString($props.chatMessage.record_time) + '" ', 1),
           vue.createElementVNode("text", { class: "iconfont icon-wifi rotate-right-90 ml-2" })
         ])) : vue.createCommentVNode("v-if", true),
         vue.createCommentVNode(" \u5BF9\u65B9\u5F55\u97F3\u6D88\u606F "),
@@ -1306,7 +1304,7 @@ if (uni.restoreGlobal) {
       $props.chatMessage.type === "video" ? (vue.openBlock(), vue.createElementBlock("view", { key: 3 })) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
+  const YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
   const _sfc_main$3 = {
     name: "yx-chat-item-detail",
     components: {
@@ -1345,7 +1343,7 @@ if (uni.restoreGlobal) {
         class: "ele-center mb-2 font-sm text-common"
       }, [
         vue.createCommentVNode(" 2022\u5E7412\u670813\u65E5 13:21 "),
-        vue.createTextVNode(vue.toDisplayString($options.time), 1)
+        vue.createTextVNode(" " + vue.toDisplayString($options.time), 1)
       ])) : vue.createCommentVNode("v-if", true),
       vue.createCommentVNode(" \u6211\u65B9\u4FE1\u606F "),
       $props.chatMessage.user_id == 0 && !$props.chatMessage.isDel && !$props.chatMessage.isUndone ? (vue.openBlock(), vue.createElementBlock("view", {
@@ -1401,7 +1399,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
+  const YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
   const _sfc_main$2 = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
@@ -1409,7 +1407,8 @@ if (uni.restoreGlobal) {
     mounted() {
       this.getInputHeight();
       this.autoFocus = true;
-      this.recordManager = uni.getRecorderManager();
+      formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:59", "\u5F55\u97F3\u5BF9\u8C61", this.recordManager);
+      formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:64", "\u5F55\u97F3");
     },
     data() {
       return {
@@ -1432,34 +1431,148 @@ if (uni.restoreGlobal) {
         isFocus: false,
         inputMode: "keyboard",
         getFocusOnKeyboard: false,
-        recordManager: null,
+        recordManager: plus.audio.getRecorder(),
         touchPosition: {},
         isRecording: false,
-        isClickUtil: false
+        isUndoRecording: false,
+        isValidRecord: true,
+        isClickUtil: false,
+        recordingTime: 0,
+        audioPath: "",
+        audioManager: plus.audio.createPlayer({})
       };
     },
     methods: {
+      requestPermission() {
+        let vm = this;
+        let platform = plus.os.name;
+        if (platform === "Android") {
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:144", "\u8BF7\u6C42\u6743\u9650");
+          plus.android.requestPermissions(["android.permission.RECORD_AUDIO"], function(e) {
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:148", "\u6743\u9650\u5BF9\u8C61", e);
+            if (e.deniedAlways.length > 0) {
+              uni.showToast({
+                title: "\u5F55\u97F3\u6743\u9650\u88AB\u6C38\u4E45\u62D2\u7EDD\uFF0C\u8BF7\u5230\u8BBE\u7F6E\u6743\u9650\u91CC\u627E\u5230\u5E94\u7528\u624B\u52A8\u5F00\u542F\u6743\u9650\uFF0C\u5426\u5219\u5C06\u4E0D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD\u3002"
+              });
+              vm.$dialog.alert({
+                message: "\u5F55\u97F3\u6743\u9650\u88AB\u6C38\u4E45\u62D2\u7EDD\uFF0C\u8BF7\u5230\u8BBE\u7F6E\u6743\u9650\u91CC\u627E\u5230\u5E94\u7528\u624B\u52A8\u5F00\u542F\u6743\u9650\uFF0C\u5426\u5219\u5C06\u4E0D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD\u3002"
+              });
+            }
+            if (e.deniedPresent.length > 0) {
+              vm.$dialog.confirm({
+                message: "\u62D2\u7EDD\u5F00\u542F\u5F55\u97F3\u6743\u9650\uFF0C\u5C06\u4E0D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD\uFF01\u786E\u5B9A\u62D2\u7EDD\u5F00\u542F\u5417\uFF1F",
+                confirmButtonText: "\u786E\u5B9A",
+                cancelButtonText: "\u53D6\u6D88"
+              }).then(() => {
+              }).catch(() => {
+                vm.requestPermission();
+              });
+            }
+            if (e.granted.length > 0)
+              ;
+          }, function(e) {
+            vm.$dialog.alert({
+              message: "\u8BF7\u6C42\u5F55\u97F3\u6743\u9650\u5931\u8D25\uFF0C\u8BF7\u5230\u8BBE\u7F6E\u6743\u9650\u91CC\u627E\u5230\u5E94\u7528\u624B\u52A8\u5F00\u542F\u6743\u9650\uFF0C\u5426\u5219\u5C06\u4E0D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD\u3002"
+            });
+          });
+        } else if (platform === "iOS") {
+          vm.recorderPlus.record({}, function() {
+          }, function(e) {
+            if (e.code === 2) {
+              vm.$dialog.alert({
+                message: "\u5F55\u97F3\u6743\u9650\u672A\u5141\u8BB8\uFF0C\u8BF7\u5230\u8BBE\u7F6E\u624B\u52A8\u5F00\u542F\u6743\u9650\uFF0C\u5426\u5219\u5C06\u4E0D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD\u3002"
+              });
+            }
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:183", JSON.stringify(e));
+          });
+          vm.recorderPlus.stop();
+        } else {
+          this.startRecord();
+        }
+      },
+      getRecordAuth() {
+        let permission = plus.navigator.checkPermission("RECORD");
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:193", "\u5F53\u524D\u7684\u6743\u9650\u4E3A", permission);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:194", permission);
+        switch (permission) {
+          case "authorized":
+          case "unknown":
+            return true;
+          case "denied":
+            this.requestPermission();
+            break;
+          case "undetermined":
+            this.requestPermission();
+            break;
+          default:
+            this.$toast("\u8BBE\u5907\u4E0D\u652F\u6301\u5F55\u97F3");
+            break;
+        }
+        return true;
+      },
       startRecord(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:108", "\u5F00\u59CB\u5F55\u97F3", e);
+        if (!this.getRecordAuth()) {
+          return;
+        }
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:222", "\u5F00\u59CB\u5F55\u97F3", e);
+        const recordObj = {
+          filename: "_doc/audio/",
+          format: "mp3"
+        };
+        const self2 = this;
+        this.recordManager.record(recordObj, (e2) => {
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:232", "\u5F55\u97F3\u5B8C\u6210,\u8DEF\u5F84\u4E3A", e2);
+          self2.audioPath = e2;
+          self2.audioManager.setStyles({ src: e2 });
+          setTimeout(() => {
+            if (self2.isValidRecord) {
+              const audio_time = Math.ceil(self2.audioManager.getDuration());
+              self2.$emit("addMessage", self2.audioPath, "audio", audio_time);
+              formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:245", `\u6B64\u5F55\u97F3\u6709${audio_time}\u79D2`);
+            }
+            self2.isValidRecord = true;
+          }, 60);
+        }, (err) => {
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:252", "\u5F55\u97F3\u9519\u8BEF", err);
+        });
         this.touchPosition = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY
         };
         this.isRecording = true;
+        this.recordingTime = e.timeStamp;
       },
       moveRecord(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:116", "\u79FB\u52A8", e);
         const y = e.touches[0].clientY;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:119", "move");
-        if (this.touchPosition.y - y >= 130)
-          ;
+        this.isUndoRecording = Math.abs(this.touchPosition.y - y) >= 60;
       },
       endRecord(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:126", "\u7ED3\u675F", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:271", "\u7ED3\u675F", e);
         const y = e.changedTouches[0].clientY;
-        if (this.touchPosition.y - y >= 130)
-          ;
+        const endTime = e.timeStamp;
+        const limitTime = 1e3;
+        if (Math.abs(this.touchPosition.y - y) >= 60 || endTime - this.recordingTime < limitTime) {
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:279", "\u7ED3\u675F\u65F6\u53D6\u6D88\u5F55\u97F3");
+          this.isValidRecord = false;
+          if (Math.abs(this.touchPosition.y - y) >= 60) {
+            uni.showToast({
+              title: "\u53D6\u6D88\u5F55\u97F3\u6210\u529F",
+              duration: 500,
+              icon: "none"
+            });
+          }
+          if (endTime - this.recordingTime < limitTime) {
+            uni.showToast({
+              title: "\u8BED\u97F3\u65F6\u95F4\u592A\u77ED\uFF0C\u53D6\u6D88\u5F55\u97F3",
+              duration: 500,
+              icon: "none"
+            });
+          }
+        }
+        this.recordManager.stop();
         this.isRecording = false;
+        this.recordingTime = 0;
+        this.isUndoRecording = false;
       },
       toggleMode() {
         if (this.inputMode === "keyboard") {
@@ -1487,14 +1600,14 @@ if (uni.restoreGlobal) {
             break;
           case "util":
             this.chatInputHeight = this.activeKeyboardHeight + this.originVal + this.stepVal;
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:173", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:344", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
             break;
           case "audio":
             this.chatInputHeight = this.originVal;
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:179", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:350", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
             break;
           default:
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:182", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:353", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
             break;
         }
         this.$emit("syn");
@@ -1516,7 +1629,7 @@ if (uni.restoreGlobal) {
       textareaLineChangeHandle(e) {
         if (this.isClickUtil)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:216", "lineChange", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:387", "lineChange", e);
         this.curLine = e.detail.lineCount;
         this.inputChangeHeight = e.detail.height;
         this.getInputHeight();
@@ -1531,13 +1644,13 @@ if (uni.restoreGlobal) {
       sendMessage() {
         if (!this.inputContent)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:237", "@content---", this.inputContent);
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:238", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:408", "@content---", this.inputContent);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:409", this.inputContent);
         this.$emit("addMessage", this.inputContent, "text");
         this.inputContent = "";
       },
       keyboardHeightChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:243", "@keyboard", e);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:414", "@keyboard", e);
         const height = e.detail.height;
         if (!this.keyboardHeight && height) {
           this.keyboardHeight = height + 200;
@@ -1560,7 +1673,7 @@ if (uni.restoreGlobal) {
     watch: {
       inputContent: {
         handler() {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:272", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:443", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
           this.isText = this.inputContent.length > 0;
           if (this.isText) {
             this.isClickUtil = false;
@@ -1656,21 +1769,21 @@ if (uni.restoreGlobal) {
         class: "grid grid-center-by-grid-and-ele lucency-5 bg-gray-shallow fill-screen"
       }, [
         vue.createElementVNode("view", {
-          class: "rounded p-2 zTop bg-white grid grid-center-by-el",
+          class: "rounded p-2 zTop bg-white-five-deep grid grid-center-by-el",
           style: { "opacity": "1", "width": "340rpx", "height": "300rpx" }
         }, [
           vue.createElementVNode("image", {
             style: { "width": "150rpx", "height": "260rpx" },
-            src: "/static/audio/play.gif",
+            src: $data.isUndoRecording ? `/static/audio/recording.gif` : `/static/audio/play.gif`,
             mode: "aspectFill"
-          }),
-          vue.createElementVNode("view", null, "\u5F55\u97F3\u4E2D")
+          }, null, 8, ["src"]),
+          vue.createElementVNode("view", null, vue.toDisplayString($data.isUndoRecording ? `\u677E\u5F00\u53D6\u6D88\u5F55\u97F3` : `\u5F55\u97F3\u4E2D`), 1)
         ])
       ])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
-  var chatMesssage = [
+  const YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
+  const chatMesssage = [
     {
       id: "a1",
       user_id: 0,
@@ -1788,7 +1901,7 @@ if (uni.restoreGlobal) {
       showTime: true
     }
   ];
-  var chatUtils = [
+  const chatUtils = [
     [
       {
         id: "001",
@@ -1960,7 +2073,7 @@ if (uni.restoreGlobal) {
           this.bottomClickTransition = false;
         }, 50);
       },
-      addMessage(message, type) {
+      addMessage(message, type, record_time) {
         const m = {
           id: Date.now(),
           user_id: 0,
@@ -1972,6 +2085,9 @@ if (uni.restoreGlobal) {
           user_image: "/static/logo.png",
           showTime: true
         };
+        if (record_time) {
+          m.record_time = record_time;
+        }
         const lastIndex = this.userMessage.length - 1;
         const preTime = this.userMessage[lastIndex].message_time;
         const timeLimit = 1e3 * 60 * 10;
@@ -2003,7 +2119,7 @@ if (uni.restoreGlobal) {
             this.curUserMessage.isDel = true;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:280", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:285", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
             break;
         }
       },
@@ -2067,7 +2183,7 @@ if (uni.restoreGlobal) {
       },
       synMoveDistance() {
         this.scrollViewHeight = this.$refs.inputBar.chatInputHeight;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:365", "\u5F53\u524D\u79FB\u52A8\u7684\u9AD8\u5EA6", this.scrollViewHeight);
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:370", "\u5F53\u524D\u79FB\u52A8\u7684\u9AD8\u5EA6", this.scrollViewHeight);
         this.scrollBottom();
       }
     },
@@ -2221,7 +2337,7 @@ if (uni.restoreGlobal) {
       ])
     ], 2112);
   }
-  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
+  const PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
@@ -2238,7 +2354,7 @@ if (uni.restoreGlobal) {
       formatAppLog("log", "at App.vue:10", "App Hide");
     }
   };
-  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/\u804A\u5929/App.vue"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/uniapp-chat-project/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
     return {

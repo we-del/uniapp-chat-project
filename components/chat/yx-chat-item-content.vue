@@ -1,5 +1,5 @@
 <template>
-	<view @touchstart="(e)=>touchMessageOfChat(chatMessage,e)" @touchend="(e)=>touchLeaveMessageOfChat(chatMessage,e)"  style="overflow: auto;" class="font-md">
+	<view @click="handleAudio" @touchstart="(e)=>touchMessageOfChat(chatMessage,e)" @touchend="(e)=>touchLeaveMessageOfChat(chatMessage,e)"  style="overflow: auto;" class="font-md">
 		<view v-if="chatMessage.type === 'text'" class="text-overflow-line p-1" > 
 			<view v-html="chatMessage.data"></view>
 			<!-- {{}} -->
@@ -11,7 +11,7 @@
 			<!-- 判断是哪一方的信息，便于在正确的位置上显示 -->
 			<!-- 我方录音消息 -->
 			<view v-if="chatMessage.user_id == 0"   class="flex justify-end  ">
-				4" 
+				{{chatMessage.record_time}}"
 				<text class="iconfont icon-wifi rotate-right-90 ml-2"></text>
 			</view>
 			<!-- 对方录音消息 -->
@@ -39,10 +39,19 @@
 		},
 		data() {
 			return {
-				
+				// 音频管理器
+				// #ifdef APP-PLUS
+				audioManager: plus.audio.createPlayer({})
+				// #endif
 			}
 		},
 		methods: {
+			handleAudio(){
+				if(this.chatMessage.type !=='audio') return
+				console.log('播放录音',this.chatMessage)
+				this.audioManager.setStyles({src:this.chatMessage.data})
+				this.audioManager.play()
+			}
 		},
 		computed:{
 			recordWidth(){

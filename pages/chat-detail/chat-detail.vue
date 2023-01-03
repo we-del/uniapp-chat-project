@@ -209,7 +209,7 @@
 			},
 			
 			// 输入框添加消息信息
-			addMessage(message,type){
+			addMessage(message,type,record_time){
 				const m = {
 					id:Date.now(),
 					// user_id标识是那个用户发送得信息，0为本人，其他为其他人
@@ -230,6 +230,11 @@
 					data: type === 'text' ? this.convertln(message) : message,
 					user_image:'/static/logo.png',
 					showTime: true
+				}
+				
+				// 说明是音频数据，需要时间字段
+				if(record_time) {
+					m.record_time = record_time
 				}
 				// 判断此次消息发送时间距离上次时间的间隔(抽象一个方法来完成判断)
 				const lastIndex = this.userMessage.length -1
