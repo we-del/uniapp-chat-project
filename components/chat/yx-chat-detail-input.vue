@@ -37,7 +37,7 @@
 
 <script>
 	// import {plus} from 'vue-native-plus'
-	// import {permisson} from '@/module/phone-permission.js'
+	import {gotoAppPermissionSetting} from '@/js_sdk/phone-permisson/phone-permission.js'
 	export default {
 		name: "yx-chat-detail-input",
 		emits: ['syn', 'addMessage', 'activeUtil', 'hide'],
@@ -127,6 +127,8 @@
 				isClickUtil: false,
 				// 语音时长记录
 				recordingTime: 0,
+				// 是否有录音权限
+				havingRecordAuth: false,
 				audioPath: '',
 				// 音频管理器
 				// #ifdef APP-PLUS
@@ -146,39 +148,79 @@
 				// eslint-disable-next-line
 				  plus.android.requestPermissions(['android.permission.RECORD_AUDIO'], function (e) {
 				  console.log('权限对象',e)
-				  if (e.deniedAlways.length > 0) { // 权限被永久拒绝
-					uni.showToast({
-						title:'录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。',
+				  // 权限判断
+				  
+				 //  if (e.deniedAlways.length > 0) { // 权限被永久拒绝
+					// uni.showToast({
+					// 	title:'录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。',
 						     
+					// })
+					// vm.$dialog.alert({
+					//   message: '录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。'
+					// })
+				 //  }
+				 //  if (e.deniedPresent.length > 0) { // 权限被临时拒绝
+					// vm.$dialog.confirm({
+					//   message: '拒绝开启录音权限，将不能使用此功能！确定拒绝开启吗？',
+					//   confirmButtonText: '确定',
+					//   cancelButtonText: '取消'
+					// }).then(() => {})
+					//   .catch(() => {
+					// 	vm.requestPermission()
+					//   })
+				 //  }
+				 if (e.deniedAlways.length > 0 || e.deniedPresent.length > 0) { // 权限被永久拒绝
+					uni.showModal({
+						title:'关于录音权限',
+						content:'录音权限获取失败，如果您不对此软件开启此权限将无法正常使用录音功能',
+						confirmText:'去授权',
+						cancelText:'拒绝',
+						success(e){
+							if(e.confirm){
+								console.log('同意开启权限，即将跳转')
+								gotoAppPermissionSetting()
+								this.havingRecordAuth = true
+							}else if(e.cancel){
+								console.log('不同意开启权限')
+							}
+						},
+						fail(){
+						}
 					})
-					vm.$dialog.alert({
-					  message: '录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。'
-					})
-				  }
-				  if (e.deniedPresent.length > 0) { // 权限被临时拒绝
-					vm.$dialog.confirm({
-					  message: '拒绝开启录音权限，将不能使用此功能！确定拒绝开启吗？',
-					  confirmButtonText: '确定',
-					  cancelButtonText: '取消'
-					}).then(() => {})
-					  .catch(() => {
-						vm.requestPermission()
-					  })
-				  }
-				  if (e.granted.length > 0) { // 权限被允许
-				  }
+				 }
+				if (e.granted.length > 0) { // 权限被允许
+					this.havingRecordAuth = true
+				}
 				}, function (e) {
-				  vm.$dialog.alert({
-					message: '请求录音权限失败，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。'
-				  })
+					uni.showToast({
+						title:'请求录音权限失败，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。',
+						icon:'error'     
+					})
 				})
 			  } else if (platform === 'iOS') {
 				vm.recorderPlus.record({}, function () {
 				}, function (e) {
 				  if (e.code === 2) {
-					vm.$dialog.alert({
-					  message: '录音权限未允许，请到设置手动开启权限，否则将不能使用此功能。'
-					})
+					  uni.showModal({
+					  	title:'关于录音权限',
+					  	content:'录音权限获取失败，如果您不对此软件开启此权限将无法正常使用录音功能',
+					  	confirmText:'去授权',
+					  	cancelText:'拒绝',
+					  	success(e){
+					  		if(e.confirm){
+					  			console.log('同意开启权限，即将跳转')
+					  			gotoAppPermissionSetting()
+					  			this.havingRecordAuth = true
+					  		}else if(e.cancel){
+					  			console.log('不同意开启权限')
+					  		}
+					  	},
+					  	fail(){
+					  	}
+					  })
+					// vm.$dialog.alert({
+					//   message: '录音权限未允许，请到设置手动开启权限，否则将不能使用此功能。'
+					// })
 				  }
 				  console.log(JSON.stringify(e))
 				})
@@ -195,27 +237,27 @@
 				      switch (permission) {
 				        case 'authorized':   // 允许
 						case 'unknown':    // 未知
-				          return true
+				          this.havingRecordAuth = true
+						  // return true
 				          break
 				        case 'denied':    // 拒绝
-				          this.requestPermission()
-				          break
 				        case 'undetermined':    // 询问
 				          this.requestPermission()
 				          break
 				        // case 'unknown':    // 未知
 				        //    return true
-				          break
 				        default:
-				          this.$toast('设备不支持录音')
+				          console.log('设备不支持录音')
 				          break
 				      }
-					  return true
 			},
 			// 录音时调用
 			startRecord(e) {
 				// 判断是否有录音权限(待完成)
-				if(!this.getRecordAuth()){
+				this.getRecordAuth() 
+				// 查看是否会等待权限回调完成，如果没有等待使用promise达到同步（不需要完成同步第一次执行touch操作用于完成权限注入，第二次点击即可拥有对应权限）
+				if(!this.havingRecordAuth){
+					console.log('异步执行的')
 					return 
 				}
 				// await Number permision.requestAndroidPermission(String permisionID)
@@ -262,11 +304,17 @@
 				this.recordingTime = e.timeStamp
 			},
 			moveRecord(e) {
+				if(!this.havingRecordAuth){
+					return 
+				}
 				const y = e.touches[0].clientY
 				this.isUndoRecording = Math.abs(this.touchPosition.y - y) >= 60
 			},
 			// 松开时录音时调用
 			endRecord(e) {
+				if(!this.havingRecordAuth){
+					return 
+				}
 				// 如果时长不足1s则取消录音
 				console.log('结束', e)
 				// 只对y的坐标进行一个判断

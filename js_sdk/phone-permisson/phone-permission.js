@@ -264,9 +264,18 @@ function checkSystemEnableLocation() {
 	}
 }
 
-module.exports = {
-	judgeIosPermission: judgeIosPermission,
-	requestAndroidPermission: requestAndroidPermission,
-	checkSystemEnableLocation: checkSystemEnableLocation,
-	gotoAppPermissionSetting: gotoAppPermissionSetting
+// commonjs 暴露
+// module.exports = {
+// 	judgeIosPermission: judgeIosPermission,
+// 	requestAndroidPermission: requestAndroidPermission,
+// 	checkSystemEnableLocation: checkSystemEnableLocation,
+// 	gotoAppPermissionSetting: gotoAppPermissionSetting
+// }
+
+// es-6暴露
+export {
+	 judgeIosPermission,
+	 requestAndroidPermission,
+	 checkSystemEnableLocation,
+	 gotoAppPermissionSetting
 }
