@@ -1,9 +1,9 @@
 <template>
-	<view class="page">
-		<view style="width: 100%;height:150rpx;background-color: white;">
-			<text class="iconfont icon-help position-fixed" style="right:20rpx;top:30rpx"></text>
+	<yx-common-wrapper>
+		<view class="position-relative" style="width: 100%;height:150rpx;background-color: white;">
+			<text class="iconfont icon-help position-absolute" style="right:20rpx;top:30rpx"></text>
 		</view>
-		<yx-card img="/static/logo.png" title="楚云" desc="测试数据">
+		<yx-card img="/static/logo.png" class="bg-white" title="楚云" desc="测试数据">
 			<template #right>
 				<view class="mt-3">
 						<text class="iconfont icon-saoyisao  font-lg"></text>
@@ -22,15 +22,16 @@
 			</yx-list>
 			<yx-divider></yx-divider>
 		</block>
-	</view>
+	</yx-common-wrapper>
 </template>
 
 <script>
 	import YxCard from '@/components/yx-card.vue'
 	import YxDivider from '@/components/yx-divider.vue'
 	import YxList from '@/components/yx-list.vue'
+	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
 	export default {
-		components:{YxCard,YxDivider,YxList},
+		components:{YxCard,YxDivider,YxList,YxCommonWrapper},
 		data() {
 			return {
 				data:[

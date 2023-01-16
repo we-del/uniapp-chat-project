@@ -1,9 +1,9 @@
 <template>
 	<view :class="styleCustom" 
-	class="zTop border-dark  p-2 flex flex-column  position-fixed  rounded font-md" 
+	class="zTop border-dark  p-2 flex   position-fixed  rounded font-md" 
 	:style="show ? `display:block;${position}`:`display:none;${position};`">
-		<!-- 普通功能框 -->
-		<view v-if="!isBottom">
+		<!-- 普通功能提示框 -->
+		<view v-if="isChat">
 			<view @click="handleReactive(item)" class="flex-1 "
 			 v-for="(item,i) in popItem" :key="item.id"
 			:style="i !== popItem.length-1 && item.content? 'margin-bottom:30rpx':''">
@@ -16,8 +16,12 @@
 			<slot name="util"></slot>
 			<slot name="emo"></slot>
 		</view>
+		
+		<view>
+			<slot name="custom"></slot>
+		</view>
 	</view>
-	<view @click="hide" :style="show ? 'display:block':'display:none'"  id="mask" class="fill-screen  position-absolute" style="left:0;top:0;"></view>
+	<view @click="hide" :style="show ? 'display:block':'display:none'" :class="isCustom ? 'bg-dark lucency-5':''"  id="mask" class="fill-screen   position-absolute" style="left:0;top:0;"></view>
 </template>
 
 <script>
@@ -64,6 +68,16 @@
 				type:Boolean,
 				default:false
 			},
+			// 判断是否位chat地址框
+			isChat:{				
+				type:Boolean,
+				default:false
+			},
+			// 判断是否为自制框
+			isCustom:{				
+				type:Boolean,
+				default:false
+			},
 			// 在底部显示的情况下需要输入显示高度
 			popHeight:{
 				type:Number
@@ -99,9 +113,18 @@
 				// 移动因子
 				// let i = 1.4
 				// console.log(uni.upx2px(this.popPosittion.x ))
-				return !this.isBottom ? 
-										`left:${this.popPosittion.x}px;top:${this.popPosittion.y}px`
-										: `left:${this.popPosittion.x}px;bottom:${this.popPosittion.y}px`
+				if(this.isBottom){
+					
+					return `left:${this.popPosittion.x}rpx;bottom:${this.popPosittion.y}rpx`
+				}
+				if(this.isChat){
+					this.popPosittion.x*=2
+					this.popPosittion.y*=2
+				}
+				return `left:${this.popPosittion.x}rpx;top:${this.popPosittion.y}rpx`
+				// return !this.isBottom ? 
+				// 						`left:${this.popPosittion.x}px;top:${this.popPosittion.y}px`
+				// 						: `left:${this.popPosittion.x}px;bottom:${this.popPosittion.y}px`
 			},
 			styleCustom(){
 				let res = ''

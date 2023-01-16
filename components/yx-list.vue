@@ -1,13 +1,18 @@
 <template>
-	<view class="flex justify-between align-center pl-2" style="height:100rpx">
+	<view class="flex justify-between align-center  pl-2 border-bottom font-md" style="height:100rpx">
+		<view >
+			<slot name="prefix"></slot>
+		</view>
 		<text v-if="icon" :class="`iconfont font-md ${icon}` "></text>
-		<view v-if="img" style="width: 60rpx;height:60rpx;">
+		<view v-if="img" class="rounded overflow-hidden" style="width: 75rpx;height:75rpx;">
 			<image :src="img" style="width:100%;height:100%" mode="aspectFill"></image>
 		</view>
-		<view class="flex-1 border-bottom ml-2 " style="line-height: 70rpx;font-size: 26rpx;">
+		<view class="flex-1  ml-2 ">
 		{{title}}
 		</view>
-		<slot name="suffix"></slot>
+		<view style="font-weight:300">
+			<slot name="suffix" ></slot>
+		</view>
 		<view v-if="isCell" class="iconfont icon-right mr-2"></view>
 	</view>
 </template>

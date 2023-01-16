@@ -18,7 +18,7 @@
 					<yx-chat-item-content :chatMessage="chatMessage"></yx-chat-item-content>
 				</view>
 			
-				<image :src="chatMessage.user_image" mode="scaleToFill" style="width: 60rpx;height:60rpx;"></image>
+				<image @click="toUserMessagePage" :src="chatMessage.user_image" mode="scaleToFill" style="width: 60rpx;height:60rpx;"></image>
 			</view>
 			
 			<!-- 对方信息 -->
@@ -27,7 +27,7 @@
 				<!-- 三角 -->
 				<view id="other-triangle" class="position-absolute right-triangle" 
 				style="top:40rpx;left:81rpx;border-right-color:white"></view>
-				<image :src="chatMessage.user_image" mode="scaleToFill" style="width: 60rpx;height:60rpx;"></image>
+				<image @click="toUserMessagePage" :src="chatMessage.user_image" mode="scaleToFill" style="width: 60rpx;height:60rpx;"></image>
 								
 				<view class="ml-2 font-small bg-white p-1 rounded" style="line-height: 38rpx;min-height:40rpx;max-width:500rpx">
 					<yx-chat-item-content :chatMessage="chatMessage"></yx-chat-item-content>
@@ -78,6 +78,11 @@
 			};
 		},
 		methods:{
+			toUserMessagePage(){
+				uni.navigateTo({
+					url: `/pages/UserInfo/UserInfo`
+				})
+			}
 		},
 		computed:{
 			time(){

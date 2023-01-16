@@ -1,4 +1,6 @@
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -14,6 +16,7 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 if (typeof Promise !== "undefined" && !Promise.prototype.finally) {
   Promise.prototype.finally = function(callback) {
     const promise = this.constructor;
@@ -51,14 +54,1458 @@ if (uni.restoreGlobal) {
       console[type].apply(console, [...args, filename]);
     }
   }
-  var _export_sfc = (sfc, props) => {
-    const target = sfc.__vccOpts || sfc;
-    for (const [key, val] of props) {
-      target[key] = val;
+  var isVue2 = false;
+  function set(target2, key, val) {
+    if (Array.isArray(target2)) {
+      target2.length = Math.max(target2.length, key);
+      target2.splice(key, 1, val);
+      return val;
     }
-    return target;
+    target2[key] = val;
+    return val;
+  }
+  function del(target2, key) {
+    if (Array.isArray(target2)) {
+      target2.splice(key, 1);
+      return;
+    }
+    delete target2[key];
+  }
+  function getDevtoolsGlobalHook() {
+    return getTarget().__VUE_DEVTOOLS_GLOBAL_HOOK__;
+  }
+  function getTarget() {
+    return typeof navigator !== "undefined" && typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {};
+  }
+  const isProxyAvailable = typeof Proxy === "function";
+  const HOOK_SETUP = "devtools-plugin:setup";
+  const HOOK_PLUGIN_SETTINGS_SET = "plugin:settings:set";
+  let supported;
+  let perf;
+  function isPerformanceSupported() {
+    var _a;
+    if (supported !== void 0) {
+      return supported;
+    }
+    if (typeof window !== "undefined" && window.performance) {
+      supported = true;
+      perf = window.performance;
+    } else if (typeof global !== "undefined" && ((_a = global.perf_hooks) === null || _a === void 0 ? void 0 : _a.performance)) {
+      supported = true;
+      perf = global.perf_hooks.performance;
+    } else {
+      supported = false;
+    }
+    return supported;
+  }
+  function now() {
+    return isPerformanceSupported() ? perf.now() : Date.now();
+  }
+  class ApiProxy {
+    constructor(plugin, hook) {
+      this.target = null;
+      this.targetQueue = [];
+      this.onQueue = [];
+      this.plugin = plugin;
+      this.hook = hook;
+      const defaultSettings = {};
+      if (plugin.settings) {
+        for (const id in plugin.settings) {
+          const item = plugin.settings[id];
+          defaultSettings[id] = item.defaultValue;
+        }
+      }
+      const localSettingsSaveId = `__vue-devtools-plugin-settings__${plugin.id}`;
+      let currentSettings = Object.assign({}, defaultSettings);
+      try {
+        const raw = localStorage.getItem(localSettingsSaveId);
+        const data2 = JSON.parse(raw);
+        Object.assign(currentSettings, data2);
+      } catch (e) {
+      }
+      this.fallbacks = {
+        getSettings() {
+          return currentSettings;
+        },
+        setSettings(value) {
+          try {
+            localStorage.setItem(localSettingsSaveId, JSON.stringify(value));
+          } catch (e) {
+          }
+          currentSettings = value;
+        },
+        now() {
+          return now();
+        }
+      };
+      if (hook) {
+        hook.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
+          if (pluginId === this.plugin.id) {
+            this.fallbacks.setSettings(value);
+          }
+        });
+      }
+      this.proxiedOn = new Proxy({}, {
+        get: (_target, prop) => {
+          if (this.target) {
+            return this.target.on[prop];
+          } else {
+            return (...args) => {
+              this.onQueue.push({
+                method: prop,
+                args
+              });
+            };
+          }
+        }
+      });
+      this.proxiedTarget = new Proxy({}, {
+        get: (_target, prop) => {
+          if (this.target) {
+            return this.target[prop];
+          } else if (prop === "on") {
+            return this.proxiedOn;
+          } else if (Object.keys(this.fallbacks).includes(prop)) {
+            return (...args) => {
+              this.targetQueue.push({
+                method: prop,
+                args,
+                resolve: () => {
+                }
+              });
+              return this.fallbacks[prop](...args);
+            };
+          } else {
+            return (...args) => {
+              return new Promise((resolve) => {
+                this.targetQueue.push({
+                  method: prop,
+                  args,
+                  resolve
+                });
+              });
+            };
+          }
+        }
+      });
+    }
+    async setRealTarget(target2) {
+      this.target = target2;
+      for (const item of this.onQueue) {
+        this.target.on[item.method](...item.args);
+      }
+      for (const item of this.targetQueue) {
+        item.resolve(await this.target[item.method](...item.args));
+      }
+    }
+  }
+  function setupDevtoolsPlugin(pluginDescriptor, setupFn) {
+    const descriptor = pluginDescriptor;
+    const target2 = getTarget();
+    const hook = getDevtoolsGlobalHook();
+    const enableProxy = isProxyAvailable && descriptor.enableEarlyProxy;
+    if (hook && (target2.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ || !enableProxy)) {
+      hook.emit(HOOK_SETUP, pluginDescriptor, setupFn);
+    } else {
+      const proxy = enableProxy ? new ApiProxy(descriptor, hook) : null;
+      const list = target2.__VUE_DEVTOOLS_PLUGINS__ = target2.__VUE_DEVTOOLS_PLUGINS__ || [];
+      list.push({
+        pluginDescriptor: descriptor,
+        setupFn,
+        proxy
+      });
+      if (proxy)
+        setupFn(proxy.proxiedTarget);
+    }
+  }
+  /*!
+    * pinia v2.0.14
+    * (c) 2022 Eduardo San Martin Morote
+    * @license MIT
+    */
+  let activePinia;
+  const setActivePinia = (pinia2) => activePinia = pinia2;
+  const piniaSymbol = Symbol("pinia");
+  function isPlainObject(o) {
+    return o && typeof o === "object" && Object.prototype.toString.call(o) === "[object Object]" && typeof o.toJSON !== "function";
+  }
+  var MutationType;
+  (function(MutationType2) {
+    MutationType2["direct"] = "direct";
+    MutationType2["patchObject"] = "patch object";
+    MutationType2["patchFunction"] = "patch function";
+  })(MutationType || (MutationType = {}));
+  const IS_CLIENT = typeof window !== "undefined";
+  const _global = /* @__PURE__ */ (() => typeof window === "object" && window.window === window ? window : typeof self === "object" && self.self === self ? self : typeof global === "object" && global.global === global ? global : typeof globalThis === "object" ? globalThis : { HTMLElement: null })();
+  function bom(blob, { autoBom = false } = {}) {
+    if (autoBom && /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
+      return new Blob([String.fromCharCode(65279), blob], { type: blob.type });
+    }
+    return blob;
+  }
+  function download(url, name, opts) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
+    xhr.onload = function() {
+      saveAs(xhr.response, name, opts);
+    };
+    xhr.onerror = function() {
+      console.error("could not download file");
+    };
+    xhr.send();
+  }
+  function corsEnabled(url) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("HEAD", url, false);
+    try {
+      xhr.send();
+    } catch (e) {
+    }
+    return xhr.status >= 200 && xhr.status <= 299;
+  }
+  function click(node) {
+    try {
+      node.dispatchEvent(new MouseEvent("click"));
+    } catch (e) {
+      const evt = document.createEvent("MouseEvents");
+      evt.initMouseEvent("click", true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
+      node.dispatchEvent(evt);
+    }
+  }
+  const _navigator = typeof navigator === "object" ? navigator : { userAgent: "" };
+  const isMacOSWebView = /* @__PURE__ */ (() => /Macintosh/.test(_navigator.userAgent) && /AppleWebKit/.test(_navigator.userAgent) && !/Safari/.test(_navigator.userAgent))();
+  const saveAs = !IS_CLIENT ? () => {
+  } : typeof HTMLAnchorElement !== "undefined" && "download" in HTMLAnchorElement.prototype && !isMacOSWebView ? downloadSaveAs : "msSaveOrOpenBlob" in _navigator ? msSaveAs : fileSaverSaveAs;
+  function downloadSaveAs(blob, name = "download", opts) {
+    const a = document.createElement("a");
+    a.download = name;
+    a.rel = "noopener";
+    if (typeof blob === "string") {
+      a.href = blob;
+      if (a.origin !== location.origin) {
+        if (corsEnabled(a.href)) {
+          download(blob, name, opts);
+        } else {
+          a.target = "_blank";
+          click(a);
+        }
+      } else {
+        click(a);
+      }
+    } else {
+      a.href = URL.createObjectURL(blob);
+      setTimeout(function() {
+        URL.revokeObjectURL(a.href);
+      }, 4e4);
+      setTimeout(function() {
+        click(a);
+      }, 0);
+    }
+  }
+  function msSaveAs(blob, name = "download", opts) {
+    if (typeof blob === "string") {
+      if (corsEnabled(blob)) {
+        download(blob, name, opts);
+      } else {
+        const a = document.createElement("a");
+        a.href = blob;
+        a.target = "_blank";
+        setTimeout(function() {
+          click(a);
+        });
+      }
+    } else {
+      navigator.msSaveOrOpenBlob(bom(blob, opts), name);
+    }
+  }
+  function fileSaverSaveAs(blob, name, opts, popup) {
+    popup = popup || open("", "_blank");
+    if (popup) {
+      popup.document.title = popup.document.body.innerText = "downloading...";
+    }
+    if (typeof blob === "string")
+      return download(blob, name, opts);
+    const force = blob.type === "application/octet-stream";
+    const isSafari = /constructor/i.test(String(_global.HTMLElement)) || "safari" in _global;
+    const isChromeIOS = /CriOS\/[\d]+/.test(navigator.userAgent);
+    if ((isChromeIOS || force && isSafari || isMacOSWebView) && typeof FileReader !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        let url = reader.result;
+        if (typeof url !== "string") {
+          popup = null;
+          throw new Error("Wrong reader.result type");
+        }
+        url = isChromeIOS ? url : url.replace(/^data:[^;]*;/, "data:attachment/file;");
+        if (popup) {
+          popup.location.href = url;
+        } else {
+          location.assign(url);
+        }
+        popup = null;
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      const url = URL.createObjectURL(blob);
+      if (popup)
+        popup.location.assign(url);
+      else
+        location.href = url;
+      popup = null;
+      setTimeout(function() {
+        URL.revokeObjectURL(url);
+      }, 4e4);
+    }
+  }
+  function toastMessage(message, type) {
+    const piniaMessage = "\u{1F34D} " + message;
+    if (typeof __VUE_DEVTOOLS_TOAST__ === "function") {
+      __VUE_DEVTOOLS_TOAST__(piniaMessage, type);
+    } else if (type === "error") {
+      console.error(piniaMessage);
+    } else if (type === "warn") {
+      console.warn(piniaMessage);
+    } else {
+      console.log(piniaMessage);
+    }
+  }
+  function isPinia(o) {
+    return "_a" in o && "install" in o;
+  }
+  function checkClipboardAccess() {
+    if (!("clipboard" in navigator)) {
+      toastMessage(`Your browser doesn't support the Clipboard API`, "error");
+      return true;
+    }
+  }
+  function checkNotFocusedError(error) {
+    if (error instanceof Error && error.message.toLowerCase().includes("document is not focused")) {
+      toastMessage('You need to activate the "Emulate a focused page" setting in the "Rendering" panel of devtools.', "warn");
+      return true;
+    }
+    return false;
+  }
+  async function actionGlobalCopyState(pinia2) {
+    if (checkClipboardAccess())
+      return;
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(pinia2.state.value));
+      toastMessage("Global state copied to clipboard.");
+    } catch (error) {
+      if (checkNotFocusedError(error))
+        return;
+      toastMessage(`Failed to serialize the state. Check the console for more details.`, "error");
+      console.error(error);
+    }
+  }
+  async function actionGlobalPasteState(pinia2) {
+    if (checkClipboardAccess())
+      return;
+    try {
+      pinia2.state.value = JSON.parse(await navigator.clipboard.readText());
+      toastMessage("Global state pasted from clipboard.");
+    } catch (error) {
+      if (checkNotFocusedError(error))
+        return;
+      toastMessage(`Failed to deserialize the state from clipboard. Check the console for more details.`, "error");
+      console.error(error);
+    }
+  }
+  async function actionGlobalSaveState(pinia2) {
+    try {
+      saveAs(new Blob([JSON.stringify(pinia2.state.value)], {
+        type: "text/plain;charset=utf-8"
+      }), "pinia-state.json");
+    } catch (error) {
+      toastMessage(`Failed to export the state as JSON. Check the console for more details.`, "error");
+      console.error(error);
+    }
+  }
+  let fileInput;
+  function getFileOpener() {
+    if (!fileInput) {
+      fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = ".json";
+    }
+    function openFile() {
+      return new Promise((resolve, reject) => {
+        fileInput.onchange = async () => {
+          const files = fileInput.files;
+          if (!files)
+            return resolve(null);
+          const file = files.item(0);
+          if (!file)
+            return resolve(null);
+          return resolve({ text: await file.text(), file });
+        };
+        fileInput.oncancel = () => resolve(null);
+        fileInput.onerror = reject;
+        fileInput.click();
+      });
+    }
+    return openFile;
+  }
+  async function actionGlobalOpenStateFile(pinia2) {
+    try {
+      const open2 = await getFileOpener();
+      const result = await open2();
+      if (!result)
+        return;
+      const { text, file } = result;
+      pinia2.state.value = JSON.parse(text);
+      toastMessage(`Global state imported from "${file.name}".`);
+    } catch (error) {
+      toastMessage(`Failed to export the state as JSON. Check the console for more details.`, "error");
+      console.error(error);
+    }
+  }
+  function formatDisplay(display) {
+    return {
+      _custom: {
+        display
+      }
+    };
+  }
+  const PINIA_ROOT_LABEL = "\u{1F34D} Pinia (root)";
+  const PINIA_ROOT_ID = "_root";
+  function formatStoreForInspectorTree(store) {
+    return isPinia(store) ? {
+      id: PINIA_ROOT_ID,
+      label: PINIA_ROOT_LABEL
+    } : {
+      id: store.$id,
+      label: store.$id
+    };
+  }
+  function formatStoreForInspectorState(store) {
+    if (isPinia(store)) {
+      const storeNames = Array.from(store._s.keys());
+      const storeMap = store._s;
+      const state2 = {
+        state: storeNames.map((storeId) => ({
+          editable: true,
+          key: storeId,
+          value: store.state.value[storeId]
+        })),
+        getters: storeNames.filter((id) => storeMap.get(id)._getters).map((id) => {
+          const store2 = storeMap.get(id);
+          return {
+            editable: false,
+            key: id,
+            value: store2._getters.reduce((getters, key) => {
+              getters[key] = store2[key];
+              return getters;
+            }, {})
+          };
+        })
+      };
+      return state2;
+    }
+    const state = {
+      state: Object.keys(store.$state).map((key) => ({
+        editable: true,
+        key,
+        value: store.$state[key]
+      }))
+    };
+    if (store._getters && store._getters.length) {
+      state.getters = store._getters.map((getterName) => ({
+        editable: false,
+        key: getterName,
+        value: store[getterName]
+      }));
+    }
+    if (store._customProperties.size) {
+      state.customProperties = Array.from(store._customProperties).map((key) => ({
+        editable: true,
+        key,
+        value: store[key]
+      }));
+    }
+    return state;
+  }
+  function formatEventData(events) {
+    if (!events)
+      return {};
+    if (Array.isArray(events)) {
+      return events.reduce((data2, event) => {
+        data2.keys.push(event.key);
+        data2.operations.push(event.type);
+        data2.oldValue[event.key] = event.oldValue;
+        data2.newValue[event.key] = event.newValue;
+        return data2;
+      }, {
+        oldValue: {},
+        keys: [],
+        operations: [],
+        newValue: {}
+      });
+    } else {
+      return {
+        operation: formatDisplay(events.type),
+        key: formatDisplay(events.key),
+        oldValue: events.oldValue,
+        newValue: events.newValue
+      };
+    }
+  }
+  function formatMutationType(type) {
+    switch (type) {
+      case MutationType.direct:
+        return "mutation";
+      case MutationType.patchFunction:
+        return "$patch";
+      case MutationType.patchObject:
+        return "$patch";
+      default:
+        return "unknown";
+    }
+  }
+  let isTimelineActive = true;
+  const componentStateTypes = [];
+  const MUTATIONS_LAYER_ID = "pinia:mutations";
+  const INSPECTOR_ID = "pinia";
+  const getStoreType = (id) => "\u{1F34D} " + id;
+  function registerPiniaDevtools(app, pinia2) {
+    setupDevtoolsPlugin({
+      id: "dev.esm.pinia",
+      label: "Pinia \u{1F34D}",
+      logo: "https://pinia.vuejs.org/logo.svg",
+      packageName: "pinia",
+      homepage: "https://pinia.vuejs.org",
+      componentStateTypes,
+      app
+    }, (api) => {
+      if (typeof api.now !== "function") {
+        toastMessage("You seem to be using an outdated version of Vue Devtools. Are you still using the Beta release instead of the stable one? You can find the links at https://devtools.vuejs.org/guide/installation.html.");
+      }
+      api.addTimelineLayer({
+        id: MUTATIONS_LAYER_ID,
+        label: `Pinia \u{1F34D}`,
+        color: 15064968
+      });
+      api.addInspector({
+        id: INSPECTOR_ID,
+        label: "Pinia \u{1F34D}",
+        icon: "storage",
+        treeFilterPlaceholder: "Search stores",
+        actions: [
+          {
+            icon: "content_copy",
+            action: () => {
+              actionGlobalCopyState(pinia2);
+            },
+            tooltip: "Serialize and copy the state"
+          },
+          {
+            icon: "content_paste",
+            action: async () => {
+              await actionGlobalPasteState(pinia2);
+              api.sendInspectorTree(INSPECTOR_ID);
+              api.sendInspectorState(INSPECTOR_ID);
+            },
+            tooltip: "Replace the state with the content of your clipboard"
+          },
+          {
+            icon: "save",
+            action: () => {
+              actionGlobalSaveState(pinia2);
+            },
+            tooltip: "Save the state as a JSON file"
+          },
+          {
+            icon: "folder_open",
+            action: async () => {
+              await actionGlobalOpenStateFile(pinia2);
+              api.sendInspectorTree(INSPECTOR_ID);
+              api.sendInspectorState(INSPECTOR_ID);
+            },
+            tooltip: "Import the state from a JSON file"
+          }
+        ]
+      });
+      api.on.inspectComponent((payload, ctx) => {
+        const proxy = payload.componentInstance && payload.componentInstance.proxy;
+        if (proxy && proxy._pStores) {
+          const piniaStores = payload.componentInstance.proxy._pStores;
+          Object.values(piniaStores).forEach((store) => {
+            payload.instanceData.state.push({
+              type: getStoreType(store.$id),
+              key: "state",
+              editable: true,
+              value: store._isOptionsAPI ? {
+                _custom: {
+                  value: store.$state,
+                  actions: [
+                    {
+                      icon: "restore",
+                      tooltip: "Reset the state of this store",
+                      action: () => store.$reset()
+                    }
+                  ]
+                }
+              } : store.$state
+            });
+            if (store._getters && store._getters.length) {
+              payload.instanceData.state.push({
+                type: getStoreType(store.$id),
+                key: "getters",
+                editable: false,
+                value: store._getters.reduce((getters, key) => {
+                  try {
+                    getters[key] = store[key];
+                  } catch (error) {
+                    getters[key] = error;
+                  }
+                  return getters;
+                }, {})
+              });
+            }
+          });
+        }
+      });
+      api.on.getInspectorTree((payload) => {
+        if (payload.app === app && payload.inspectorId === INSPECTOR_ID) {
+          let stores = [pinia2];
+          stores = stores.concat(Array.from(pinia2._s.values()));
+          payload.rootNodes = (payload.filter ? stores.filter((store) => "$id" in store ? store.$id.toLowerCase().includes(payload.filter.toLowerCase()) : PINIA_ROOT_LABEL.toLowerCase().includes(payload.filter.toLowerCase())) : stores).map(formatStoreForInspectorTree);
+        }
+      });
+      api.on.getInspectorState((payload) => {
+        if (payload.app === app && payload.inspectorId === INSPECTOR_ID) {
+          const inspectedStore = payload.nodeId === PINIA_ROOT_ID ? pinia2 : pinia2._s.get(payload.nodeId);
+          if (!inspectedStore) {
+            return;
+          }
+          if (inspectedStore) {
+            payload.state = formatStoreForInspectorState(inspectedStore);
+          }
+        }
+      });
+      api.on.editInspectorState((payload, ctx) => {
+        if (payload.app === app && payload.inspectorId === INSPECTOR_ID) {
+          const inspectedStore = payload.nodeId === PINIA_ROOT_ID ? pinia2 : pinia2._s.get(payload.nodeId);
+          if (!inspectedStore) {
+            return toastMessage(`store "${payload.nodeId}" not found`, "error");
+          }
+          const { path } = payload;
+          if (!isPinia(inspectedStore)) {
+            if (path.length !== 1 || !inspectedStore._customProperties.has(path[0]) || path[0] in inspectedStore.$state) {
+              path.unshift("$state");
+            }
+          } else {
+            path.unshift("state");
+          }
+          isTimelineActive = false;
+          payload.set(inspectedStore, path, payload.state.value);
+          isTimelineActive = true;
+        }
+      });
+      api.on.editComponentState((payload) => {
+        if (payload.type.startsWith("\u{1F34D}")) {
+          const storeId = payload.type.replace(/^🍍\s*/, "");
+          const store = pinia2._s.get(storeId);
+          if (!store) {
+            return toastMessage(`store "${storeId}" not found`, "error");
+          }
+          const { path } = payload;
+          if (path[0] !== "state") {
+            return toastMessage(`Invalid path for store "${storeId}":
+${path}
+Only state can be modified.`);
+          }
+          path[0] = "$state";
+          isTimelineActive = false;
+          payload.set(store, path, payload.state.value);
+          isTimelineActive = true;
+        }
+      });
+    });
+  }
+  function addStoreToDevtools(app, store) {
+    if (!componentStateTypes.includes(getStoreType(store.$id))) {
+      componentStateTypes.push(getStoreType(store.$id));
+    }
+    setupDevtoolsPlugin({
+      id: "dev.esm.pinia",
+      label: "Pinia \u{1F34D}",
+      logo: "https://pinia.vuejs.org/logo.svg",
+      packageName: "pinia",
+      homepage: "https://pinia.vuejs.org",
+      componentStateTypes,
+      app,
+      settings: {
+        logStoreChanges: {
+          label: "Notify about new/deleted stores",
+          type: "boolean",
+          defaultValue: true
+        }
+      }
+    }, (api) => {
+      const now2 = typeof api.now === "function" ? api.now.bind(api) : Date.now;
+      store.$onAction(({ after, onError, name, args }) => {
+        const groupId = runningActionId++;
+        api.addTimelineEvent({
+          layerId: MUTATIONS_LAYER_ID,
+          event: {
+            time: now2(),
+            title: "\u{1F6EB} " + name,
+            subtitle: "start",
+            data: {
+              store: formatDisplay(store.$id),
+              action: formatDisplay(name),
+              args
+            },
+            groupId
+          }
+        });
+        after((result) => {
+          activeAction = void 0;
+          api.addTimelineEvent({
+            layerId: MUTATIONS_LAYER_ID,
+            event: {
+              time: now2(),
+              title: "\u{1F6EC} " + name,
+              subtitle: "end",
+              data: {
+                store: formatDisplay(store.$id),
+                action: formatDisplay(name),
+                args,
+                result
+              },
+              groupId
+            }
+          });
+        });
+        onError((error) => {
+          activeAction = void 0;
+          api.addTimelineEvent({
+            layerId: MUTATIONS_LAYER_ID,
+            event: {
+              time: now2(),
+              logType: "error",
+              title: "\u{1F4A5} " + name,
+              subtitle: "end",
+              data: {
+                store: formatDisplay(store.$id),
+                action: formatDisplay(name),
+                args,
+                error
+              },
+              groupId
+            }
+          });
+        });
+      }, true);
+      store._customProperties.forEach((name) => {
+        vue.watch(() => vue.unref(store[name]), (newValue, oldValue) => {
+          api.notifyComponentUpdate();
+          api.sendInspectorState(INSPECTOR_ID);
+          if (isTimelineActive) {
+            api.addTimelineEvent({
+              layerId: MUTATIONS_LAYER_ID,
+              event: {
+                time: now2(),
+                title: "Change",
+                subtitle: name,
+                data: {
+                  newValue,
+                  oldValue
+                },
+                groupId: activeAction
+              }
+            });
+          }
+        }, { deep: true });
+      });
+      store.$subscribe(({ events, type }, state) => {
+        api.notifyComponentUpdate();
+        api.sendInspectorState(INSPECTOR_ID);
+        if (!isTimelineActive)
+          return;
+        const eventData = {
+          time: now2(),
+          title: formatMutationType(type),
+          data: __spreadValues({
+            store: formatDisplay(store.$id)
+          }, formatEventData(events)),
+          groupId: activeAction
+        };
+        activeAction = void 0;
+        if (type === MutationType.patchFunction) {
+          eventData.subtitle = "\u2935\uFE0F";
+        } else if (type === MutationType.patchObject) {
+          eventData.subtitle = "\u{1F9E9}";
+        } else if (events && !Array.isArray(events)) {
+          eventData.subtitle = events.type;
+        }
+        if (events) {
+          eventData.data["rawEvent(s)"] = {
+            _custom: {
+              display: "DebuggerEvent",
+              type: "object",
+              tooltip: "raw DebuggerEvent[]",
+              value: events
+            }
+          };
+        }
+        api.addTimelineEvent({
+          layerId: MUTATIONS_LAYER_ID,
+          event: eventData
+        });
+      }, { detached: true, flush: "sync" });
+      const hotUpdate = store._hotUpdate;
+      store._hotUpdate = vue.markRaw((newStore) => {
+        hotUpdate(newStore);
+        api.addTimelineEvent({
+          layerId: MUTATIONS_LAYER_ID,
+          event: {
+            time: now2(),
+            title: "\u{1F525} " + store.$id,
+            subtitle: "HMR update",
+            data: {
+              store: formatDisplay(store.$id),
+              info: formatDisplay(`HMR update`)
+            }
+          }
+        });
+        api.notifyComponentUpdate();
+        api.sendInspectorTree(INSPECTOR_ID);
+        api.sendInspectorState(INSPECTOR_ID);
+      });
+      const { $dispose } = store;
+      store.$dispose = () => {
+        $dispose();
+        api.notifyComponentUpdate();
+        api.sendInspectorTree(INSPECTOR_ID);
+        api.sendInspectorState(INSPECTOR_ID);
+        api.getSettings().logStoreChanges && toastMessage(`Disposed "${store.$id}" store \u{1F5D1}`);
+      };
+      api.notifyComponentUpdate();
+      api.sendInspectorTree(INSPECTOR_ID);
+      api.sendInspectorState(INSPECTOR_ID);
+      api.getSettings().logStoreChanges && toastMessage(`"${store.$id}" store installed \u{1F195}`);
+    });
+  }
+  let runningActionId = 0;
+  let activeAction;
+  function patchActionForGrouping(store, actionNames) {
+    const actions = actionNames.reduce((storeActions, actionName) => {
+      storeActions[actionName] = vue.toRaw(store)[actionName];
+      return storeActions;
+    }, {});
+    for (const actionName in actions) {
+      store[actionName] = function() {
+        const _actionId = runningActionId;
+        const trackedStore = new Proxy(store, {
+          get(...args) {
+            activeAction = _actionId;
+            return Reflect.get(...args);
+          },
+          set(...args) {
+            activeAction = _actionId;
+            return Reflect.set(...args);
+          }
+        });
+        return actions[actionName].apply(trackedStore, arguments);
+      };
+    }
+  }
+  function devtoolsPlugin({ app, store, options }) {
+    if (store.$id.startsWith("__hot:")) {
+      return;
+    }
+    if (options.state) {
+      store._isOptionsAPI = true;
+    }
+    if (typeof options.state === "function") {
+      patchActionForGrouping(store, Object.keys(options.actions));
+      const originalHotUpdate = store._hotUpdate;
+      vue.toRaw(store)._hotUpdate = function(newStore) {
+        originalHotUpdate.apply(this, arguments);
+        patchActionForGrouping(store, Object.keys(newStore._hmrPayload.actions));
+      };
+    }
+    addStoreToDevtools(app, store);
+  }
+  function createPinia() {
+    const scope = vue.effectScope(true);
+    const state = scope.run(() => vue.ref({}));
+    let _p = [];
+    let toBeInstalled = [];
+    const pinia2 = vue.markRaw({
+      install(app) {
+        setActivePinia(pinia2);
+        {
+          pinia2._a = app;
+          app.provide(piniaSymbol, pinia2);
+          app.config.globalProperties.$pinia = pinia2;
+          if (IS_CLIENT) {
+            registerPiniaDevtools(app, pinia2);
+          }
+          toBeInstalled.forEach((plugin) => _p.push(plugin));
+          toBeInstalled = [];
+        }
+      },
+      use(plugin) {
+        if (!this._a && !isVue2) {
+          toBeInstalled.push(plugin);
+        } else {
+          _p.push(plugin);
+        }
+        return this;
+      },
+      _p,
+      _a: null,
+      _e: scope,
+      _s: /* @__PURE__ */ new Map(),
+      state
+    });
+    if (IS_CLIENT && true) {
+      pinia2.use(devtoolsPlugin);
+    }
+    return pinia2;
+  }
+  function patchObject(newState, oldState) {
+    for (const key in oldState) {
+      const subPatch = oldState[key];
+      if (!(key in newState)) {
+        continue;
+      }
+      const targetValue = newState[key];
+      if (isPlainObject(targetValue) && isPlainObject(subPatch) && !vue.isRef(subPatch) && !vue.isReactive(subPatch)) {
+        newState[key] = patchObject(targetValue, subPatch);
+      } else {
+        {
+          newState[key] = subPatch;
+        }
+      }
+    }
+    return newState;
+  }
+  const noop = () => {
   };
-  const _sfc_main$g = {
+  function addSubscription(subscriptions, callback, detached, onCleanup = noop) {
+    subscriptions.push(callback);
+    const removeSubscription = () => {
+      const idx = subscriptions.indexOf(callback);
+      if (idx > -1) {
+        subscriptions.splice(idx, 1);
+        onCleanup();
+      }
+    };
+    if (!detached && vue.getCurrentInstance()) {
+      vue.onUnmounted(removeSubscription);
+    }
+    return removeSubscription;
+  }
+  function triggerSubscriptions(subscriptions, ...args) {
+    subscriptions.slice().forEach((callback) => {
+      callback(...args);
+    });
+  }
+  function mergeReactiveObjects(target2, patchToApply) {
+    for (const key in patchToApply) {
+      if (!patchToApply.hasOwnProperty(key))
+        continue;
+      const subPatch = patchToApply[key];
+      const targetValue = target2[key];
+      if (isPlainObject(targetValue) && isPlainObject(subPatch) && target2.hasOwnProperty(key) && !vue.isRef(subPatch) && !vue.isReactive(subPatch)) {
+        target2[key] = mergeReactiveObjects(targetValue, subPatch);
+      } else {
+        target2[key] = subPatch;
+      }
+    }
+    return target2;
+  }
+  const skipHydrateSymbol = Symbol("pinia:skipHydration");
+  function shouldHydrate(obj) {
+    return !isPlainObject(obj) || !obj.hasOwnProperty(skipHydrateSymbol);
+  }
+  const { assign } = Object;
+  function isComputed(o) {
+    return !!(vue.isRef(o) && o.effect);
+  }
+  function createOptionsStore(id, options, pinia2, hot) {
+    const { state, actions, getters } = options;
+    const initialState = pinia2.state.value[id];
+    let store;
+    function setup() {
+      if (!initialState && !hot) {
+        {
+          pinia2.state.value[id] = state ? state() : {};
+        }
+      }
+      const localState = hot ? vue.toRefs(vue.ref(state ? state() : {}).value) : vue.toRefs(pinia2.state.value[id]);
+      return assign(localState, actions, Object.keys(getters || {}).reduce((computedGetters, name) => {
+        computedGetters[name] = vue.markRaw(vue.computed(() => {
+          setActivePinia(pinia2);
+          const store2 = pinia2._s.get(id);
+          return getters[name].call(store2, store2);
+        }));
+        return computedGetters;
+      }, {}));
+    }
+    store = createSetupStore(id, setup, options, pinia2, hot, true);
+    store.$reset = function $reset() {
+      const newState = state ? state() : {};
+      this.$patch(($state) => {
+        assign($state, newState);
+      });
+    };
+    return store;
+  }
+  function createSetupStore($id, setup, options = {}, pinia2, hot, isOptionsStore) {
+    let scope;
+    const optionsForPlugin = assign({ actions: {} }, options);
+    if (!pinia2._e.active) {
+      throw new Error("Pinia destroyed");
+    }
+    const $subscribeOptions = {
+      deep: true
+    };
+    {
+      $subscribeOptions.onTrigger = (event) => {
+        if (isListening) {
+          debuggerEvents = event;
+        } else if (isListening == false && !store._hotUpdating) {
+          if (Array.isArray(debuggerEvents)) {
+            debuggerEvents.push(event);
+          } else {
+            console.error("\u{1F34D} debuggerEvents should be an array. This is most likely an internal Pinia bug.");
+          }
+        }
+      };
+    }
+    let isListening;
+    let isSyncListening;
+    let subscriptions = vue.markRaw([]);
+    let actionSubscriptions = vue.markRaw([]);
+    let debuggerEvents;
+    const initialState = pinia2.state.value[$id];
+    if (!isOptionsStore && !initialState && !hot) {
+      {
+        pinia2.state.value[$id] = {};
+      }
+    }
+    const hotState = vue.ref({});
+    let activeListener;
+    function $patch(partialStateOrMutator) {
+      let subscriptionMutation;
+      isListening = isSyncListening = false;
+      {
+        debuggerEvents = [];
+      }
+      if (typeof partialStateOrMutator === "function") {
+        partialStateOrMutator(pinia2.state.value[$id]);
+        subscriptionMutation = {
+          type: MutationType.patchFunction,
+          storeId: $id,
+          events: debuggerEvents
+        };
+      } else {
+        mergeReactiveObjects(pinia2.state.value[$id], partialStateOrMutator);
+        subscriptionMutation = {
+          type: MutationType.patchObject,
+          payload: partialStateOrMutator,
+          storeId: $id,
+          events: debuggerEvents
+        };
+      }
+      const myListenerId = activeListener = Symbol();
+      vue.nextTick().then(() => {
+        if (activeListener === myListenerId) {
+          isListening = true;
+        }
+      });
+      isSyncListening = true;
+      triggerSubscriptions(subscriptions, subscriptionMutation, pinia2.state.value[$id]);
+    }
+    const $reset = () => {
+      throw new Error(`\u{1F34D}: Store "${$id}" is build using the setup syntax and does not implement $reset().`);
+    };
+    function $dispose() {
+      scope.stop();
+      subscriptions = [];
+      actionSubscriptions = [];
+      pinia2._s.delete($id);
+    }
+    function wrapAction(name, action) {
+      return function() {
+        setActivePinia(pinia2);
+        const args = Array.from(arguments);
+        const afterCallbackList = [];
+        const onErrorCallbackList = [];
+        function after(callback) {
+          afterCallbackList.push(callback);
+        }
+        function onError(callback) {
+          onErrorCallbackList.push(callback);
+        }
+        triggerSubscriptions(actionSubscriptions, {
+          args,
+          name,
+          store,
+          after,
+          onError
+        });
+        let ret;
+        try {
+          ret = action.apply(this && this.$id === $id ? this : store, args);
+        } catch (error) {
+          triggerSubscriptions(onErrorCallbackList, error);
+          throw error;
+        }
+        if (ret instanceof Promise) {
+          return ret.then((value) => {
+            triggerSubscriptions(afterCallbackList, value);
+            return value;
+          }).catch((error) => {
+            triggerSubscriptions(onErrorCallbackList, error);
+            return Promise.reject(error);
+          });
+        }
+        triggerSubscriptions(afterCallbackList, ret);
+        return ret;
+      };
+    }
+    const _hmrPayload = /* @__PURE__ */ vue.markRaw({
+      actions: {},
+      getters: {},
+      state: [],
+      hotState
+    });
+    const partialStore = {
+      _p: pinia2,
+      $id,
+      $onAction: addSubscription.bind(null, actionSubscriptions),
+      $patch,
+      $reset,
+      $subscribe(callback, options2 = {}) {
+        const removeSubscription = addSubscription(subscriptions, callback, options2.detached, () => stopWatcher());
+        const stopWatcher = scope.run(() => vue.watch(() => pinia2.state.value[$id], (state) => {
+          if (options2.flush === "sync" ? isSyncListening : isListening) {
+            callback({
+              storeId: $id,
+              type: MutationType.direct,
+              events: debuggerEvents
+            }, state);
+          }
+        }, assign({}, $subscribeOptions, options2)));
+        return removeSubscription;
+      },
+      $dispose
+    };
+    const store = vue.reactive(assign(IS_CLIENT ? {
+      _customProperties: vue.markRaw(/* @__PURE__ */ new Set()),
+      _hmrPayload
+    } : {}, partialStore));
+    pinia2._s.set($id, store);
+    const setupStore = pinia2._e.run(() => {
+      scope = vue.effectScope();
+      return scope.run(() => setup());
+    });
+    for (const key in setupStore) {
+      const prop = setupStore[key];
+      if (vue.isRef(prop) && !isComputed(prop) || vue.isReactive(prop)) {
+        if (hot) {
+          set(hotState.value, key, vue.toRef(setupStore, key));
+        } else if (!isOptionsStore) {
+          if (initialState && shouldHydrate(prop)) {
+            if (vue.isRef(prop)) {
+              prop.value = initialState[key];
+            } else {
+              mergeReactiveObjects(prop, initialState[key]);
+            }
+          }
+          {
+            pinia2.state.value[$id][key] = prop;
+          }
+        }
+        {
+          _hmrPayload.state.push(key);
+        }
+      } else if (typeof prop === "function") {
+        const actionValue = hot ? prop : wrapAction(key, prop);
+        {
+          setupStore[key] = actionValue;
+        }
+        {
+          _hmrPayload.actions[key] = prop;
+        }
+        optionsForPlugin.actions[key] = prop;
+      } else {
+        if (isComputed(prop)) {
+          _hmrPayload.getters[key] = isOptionsStore ? options.getters[key] : prop;
+          if (IS_CLIENT) {
+            const getters = setupStore._getters || (setupStore._getters = vue.markRaw([]));
+            getters.push(key);
+          }
+        }
+      }
+    }
+    {
+      assign(store, setupStore);
+      assign(vue.toRaw(store), setupStore);
+    }
+    Object.defineProperty(store, "$state", {
+      get: () => hot ? hotState.value : pinia2.state.value[$id],
+      set: (state) => {
+        if (hot) {
+          throw new Error("cannot set hotState");
+        }
+        $patch(($state) => {
+          assign($state, state);
+        });
+      }
+    });
+    {
+      store._hotUpdate = vue.markRaw((newStore) => {
+        store._hotUpdating = true;
+        newStore._hmrPayload.state.forEach((stateKey) => {
+          if (stateKey in store.$state) {
+            const newStateTarget = newStore.$state[stateKey];
+            const oldStateSource = store.$state[stateKey];
+            if (typeof newStateTarget === "object" && isPlainObject(newStateTarget) && isPlainObject(oldStateSource)) {
+              patchObject(newStateTarget, oldStateSource);
+            } else {
+              newStore.$state[stateKey] = oldStateSource;
+            }
+          }
+          set(store, stateKey, vue.toRef(newStore.$state, stateKey));
+        });
+        Object.keys(store.$state).forEach((stateKey) => {
+          if (!(stateKey in newStore.$state)) {
+            del(store, stateKey);
+          }
+        });
+        isListening = false;
+        isSyncListening = false;
+        pinia2.state.value[$id] = vue.toRef(newStore._hmrPayload, "hotState");
+        isSyncListening = true;
+        vue.nextTick().then(() => {
+          isListening = true;
+        });
+        for (const actionName in newStore._hmrPayload.actions) {
+          const action = newStore[actionName];
+          set(store, actionName, wrapAction(actionName, action));
+        }
+        for (const getterName in newStore._hmrPayload.getters) {
+          const getter = newStore._hmrPayload.getters[getterName];
+          const getterValue = isOptionsStore ? vue.computed(() => {
+            setActivePinia(pinia2);
+            return getter.call(store, store);
+          }) : getter;
+          set(store, getterName, getterValue);
+        }
+        Object.keys(store._hmrPayload.getters).forEach((key) => {
+          if (!(key in newStore._hmrPayload.getters)) {
+            del(store, key);
+          }
+        });
+        Object.keys(store._hmrPayload.actions).forEach((key) => {
+          if (!(key in newStore._hmrPayload.actions)) {
+            del(store, key);
+          }
+        });
+        store._hmrPayload = newStore._hmrPayload;
+        store._getters = newStore._getters;
+        store._hotUpdating = false;
+      });
+      const nonEnumerable = {
+        writable: true,
+        configurable: true,
+        enumerable: false
+      };
+      if (IS_CLIENT) {
+        ["_p", "_hmrPayload", "_getters", "_customProperties"].forEach((p) => {
+          Object.defineProperty(store, p, __spreadValues({
+            value: store[p]
+          }, nonEnumerable));
+        });
+      }
+    }
+    pinia2._p.forEach((extender) => {
+      if (IS_CLIENT) {
+        const extensions = scope.run(() => extender({
+          store,
+          app: pinia2._a,
+          pinia: pinia2,
+          options: optionsForPlugin
+        }));
+        Object.keys(extensions || {}).forEach((key) => store._customProperties.add(key));
+        assign(store, extensions);
+      } else {
+        assign(store, scope.run(() => extender({
+          store,
+          app: pinia2._a,
+          pinia: pinia2,
+          options: optionsForPlugin
+        })));
+      }
+    });
+    if (store.$state && typeof store.$state === "object" && typeof store.$state.constructor === "function" && !store.$state.constructor.toString().includes("[native code]")) {
+      console.warn(`[\u{1F34D}]: The "state" must be a plain object. It cannot be
+	state: () => new MyClass()
+Found in store "${store.$id}".`);
+    }
+    if (initialState && isOptionsStore && options.hydrate) {
+      options.hydrate(store.$state, initialState);
+    }
+    isListening = true;
+    isSyncListening = true;
+    return store;
+  }
+  function defineStore(idOrOptions, setup, setupOptions) {
+    let id;
+    let options;
+    const isSetupStore = typeof setup === "function";
+    if (typeof idOrOptions === "string") {
+      id = idOrOptions;
+      options = isSetupStore ? setupOptions : setup;
+    } else {
+      options = idOrOptions;
+      id = idOrOptions.id;
+    }
+    function useStore(pinia2, hot) {
+      const currentInstance = vue.getCurrentInstance();
+      pinia2 = pinia2 || currentInstance && vue.inject(piniaSymbol);
+      if (pinia2)
+        setActivePinia(pinia2);
+      if (!activePinia) {
+        throw new Error(`[\u{1F34D}]: getActivePinia was called with no active Pinia. Did you forget to install pinia?
+	const pinia = createPinia()
+	app.use(pinia)
+This will fail in production.`);
+      }
+      pinia2 = activePinia;
+      if (!pinia2._s.has(id)) {
+        if (isSetupStore) {
+          createSetupStore(id, setup, options, pinia2);
+        } else {
+          createOptionsStore(id, options, pinia2);
+        }
+        {
+          useStore._pinia = pinia2;
+        }
+      }
+      const store = pinia2._s.get(id);
+      if (hot) {
+        const hotId = "__hot:" + id;
+        const newStore = isSetupStore ? createSetupStore(hotId, setup, options, pinia2, true) : createOptionsStore(hotId, assign({}, options), pinia2, true);
+        hot._hotUpdate(newStore);
+        delete pinia2.state.value[hotId];
+        pinia2._s.delete(hotId);
+      }
+      if (IS_CLIENT && currentInstance && currentInstance.proxy && !hot) {
+        const vm = currentInstance.proxy;
+        const cache = "_pStores" in vm ? vm._pStores : vm._pStores = {};
+        cache[id] = store;
+      }
+      return store;
+    }
+    useStore.$id = id;
+    return useStore;
+  }
+  function mapState(useStore, keysOrMapper) {
+    return Array.isArray(keysOrMapper) ? keysOrMapper.reduce((reduced, key) => {
+      reduced[key] = function() {
+        return useStore(this.$pinia)[key];
+      };
+      return reduced;
+    }, {}) : Object.keys(keysOrMapper).reduce((reduced, key) => {
+      reduced[key] = function() {
+        const store = useStore(this.$pinia);
+        const storeKey = keysOrMapper[key];
+        return typeof storeKey === "function" ? storeKey.call(this, store) : store[storeKey];
+      };
+      return reduced;
+    }, {});
+  }
+  function mapWritableState(useStore, keysOrMapper) {
+    return Array.isArray(keysOrMapper) ? keysOrMapper.reduce((reduced, key) => {
+      reduced[key] = {
+        get() {
+          return useStore(this.$pinia)[key];
+        },
+        set(value) {
+          return useStore(this.$pinia)[key] = value;
+        }
+      };
+      return reduced;
+    }, {}) : Object.keys(keysOrMapper).reduce((reduced, key) => {
+      reduced[key] = {
+        get() {
+          return useStore(this.$pinia)[keysOrMapper[key]];
+        },
+        set(value) {
+          return useStore(this.$pinia)[keysOrMapper[key]] = value;
+        }
+      };
+      return reduced;
+    }, {});
+  }
+  const useDeviceStore = defineStore("device", () => {
+    function setDeivce(env) {
+      device.value = env;
+    }
+    const device = vue.ref("");
+    const statusBarHeight = vue.ref(0);
+    const fixedTop = vue.computed(() => statusBarHeight.value * 2);
+    return {
+      setDeivce,
+      device,
+      statusBarHeight,
+      fixedTop
+    };
+  });
+  var _export_sfc = (sfc, props) => {
+    const target2 = sfc.__vccOpts || sfc;
+    for (const [key, val] of props) {
+      target2[key] = val;
+    }
+    return target2;
+  };
+  const _sfc_main$r = {
+    name: "yx-common-wrapper",
+    props: {
+      bg: {
+        type: String,
+        default: "common"
+      }
+    },
+    mounted() {
+    },
+    data() {
+      return {};
+    },
+    methods: {},
+    computed: __spreadProps(__spreadValues({}, mapState(useDeviceStore, ["fixedTop"])), {
+      bgColor() {
+        switch (this.bg) {
+          case "common":
+            return "bg-common";
+          case "white":
+            return "bg-white";
+          default:
+            formatAppLog("log", "at components/yx-common-wrapper.vue:37", "\u6CA1\u6709\u5339\u914D\u5230\u6837\u5F0F");
+            break;
+        }
+      }
+    })
+  };
+  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", {
+      class: vue.normalizeClass(["bg-common fill-screen font-sm position-fixed", $options.bgColor]),
+      style: vue.normalizeStyle(`top:${_ctx.fixedTop}rpx;`)
+    }, [
+      vue.renderSlot(_ctx.$slots, "default")
+    ], 6);
+  }
+  var YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-common-wrapper.vue"]]);
+  const _sfc_main$q = {
     name: "yx-popup",
     emits: ["hide", "action"],
     props: {
@@ -95,6 +1542,14 @@ if (uni.restoreGlobal) {
         type: Boolean,
         default: false
       },
+      isChat: {
+        type: Boolean,
+        default: false
+      },
+      isCustom: {
+        type: Boolean,
+        default: false
+      },
       popHeight: {
         type: Number
       },
@@ -109,18 +1564,25 @@ if (uni.restoreGlobal) {
     },
     methods: {
       handleReactive(item) {
-        formatAppLog("log", "at components/yx-popup.vue:86", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
+        formatAppLog("log", "at components/yx-popup.vue:100", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
         this.$emit("action", item.event);
         this.$emit("hide");
       },
       hide() {
-        formatAppLog("log", "at components/yx-popup.vue:92", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
+        formatAppLog("log", "at components/yx-popup.vue:106", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
         this.$emit("hide");
       }
     },
     computed: {
       position() {
-        return !this.isBottom ? `left:${this.popPosittion.x}px;top:${this.popPosittion.y}px` : `left:${this.popPosittion.x}px;bottom:${this.popPosittion.y}px`;
+        if (this.isBottom) {
+          return `left:${this.popPosittion.x}rpx;bottom:${this.popPosittion.y}rpx`;
+        }
+        if (this.isChat) {
+          this.popPosittion.x *= 2;
+          this.popPosittion.y *= 2;
+        }
+        return `left:${this.popPosittion.x}rpx;top:${this.popPosittion.y}rpx`;
       },
       styleCustom() {
         let res = "";
@@ -133,14 +1595,14 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
-        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex flex-column position-fixed rounded font-md"]),
+        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex position-fixed rounded font-md"]),
         style: vue.normalizeStyle($props.show ? `display:block;${$options.position}` : `display:none;${$options.position};`)
       }, [
-        vue.createCommentVNode(" \u666E\u901A\u529F\u80FD\u6846 "),
-        !$props.isBottom ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+        vue.createCommentVNode(" \u666E\u901A\u529F\u80FD\u63D0\u793A\u6846 "),
+        $props.isChat ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
           (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.popItem, (item, i2) => {
             return vue.openBlock(), vue.createElementBlock("view", {
               onClick: ($event) => $options.handleReactive(item),
@@ -167,18 +1629,21 @@ if (uni.restoreGlobal) {
         }, [
           vue.renderSlot(_ctx.$slots, "util"),
           vue.renderSlot(_ctx.$slots, "emo")
-        ], 4)) : vue.createCommentVNode("v-if", true)
+        ], 4)) : vue.createCommentVNode("v-if", true),
+        vue.createElementVNode("view", null, [
+          vue.renderSlot(_ctx.$slots, "custom")
+        ])
       ], 6),
       vue.createElementVNode("view", {
         onClick: _cache[0] || (_cache[0] = (...args) => $options.hide && $options.hide(...args)),
         style: vue.normalizeStyle([$props.show ? "display:block" : "display:none", { "left": "0", "top": "0" }]),
-        id: "mask",
-        class: "fill-screen position-absolute"
-      }, null, 4)
+        class: vue.normalizeClass([$props.isCustom ? "bg-dark lucency-5" : "", "fill-screen position-absolute"]),
+        id: "mask"
+      }, null, 6)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
-  const _sfc_main$f = {
+  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
+  const _sfc_main$p = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
     props: {
@@ -193,7 +1658,7 @@ if (uni.restoreGlobal) {
       if (!this.isSelf) {
         this.initPopup();
       }
-      formatAppLog("log", "at components/yx-tool-bar.vue:32", "@tool", this);
+      formatAppLog("log", "at components/yx-tool-bar.vue:37", "@tool", this);
     },
     data() {
       return {
@@ -242,21 +1707,23 @@ if (uni.restoreGlobal) {
         this.popShow = true;
       },
       handleClick() {
-        formatAppLog("log", "at components/yx-tool-bar.vue:83", "@clickcc", this);
+        formatAppLog("log", "at components/yx-tool-bar.vue:88", "@clickcc", this);
         if (this.isSelf) {
           this.$emit("clickNav");
         } else {
           this.showPopup();
         }
       }
-    }
+    },
+    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_popup = vue.resolveComponent("yx-popup");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+      vue.createCommentVNode(' <view class="fixed-top flex justify-between p-2 align-center pr-4 " :style="`top:${fixedTop}rpx`" style="background-color: #efefeb;"> '),
       vue.createElementVNode("view", {
         class: "fixed-top flex justify-between p-2 align-center pr-4",
-        style: { "background-color": "#efefeb" }
+        style: vue.normalizeStyle([`top:${_ctx.fixedTop}rpx`, { "background-color": "#efefeb" }])
       }, [
         vue.createElementVNode("view", { class: "font-lg" }, vue.toDisplayString($props.title), 1),
         vue.createElementVNode("view", null, [
@@ -266,7 +1733,7 @@ if (uni.restoreGlobal) {
             onClick: _cache[0] || (_cache[0] = (...args) => $options.handleClick && $options.handleClick(...args))
           })
         ])
-      ]),
+      ], 4),
       vue.createCommentVNode(' <view style="margin-top: 100rpx;"></view> '),
       !$props.isSelf ? (vue.openBlock(), vue.createBlock(_component_yx_popup, {
         key: 0,
@@ -275,10 +1742,12 @@ if (uni.restoreGlobal) {
         show: $data.popShow,
         isDark: true,
         onHide: _cache[1] || (_cache[1] = ($event) => $data.popShow = false)
-      }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true)
+      }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true),
+      vue.createCommentVNode(" \u5360\u4F4D\u5899 "),
+      vue.createCommentVNode(' <view style="margin-top: 100rpx;"> </view> ')
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
+  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -489,7 +1958,7 @@ if (uni.restoreGlobal) {
     });
   })(dayjs_min);
   var dayjs = dayjs_min.exports;
-  const _sfc_main$e = {
+  const _sfc_main$o = {
     name: "yx-badge",
     props: {
       messageCount: {
@@ -506,14 +1975,14 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       id: "badge",
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
-  const _sfc_main$d = {
+  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
+  const _sfc_main$n = {
     name: "chat-item",
     components: { YxBadge },
     props: {
@@ -532,7 +2001,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_badge = vue.resolveComponent("yx-badge");
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-2",
@@ -566,7 +2035,7 @@ if (uni.restoreGlobal) {
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
+  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
   var userList = [
     {
       id: 1,
@@ -588,16 +2057,16 @@ if (uni.restoreGlobal) {
     },
     {
       id: 3,
-      image_src: "/static/logo.png",
+      image_src: "/static/images/extends/voice.png",
       messagge_count: 1,
-      user_name: "\u4E4C\u6765",
+      user_name: "\u4E4C\u67653333332222222111133",
       user_message: "\u4E4C\u62C9",
       message_time: Date.now() - 15e4,
       is_top: false
     },
     {
       id: 4,
-      image_src: "/static/logo1.png",
+      image_src: "/static/images/extends/star.png",
       messagge_count: 0,
       user_name: "\u8389\u5A1C",
       user_message: "\u6211\u6765\u8FA3",
@@ -606,7 +2075,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 5,
-      image_src: "/static/logo.png",
+      image_src: "/static/images/extends/man.png",
       messagge_count: 1,
       user_name: "\u963F\u82B3",
       user_message: "\u4F60\u597D\uFF0C\u6211\u54E6\u662F\u963F\u82B3",
@@ -615,7 +2084,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 6,
-      image_src: "/static/logo1.png",
+      image_src: "/static/images/extends/location.png",
       messagge_count: 0,
       user_name: "\u73CD\u59AE\u7279",
       user_message: "\u8D77\u98DE",
@@ -624,7 +2093,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 7,
-      image_src: "/static/logo.png",
+      image_src: "/static/images/extends/hongbao.png",
       messagge_count: 1,
       user_name: "\u874E\u5B50\u83B1\u83B1",
       user_message: "\u6211\u4F1A\u53D8\u8EAB",
@@ -633,7 +2102,7 @@ if (uni.restoreGlobal) {
     },
     {
       id: 8,
-      image_src: "/static/logo1.png",
+      image_src: "/static/images/extends/camera.png",
       messagge_count: 0,
       user_name: "\u708E\u9F99\u94E0\u7532",
       user_message: "\u708E\u9F99\u4E4B\u529B",
@@ -641,13 +2110,15 @@ if (uni.restoreGlobal) {
       is_top: false
     }
   ];
-  const _sfc_main$c = {
+  const _sfc_main$m = {
     components: {
       YxToolBar,
       chatItem,
-      YxPopup
+      YxPopup,
+      YxCommonWrapper
     },
     mounted() {
+      this.userTopList = this.userList.filter((user) => user.is_top);
     },
     data() {
       return {
@@ -685,7 +2156,7 @@ if (uni.restoreGlobal) {
           this.popShow = true;
           this.popIsDark = false;
           this.curUser = user;
-          formatAppLog("log", "at pages/tabbar/chat/chat.vue:100", "@user", user);
+          formatAppLog("log", "at pages/tabbar/chat/chat.vue:102", "@user", user);
           this.popData = [
             {
               id: 1,
@@ -728,7 +2199,7 @@ if (uni.restoreGlobal) {
             });
             return;
           default:
-            formatAppLog("log", "at pages/tabbar/chat/chat.vue:145", "\u9519\u8BEF\u5F97\u4E8B\u4EF6\u8C03\u7528");
+            formatAppLog("log", "at pages/tabbar/chat/chat.vue:147", "\u9519\u8BEF\u5F97\u4E8B\u4EF6\u8C03\u7528");
         }
       },
       clickNav() {
@@ -738,7 +2209,7 @@ if (uni.restoreGlobal) {
         this.popPosition = { x: maxX - 160, y: 60 };
         this.popIsDark = true;
         this.popShow = true;
-        formatAppLog("log", "at pages/tabbar/chat/chat.vue:156", "@clickNav");
+        formatAppLog("log", "at pages/tabbar/chat/chat.vue:158", "@clickNav");
         this.popData = [
           {
             id: 1,
@@ -768,67 +2239,72 @@ if (uni.restoreGlobal) {
         ];
       }
     },
-    computed: {
+    computed: __spreadValues({
       userCount() {
         return this.userList.length;
       }
-    }
+    }, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_chat_item = vue.resolveComponent("chat-item");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
-    return vue.openBlock(), vue.createElementBlock("view", null, [
-      vue.createVNode(_component_yx_tool_bar, {
-        onClickNav: $options.clickNav,
-        title: `\u5FAE\u4FE1(${$options.userCount})`,
-        isSelf: ""
-      }, null, 8, ["onClickNav", "title"]),
-      vue.createCommentVNode(' <yx-tool-bar  :title="`\u5FAE\u4FE1(${userCount})`"></yx-tool-bar> '),
-      vue.createCommentVNode(" \u7F6E\u9876\u804A\u5929 "),
-      vue.createElementVNode("scroll-view", {
-        "scroll-y": "true",
-        class: "position-fixed",
-        style: { "top": "100rpx", "bottom": "100rpx" }
-      }, [
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTopList, (user) => {
-          return vue.openBlock(), vue.createBlock(_component_chat_item, {
-            key: user.id,
-            user,
-            onClick: ($event) => $options.goChat(user),
-            onTouchstart: (e) => $options.handleTouch(user, e),
-            onTouchend: (e) => $options.handleLeave(user, e),
-            class: "bg-common",
-            "hover-class": "bg-dark"
-          }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"]);
-        }), 128)),
-        vue.createCommentVNode(" \u5E38\u89C4\u804A\u5929 "),
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userList, (user) => {
-          return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
-            key: user.id
-          }, [
-            !user.is_top ? (vue.openBlock(), vue.createBlock(_component_chat_item, {
-              key: 0,
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, { bg: "white" }, {
+      default: vue.withCtx(() => [
+        vue.createVNode(_component_yx_tool_bar, {
+          onClickNav: $options.clickNav,
+          title: `\u5FAE\u4FE1(${$options.userCount})`,
+          isSelf: ""
+        }, null, 8, ["onClickNav", "title"]),
+        vue.createCommentVNode(' <yx-tool-bar  :title="`\u5FAE\u4FE1(${userCount})`"></yx-tool-bar> '),
+        vue.createCommentVNode(" \u7F6E\u9876\u804A\u5929 "),
+        vue.createElementVNode("scroll-view", {
+          "scroll-y": "true",
+          class: "position-fixed font-md",
+          style: vue.normalizeStyle(`top:${_ctx.fixedTop + 100}rpx;bottom:100rpx`)
+        }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTopList, (user) => {
+            return vue.openBlock(), vue.createBlock(_component_chat_item, {
+              key: user.id,
               user,
               onClick: ($event) => $options.goChat(user),
               onTouchstart: (e) => $options.handleTouch(user, e),
-              onTouchend: (e) => $options.handleLeave(user, e)
-            }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"])) : vue.createCommentVNode("v-if", true)
-          ], 64);
-        }), 128))
+              onTouchend: (e) => $options.handleLeave(user, e),
+              class: "bg-common",
+              "hover-class": "bg-dark"
+            }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"]);
+          }), 128)),
+          vue.createCommentVNode(" \u5E38\u89C4\u804A\u5929 "),
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userList, (user) => {
+            return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
+              key: user.id
+            }, [
+              !user.is_top ? (vue.openBlock(), vue.createBlock(_component_chat_item, {
+                key: 0,
+                user,
+                onClick: ($event) => $options.goChat(user),
+                onTouchstart: (e) => $options.handleTouch(user, e),
+                onTouchend: (e) => $options.handleLeave(user, e)
+              }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"])) : vue.createCommentVNode("v-if", true)
+            ], 64);
+          }), 128))
+        ], 4),
+        vue.createVNode(_component_yx_popup, {
+          show: $data.popShow,
+          popPosittion: $data.popPosition,
+          isDark: $data.popIsDark,
+          isChat: true,
+          popItem: $data.popData,
+          onAction: $options.popAction,
+          onHide: $options.handlePopHide
+        }, null, 8, ["show", "popPosittion", "isDark", "popItem", "onAction", "onHide"])
       ]),
-      vue.createVNode(_component_yx_popup, {
-        show: $data.popShow,
-        popPosittion: $data.popPosition,
-        isDark: $data.popIsDark,
-        popItem: $data.popData,
-        onAction: $options.popAction,
-        onHide: $options.handlePopHide
-      }, null, 8, ["show", "popPosittion", "isDark", "popItem", "onAction", "onHide"])
-    ]);
+      _: 1
+    });
   }
-  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
-  const _sfc_main$b = {
+  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$l], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
+  const _sfc_main$l = {
     name: "yx-list",
     props: {
       item: {
@@ -850,18 +2326,22 @@ if (uni.restoreGlobal) {
       return {};
     }
   };
-  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
-      class: "flex justify-between align-center pl-2",
+      class: "flex justify-between align-center pl-2 border-bottom font-md",
       style: { "height": "100rpx" }
     }, [
+      vue.createElementVNode("view", null, [
+        vue.renderSlot(_ctx.$slots, "prefix")
+      ]),
       $props.icon ? (vue.openBlock(), vue.createElementBlock("text", {
         key: 0,
         class: vue.normalizeClass(`iconfont font-md ${$props.icon}`)
       }, null, 2)) : vue.createCommentVNode("v-if", true),
       $props.img ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 1,
-        style: { "width": "60rpx", "height": "60rpx" }
+        class: "rounded overflow-hidden",
+        style: { "width": "75rpx", "height": "75rpx" }
       }, [
         vue.createElementVNode("image", {
           src: $props.img,
@@ -869,30 +2349,29 @@ if (uni.restoreGlobal) {
           mode: "aspectFill"
         }, null, 8, ["src"])
       ])) : vue.createCommentVNode("v-if", true),
-      vue.createElementVNode("view", {
-        class: "flex-1 border-bottom ml-2",
-        style: { "line-height": "70rpx", "font-size": "26rpx" }
-      }, vue.toDisplayString($props.title), 1),
-      vue.renderSlot(_ctx.$slots, "suffix"),
+      vue.createElementVNode("view", { class: "flex-1 ml-2" }, vue.toDisplayString($props.title), 1),
+      vue.createElementVNode("view", { style: { "font-weight": "300" } }, [
+        vue.renderSlot(_ctx.$slots, "suffix")
+      ]),
       $props.isCell ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 2,
         class: "iconfont icon-right mr-2"
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
-  const _sfc_main$a = {
+  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$k], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
+  const _sfc_main$k = {
     name: "yx-divider",
     data() {
       return {};
     }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
-  const _sfc_main$9 = {
-    components: { YxList, YxDivider },
+  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
+  const _sfc_main$j = {
+    components: { YxList, YxDivider, YxCommonWrapper },
     data() {
       return {
         data: [
@@ -901,7 +2380,8 @@ if (uni.restoreGlobal) {
               id: 0,
               title: "\u670B\u53CB\u5708",
               icon: "icon-iconfontzhizuobiaozhunbduan36",
-              isCell: true
+              isCell: true,
+              event: "circle"
             },
             {
               id: 12,
@@ -950,34 +2430,40 @@ if (uni.restoreGlobal) {
     },
     methods: {}
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
-    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group) => {
-        return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
-            return vue.openBlock(), vue.createBlock(_component_yx_list, {
-              style: { "background-color": "white" },
-              key: d.id,
-              "hover-class": "main-bg-hover-color",
-              title: d.title,
-              isCell: d.isCell,
-              icon: d.icon
-            }, {
-              suffix: vue.withCtx(() => [
-                vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
-              ]),
-              _: 2
-            }, 1032, ["title", "isCell", "icon"]);
-          }), 128)),
-          vue.createVNode(_component_yx_divider)
-        ], 64);
-      }), 256))
-    ]);
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
+      default: vue.withCtx(() => [
+        vue.createElementVNode("view", { class: "page" }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group, i2) => {
+            return vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: i2 }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
+                return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                  style: { "background-color": "white" },
+                  key: d.id,
+                  "hover-class": "main-bg-hover-color",
+                  title: d.title,
+                  isCell: d.isCell,
+                  icon: d.icon
+                }, {
+                  suffix: vue.withCtx(() => [
+                    vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
+                  ]),
+                  _: 2
+                }, 1032, ["title", "isCell", "icon"]);
+              }), 128)),
+              vue.createVNode(_component_yx_divider)
+            ], 64);
+          }), 128))
+        ])
+      ]),
+      _: 1
+    });
   }
-  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
-  const _sfc_main$8 = {
+  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$i], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
+  const _sfc_main$i = {
     name: "yx-card",
     props: {
       img: [String],
@@ -988,7 +2474,7 @@ if (uni.restoreGlobal) {
       return {};
     }
   };
-  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-3",
       "hover-class": "bg-common",
@@ -1001,16 +2487,19 @@ if (uni.restoreGlobal) {
       }, null, 8, ["src"]),
       vue.createElementVNode("view", { class: "flex flex-1 ml-2 flex-column justify-between" }, [
         vue.createElementVNode("view", { class: "text-ellipsis font-md text-dark text-primary" }, vue.toDisplayString($props.title), 1),
-        vue.createElementVNode("view", { class: "text-ellipsis font-sm text-common mb-1" }, vue.toDisplayString($props.desc), 1)
+        vue.createElementVNode("view", { class: "text-ellipsis font-sm text-common mb-1" }, [
+          vue.createTextVNode(vue.toDisplayString($props.desc) + " ", 1),
+          vue.renderSlot(_ctx.$slots, "desc")
+        ])
       ]),
       vue.createElementVNode("view", { class: "font-sm text-common" }, [
         vue.renderSlot(_ctx.$slots, "right")
       ])
     ]);
   }
-  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
-  const _sfc_main$7 = {
-    components: { YxCard, YxDivider, YxList },
+  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
+  const _sfc_main$h = {
+    components: { YxCard, YxDivider, YxList, YxCommonWrapper },
     data() {
       return {
         data: [
@@ -1058,143 +2547,206 @@ if (uni.restoreGlobal) {
     },
     methods: {}
   };
-  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
     const _component_yx_list = vue.resolveComponent("yx-list");
-    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
-      vue.createElementVNode("view", { style: { "width": "100%", "height": "150rpx", "background-color": "white" } }, [
-        vue.createElementVNode("text", {
-          class: "iconfont icon-help position-fixed",
-          style: { "right": "20rpx", "top": "30rpx" }
-        })
-      ]),
-      vue.createVNode(_component_yx_card, {
-        img: "/static/logo.png",
-        title: "\u695A\u4E91",
-        desc: "\u6D4B\u8BD5\u6570\u636E"
-      }, {
-        right: vue.withCtx(() => [
-          vue.createElementVNode("view", { class: "mt-3" }, [
-            vue.createElementVNode("text", { class: "iconfont icon-saoyisao font-lg" }),
-            vue.createElementVNode("text", { class: "iconfont icon-right font-lg" })
-          ])
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
+      default: vue.withCtx(() => [
+        vue.createElementVNode("view", {
+          class: "position-relative",
+          style: { "width": "100%", "height": "150rpx", "background-color": "white" }
+        }, [
+          vue.createElementVNode("text", {
+            class: "iconfont icon-help position-absolute",
+            style: { "right": "20rpx", "top": "30rpx" }
+          })
         ]),
-        _: 1
-      }),
-      vue.createVNode(_component_yx_divider),
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group) => {
-        return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
-            return vue.openBlock(), vue.createBlock(_component_yx_list, {
-              key: d.id,
-              "hover-class": "bg-dark",
-              title: d.title,
-              isCell: d.isCell,
-              icon: d.icon
-            }, {
-              suffix: vue.withCtx(() => [
-                vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
-              ]),
-              _: 2
-            }, 1032, ["title", "isCell", "icon"]);
-          }), 128)),
-          vue.createVNode(_component_yx_divider)
-        ], 64);
-      }), 256))
-    ]);
+        vue.createVNode(_component_yx_card, {
+          img: "/static/logo.png",
+          class: "bg-white",
+          title: "\u695A\u4E91",
+          desc: "\u6D4B\u8BD5\u6570\u636E"
+        }, {
+          right: vue.withCtx(() => [
+            vue.createElementVNode("view", { class: "mt-3" }, [
+              vue.createElementVNode("text", { class: "iconfont icon-saoyisao font-lg" }),
+              vue.createElementVNode("text", { class: "iconfont icon-right font-lg" })
+            ])
+          ]),
+          _: 1
+        }),
+        vue.createVNode(_component_yx_divider),
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group) => {
+          return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
+              return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                key: d.id,
+                "hover-class": "bg-dark",
+                title: d.title,
+                isCell: d.isCell,
+                icon: d.icon
+              }, {
+                suffix: vue.withCtx(() => [
+                  vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
+                ]),
+                _: 2
+              }, 1032, ["title", "isCell", "icon"]);
+            }), 128)),
+            vue.createVNode(_component_yx_divider)
+          ], 64);
+        }), 256))
+      ]),
+      _: 1
+    });
   }
-  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
-  const _sfc_main$6 = {
+  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$g], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
+  let groups = [];
+  for (let i2 = "A".charCodeAt(0); i2 <= "Z".charCodeAt(0); i2++) {
+    if (Math.floor(Math.random() * 3) === 0)
+      continue;
+    let group = {
+      group: String.fromCharCode(i2),
+      userList: []
+    };
+    for (let j = 0; j < Math.floor(Math.random() * 5) + 1; j++) {
+      let user = {
+        id: Math.random() * 1e4,
+        img: "/static/images/mail/friend.png",
+        title: String.fromCharCode(i2) + (j + 1)
+      };
+      group.userList.push(user);
+    }
+    groups.push(group);
+  }
+  formatAppLog("log", "at static/testData/friendList.js:26", "@group", groups);
+  const _sfc_main$g = {
     components: { YxToolBar, YxList },
+    mounted() {
+      formatAppLog("log", "at pages/tabbar/friend/friend.vue:34", "@rrrr", groups);
+      this.friendList = groups;
+      for (var i2 = 65; i2 <= 90; i2++) {
+        this.friendPrefixPosition.push(String.fromCharCode(i2));
+      }
+      this.friendPrefixPosition.push("#");
+    },
     data() {
       return {
         base_com: [
           {
             id: 1,
-            img: "/static/contact/1.png",
+            img: "/static/images/mail/group.png",
             title: "\u7FA4\u804A"
           },
           {
             id: 2,
-            img: "/static/contact/2.png",
+            img: "/static/images/mail/tag.png",
             title: "\u6807\u7B7E"
           },
           {
             id: 3,
-            img: "/static/contact/3.png",
+            img: "/static/images/mail/friend.png",
             title: "\u65B0\u589E\u670B\u53CB"
           }
         ],
-        friend_list: [
-          {
-            id: 1,
-            img: "/static/contact/1.png",
-            title: "\u963F\u8BDA"
-          },
-          {
-            id: 2,
-            img: "/static/contact/1.png",
-            title: "\u9F99\u4E0E\u864E"
-          },
-          {
-            id: 3,
-            img: "/static/contact/1.png",
-            title: "\u7EEA\u8BBA"
-          },
-          {
-            id: 4,
-            img: "/static/contact/1.png",
-            title: "\u6768\u54E5"
-          },
-          {
-            id: 5,
-            img: "/static/contact/1.png",
-            title: "\u590F\u65E5\u91CD\u73B0"
-          },
-          {
-            id: 6,
-            img: "/static/contact/1.png",
-            title: "\u6F6E"
-          },
-          {
-            id: 7,
-            img: "/static/contact/1.png",
-            title: "\u843D"
-          }
-        ]
+        friendList: [],
+        friendPrefixPosition: [],
+        sliderTarget: ""
       };
     },
-    methods: {}
+    methods: {
+      startSlide(target2) {
+        formatAppLog("log", "at pages/tabbar/friend/friend.vue:71", "\u70B9\u51FB\u5F97\u4E3A", target2);
+        formatAppLog("log", "at pages/tabbar/friend/friend.vue:72", this.friendList.find((obj) => obj.group == target2));
+        if (this.friendList.find((obj) => obj.group == target2)) {
+          this.sliderTarget = target2;
+        } else {
+          this.slsiderTarget = "";
+        }
+      }
+    },
+    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createVNode(_component_yx_tool_bar, { title: "\u901A\u8BAF\u5F55" }),
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.base_com, (item) => {
-        return vue.openBlock(), vue.createBlock(_component_yx_list, {
-          key: item.id,
-          img: item.img,
-          title: item.title
-        }, null, 8, ["img", "title"]);
-      }), 128)),
-      vue.createElementVNode("view", { class: "font-md p-2 bg-common" }, "\u597D\u53CB\u5217\u8868"),
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friend_list, (item) => {
-        return vue.openBlock(), vue.createBlock(_component_yx_list, {
-          key: item.id,
-          img: item.img,
-          title: item.title
-        }, null, 8, ["img", "title"]);
-      }), 128))
+      vue.createCommentVNode(' <scroll-view scroll-y="true" style="width: 100vw;height: 100vh;" :scroll-into-view="`hash-abc-1-${sliderTarget}`"  > '),
+      vue.createElementVNode("scroll-view", {
+        "scroll-y": "true",
+        class: "position-fixed font-sm",
+        style: vue.normalizeStyle(`top:${_ctx.fixedTop + 100}rpx;height:88vh`),
+        "scroll-into-view": `hash-abc-1-${$data.sliderTarget}`
+      }, [
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.base_com, (item) => {
+          return vue.openBlock(), vue.createBlock(_component_yx_list, {
+            key: item.id,
+            img: item.img,
+            title: item.title
+          }, null, 8, ["img", "title"]);
+        }), 128)),
+        vue.createCommentVNode(" <view >\u597D\u53CB\u5217\u8868</view> "),
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendList, (friends) => {
+          return vue.openBlock(), vue.createElementBlock("view", { class: "font-md" }, [
+            vue.createElementVNode("view", {
+              class: "bg-common pl-2",
+              style: { "width": "100vw" },
+              id: `hash-abc-1-${friends.group}`
+            }, vue.toDisplayString(friends.group), 9, ["id"]),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(friends.userList, (data2) => {
+              return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                img: data2.img,
+                title: data2.title,
+                key: data2.id
+              }, null, 8, ["img", "title"]);
+            }), 128))
+          ]);
+        }), 256))
+      ], 12, ["scroll-into-view"]),
+      vue.createCommentVNode(" \u5FEB\u901F\u79FB\u52A8\u5230\u5BF9\u5E94\u5F97\u5206\u7EC4\u4E0A "),
+      vue.createElementVNode("view", {
+        class: "flex flex-column position-fixed text-center font-sm text-dark",
+        style: { "right": "10rpx", "top": "200rpx" }
+      }, [
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendPrefixPosition, (prefix) => {
+          return vue.openBlock(), vue.createElementBlock("view", {
+            onClick: ($event) => $options.startSlide(prefix)
+          }, vue.toDisplayString(prefix), 9, ["onClick"]);
+        }), 256))
+      ])
     ]);
   }
-  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
-  const _sfc_main$5 = {
+  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
+  const _sfc_main$f = {
     name: "yx-nav-bar",
     props: {
       title: {
         type: String
+      },
+      existMore: {
+        type: Boolean,
+        default: true
+      },
+      requireOccupy: {
+        type: Boolean,
+        default: true
+      },
+      isOpacity: {
+        type: Boolean,
+        default: false
+      },
+      routerPath: {
+        type: String
+      },
+      isChat: {
+        type: Boolean,
+        default: false
+      },
+      titleCenter: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -1202,13 +2754,30 @@ if (uni.restoreGlobal) {
     },
     methods: {
       back() {
-        uni.navigateBack();
+        if (!this.isChat) {
+          uni.navigateBack();
+        } else {
+          uni.switchTab({
+            url: "/pages/tabbar/chat/chat"
+          });
+        }
+      },
+      navPush() {
+        formatAppLog("log", "at components/yx-nav-bar.vue:65", "\u53BB\u5F80", this.routerPath);
+        uni.navigateTo({
+          url: this.routerPath
+        });
       }
-    }
+    },
+    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
-      vue.createElementVNode("view", { class: "flex justify-between align-center p-2 bg-white fixed-top" }, [
+      vue.createElementVNode("view", {
+        class: vue.normalizeClass(["flex justify-between align-center p-2 fixed-top", $props.isOpacity ? "bg-transparent" : "bg-white"]),
+        style: vue.normalizeStyle(`top:${_ctx.fixedTop}rpx`)
+      }, [
+        vue.createCommentVNode(` <view class="flex justify-between align-center p-2  position-fixed" :class="isOpacity ? 'bg-transparent':'bg-white'" > `),
         vue.createElementVNode("view", {
           id: "back-sign",
           class: "icon-left iconfont mr-2",
@@ -1216,18 +2785,27 @@ if (uni.restoreGlobal) {
         }),
         vue.createElementVNode("view", {
           id: "user-view",
-          class: "flex-1"
-        }, vue.toDisplayString($props.title), 1),
-        vue.createElementVNode("view", {
+          class: vue.normalizeClass(["flex-1", $props.titleCenter ? "text-center" : ""])
+        }, vue.toDisplayString($props.title), 3),
+        $props.existMore ? (vue.openBlock(), vue.createElementBlock("view", {
+          key: 0,
           id: "more-detail",
-          class: "icon-ellipsis iconfont"
-        })
-      ]),
-      vue.createCommentVNode(' <view style="margin-top: 90rpx;"></view> ')
-    ], 2112);
+          class: "icon-ellipsis iconfont",
+          onClick: _cache[1] || (_cache[1] = (...args) => $options.navPush && $options.navPush(...args))
+        })) : vue.createCommentVNode("v-if", true),
+        vue.createElementVNode("view", { id: "end-detail" }, [
+          vue.renderSlot(_ctx.$slots, "suffix")
+        ])
+      ], 6),
+      vue.createCommentVNode(" \u906E\u6321\u586B\u5145 "),
+      $props.requireOccupy ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        style: { "padding-top": "90rpx" }
+      })) : vue.createCommentVNode("v-if", true)
+    ], 64);
   }
-  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
-  const _sfc_main$4 = {
+  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
+  const _sfc_main$e = {
     name: "yx-chat-item-content",
     inject: ["validPreviewOfImage", "touchMessageOfChat", "touchLeaveMessageOfChat"],
     props: {
@@ -1237,14 +2815,31 @@ if (uni.restoreGlobal) {
     },
     data() {
       return {
-        audioManager: plus.audio.createPlayer({})
+        audioManager: plus.audio.createPlayer({}),
+        playAudio: false,
+        videoImage: ""
       };
     },
     methods: {
+      videoFirstLoad(width, height, during) {
+        formatAppLog("log", "at components/chat/yx-chat-item-content.vue:54", width, height, during);
+      },
       handleAudio() {
         if (this.chatMessage.type !== "audio")
           return;
-        formatAppLog("log", "at components/chat/yx-chat-item-content.vue:51", "\u64AD\u653E\u5F55\u97F3", this.chatMessage);
+        this.audioManager.addEventListener("play", () => {
+          this.audioManager.seekTo(0);
+          this.playAudio = true;
+        });
+        this.audioManager.addEventListener("stop", () => {
+          this.playAudio = false;
+        });
+        this.audioManager.addEventListener("ended", () => {
+          this.playAudio = false;
+        });
+        this.audioManager.addEventListener("pause", () => {
+          this.playAudio = false;
+        });
         this.audioManager.setStyles({ src: this.chatMessage.data });
         this.audioManager.play();
       }
@@ -1267,13 +2862,12 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
-      onClick: _cache[1] || (_cache[1] = (...args) => $options.handleAudio && $options.handleAudio(...args)),
-      onTouchstart: _cache[2] || (_cache[2] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
-      onTouchend: _cache[3] || (_cache[3] = (e) => $options.touchLeaveMessageOfChat($props.chatMessage, e)),
-      style: { "overflow": "auto" },
-      class: "font-md"
+      onClick: _cache[2] || (_cache[2] = (...args) => $options.handleAudio && $options.handleAudio(...args)),
+      onTouchstart: _cache[3] || (_cache[3] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
+      onTouchend: _cache[4] || (_cache[4] = (e) => $options.touchLeaveMessageOfChat($props.chatMessage, e)),
+      class: "font-md overflow-hidden"
     }, [
       $props.chatMessage.type === "text" ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 0,
@@ -1303,22 +2897,47 @@ if (uni.restoreGlobal) {
           class: "flex justify-end"
         }, [
           vue.createTextVNode(vue.toDisplayString($props.chatMessage.record_time) + '" ', 1),
-          vue.createElementVNode("text", { class: "iconfont icon-wifi rotate-right-90 ml-2" })
+          $data.playAudio ? (vue.openBlock(), vue.createElementBlock("image", {
+            key: 0,
+            src: "/static/audio/play.gif",
+            class: "play-icon"
+          })) : (vue.openBlock(), vue.createElementBlock("text", {
+            key: 1,
+            class: "iconfont icon-wifi rotate-right-90 ml-2"
+          }))
         ])) : vue.createCommentVNode("v-if", true),
         vue.createCommentVNode(" \u5BF9\u65B9\u5F55\u97F3\u6D88\u606F "),
         $props.chatMessage.user_id != 0 ? (vue.openBlock(), vue.createElementBlock("view", {
           key: 1,
           class: "flex justify-start"
         }, [
-          vue.createElementVNode("text", { class: "iconfont icon-wifi rotate-left-90 mr-2" }),
+          $data.playAudio ? (vue.openBlock(), vue.createElementBlock("image", {
+            key: 0,
+            class: "play-icon",
+            src: "/static/audio/play.gif"
+          })) : (vue.openBlock(), vue.createElementBlock("text", {
+            key: 1,
+            class: "iconfont icon-wifi rotate-left-90 mr-2"
+          })),
           vue.createTextVNode(" " + vue.toDisplayString($props.chatMessage.record_time) + '" ', 1)
         ])) : vue.createCommentVNode("v-if", true)
       ], 4)) : vue.createCommentVNode("v-if", true),
-      $props.chatMessage.type === "video" ? (vue.openBlock(), vue.createElementBlock("view", { key: 3 })) : vue.createCommentVNode("v-if", true)
+      $props.chatMessage.type === "video" ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 3,
+        class: "overflow-hidden"
+      }, [
+        vue.createElementVNode("video", {
+          src: $props.chatMessage.data,
+          style: { "width": "300rpx", "height": "400rpx" },
+          "play-btn-position": "center",
+          onLoadedmetadata: _cache[1] || (_cache[1] = (...args) => $options.videoFirstLoad && $options.videoFirstLoad(...args))
+        }, null, 40, ["src"]),
+        vue.createCommentVNode(' <image :src="videoImage"></image> ')
+      ])) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
-  const _sfc_main$3 = {
+  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__scopeId", "data-v-16b5a012"], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
+  const _sfc_main$d = {
     name: "yx-chat-item-detail",
     components: {
       YxChatItemContent
@@ -1341,14 +2960,20 @@ if (uni.restoreGlobal) {
     data() {
       return {};
     },
-    methods: {},
+    methods: {
+      toUserMessagePage() {
+        uni.navigateTo({
+          url: `/pages/UserInfo/UserInfo`
+        });
+      }
+    },
     computed: {
       time() {
         return dayjs(this.chatMessage.message_time).format("YYYY\u5E74MM\u6708DD\u65E5 HH:mm");
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_chat_item_content = vue.resolveComponent("yx-chat-item-content");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       $props.chatMessage.showTime && !$props.chatMessage.isDel ? (vue.openBlock(), vue.createElementBlock("text", {
@@ -1376,6 +3001,7 @@ if (uni.restoreGlobal) {
           vue.createVNode(_component_yx_chat_item_content, { chatMessage: $props.chatMessage }, null, 8, ["chatMessage"])
         ]),
         vue.createElementVNode("image", {
+          onClick: _cache[0] || (_cache[0] = (...args) => $options.toUserMessagePage && $options.toUserMessagePage(...args)),
           src: $props.chatMessage.user_image,
           mode: "scaleToFill",
           style: { "width": "60rpx", "height": "60rpx" }
@@ -1393,6 +3019,7 @@ if (uni.restoreGlobal) {
           style: { "top": "40rpx", "left": "81rpx", "border-right-color": "white" }
         }),
         vue.createElementVNode("image", {
+          onClick: _cache[1] || (_cache[1] = (...args) => $options.toUserMessagePage && $options.toUserMessagePage(...args)),
           src: $props.chatMessage.user_image,
           mode: "scaleToFill",
           style: { "width": "60rpx", "height": "60rpx" }
@@ -1412,7 +3039,7 @@ if (uni.restoreGlobal) {
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
+  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
   var isIos;
   isIos = plus.os.name == "iOS";
   function gotoAppPermissionSetting() {
@@ -1437,15 +3064,13 @@ if (uni.restoreGlobal) {
       mainActivity.startActivity(intent);
     }
   }
-  const _sfc_main$2 = {
+  const _sfc_main$c = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
     props: {},
     mounted() {
       this.getInputHeight();
       this.autoFocus = true;
-      formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:59", "\u5F55\u97F3\u5BF9\u8C61", this.recordManager);
-      formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:64", "\u5F55\u97F3");
     },
     data() {
       return {
@@ -1485,9 +3110,9 @@ if (uni.restoreGlobal) {
         let vm = this;
         let platform = plus.os.name;
         if (platform === "Android") {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:146", "\u8BF7\u6C42\u6743\u9650");
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:127", "\u8BF7\u6C42\u6743\u9650");
           plus.android.requestPermissions(["android.permission.RECORD_AUDIO"], function(e) {
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:150", "\u6743\u9650\u5BF9\u8C61", e);
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:131", "\u6743\u9650\u5BF9\u8C61", e);
             if (e.deniedAlways.length > 0 || e.deniedPresent.length > 0) {
               uni.showModal({
                 title: "\u5173\u4E8E\u5F55\u97F3\u6743\u9650",
@@ -1496,11 +3121,11 @@ if (uni.restoreGlobal) {
                 cancelText: "\u62D2\u7EDD",
                 success(e2) {
                   if (e2.confirm) {
-                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:180", "\u540C\u610F\u5F00\u542F\u6743\u9650\uFF0C\u5373\u5C06\u8DF3\u8F6C");
+                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:161", "\u540C\u610F\u5F00\u542F\u6743\u9650\uFF0C\u5373\u5C06\u8DF3\u8F6C");
                     gotoAppPermissionSetting();
                     this.havingRecordAuth = true;
                   } else if (e2.cancel) {
-                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:184", "\u4E0D\u540C\u610F\u5F00\u542F\u6743\u9650");
+                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:165", "\u4E0D\u540C\u610F\u5F00\u542F\u6743\u9650");
                   }
                 },
                 fail() {
@@ -1527,18 +3152,18 @@ if (uni.restoreGlobal) {
                 cancelText: "\u62D2\u7EDD",
                 success(e2) {
                   if (e2.confirm) {
-                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:211", "\u540C\u610F\u5F00\u542F\u6743\u9650\uFF0C\u5373\u5C06\u8DF3\u8F6C");
+                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:192", "\u540C\u610F\u5F00\u542F\u6743\u9650\uFF0C\u5373\u5C06\u8DF3\u8F6C");
                     gotoAppPermissionSetting();
                     this.havingRecordAuth = true;
                   } else if (e2.cancel) {
-                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:215", "\u4E0D\u540C\u610F\u5F00\u542F\u6743\u9650");
+                    formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:196", "\u4E0D\u540C\u610F\u5F00\u542F\u6743\u9650");
                   }
                 },
                 fail() {
                 }
               });
             }
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:225", JSON.stringify(e));
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:206", JSON.stringify(e));
           });
           vm.recorderPlus.stop();
         } else {
@@ -1547,8 +3172,8 @@ if (uni.restoreGlobal) {
       },
       getRecordAuth() {
         let permission = plus.navigator.checkPermission("RECORD");
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:235", "\u5F53\u524D\u7684\u6743\u9650\u4E3A", permission);
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:236", permission);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:216", "\u5F53\u524D\u7684\u6743\u9650\u4E3A", permission);
+        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:217", permission);
         switch (permission) {
           case "authorized":
           case "unknown":
@@ -1559,36 +3184,32 @@ if (uni.restoreGlobal) {
             this.requestPermission();
             break;
           default:
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:250", "\u8BBE\u5907\u4E0D\u652F\u6301\u5F55\u97F3");
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:231", "\u8BBE\u5907\u4E0D\u652F\u6301\u5F55\u97F3");
             break;
         }
       },
       startRecord(e) {
         this.getRecordAuth();
         if (!this.havingRecordAuth) {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:260", "\u5F02\u6B65\u6267\u884C\u7684");
           return;
         }
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:264", "\u5F00\u59CB\u5F55\u97F3", e);
         const recordObj = {
           filename: "_doc/audio/",
           format: "mp3"
         };
         const self2 = this;
         this.recordManager.record(recordObj, (e2) => {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:274", "\u5F55\u97F3\u5B8C\u6210,\u8DEF\u5F84\u4E3A", e2);
           self2.audioPath = e2;
           self2.audioManager.setStyles({ src: e2 });
           setTimeout(() => {
             if (self2.isValidRecord) {
               const audio_time = Math.ceil(self2.audioManager.getDuration());
               self2.$emit("addMessage", self2.audioPath, "audio", audio_time);
-              formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:287", `\u6B64\u5F55\u97F3\u6709${audio_time}\u79D2`);
             }
             self2.isValidRecord = true;
           }, 60);
         }, (err) => {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:294", "\u5F55\u97F3\u9519\u8BEF", err);
+          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:270", "\u5F55\u97F3\u9519\u8BEF", err);
         });
         this.touchPosition = {
           x: e.touches[0].clientX,
@@ -1608,12 +3229,10 @@ if (uni.restoreGlobal) {
         if (!this.havingRecordAuth) {
           return;
         }
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:319", "\u7ED3\u675F", e);
         const y = e.changedTouches[0].clientY;
         const endTime = e.timeStamp;
         const limitTime = 1e3;
         if (Math.abs(this.touchPosition.y - y) >= 60 || endTime - this.recordingTime < limitTime) {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:327", "\u7ED3\u675F\u65F6\u53D6\u6D88\u5F55\u97F3");
           this.isValidRecord = false;
           if (Math.abs(this.touchPosition.y - y) >= 60) {
             uni.showToast({
@@ -1661,14 +3280,12 @@ if (uni.restoreGlobal) {
             break;
           case "util":
             this.chatInputHeight = this.activeKeyboardHeight + this.originVal + this.stepVal;
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:392", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
             break;
           case "audio":
             this.chatInputHeight = this.originVal;
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:398", "\u70B9\u51FB\u4E86\u529F\u80FD\u6846\u5B8C\u6210", this.chatInputHeight);
             break;
           default:
-            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:401", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
+            formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:372", "\u9519\u8BEF\u7684\u4E8B\u4EF6");
             break;
         }
         this.$emit("syn");
@@ -1690,7 +3307,6 @@ if (uni.restoreGlobal) {
       textareaLineChangeHandle(e) {
         if (this.isClickUtil)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:435", "lineChange", e);
         this.curLine = e.detail.lineCount;
         this.inputChangeHeight = e.detail.height;
         this.getInputHeight();
@@ -1705,13 +3321,10 @@ if (uni.restoreGlobal) {
       sendMessage() {
         if (!this.inputContent)
           return;
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:456", "@content---", this.inputContent);
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:457", this.inputContent);
         this.$emit("addMessage", this.inputContent, "text");
         this.inputContent = "";
       },
       keyboardHeightChangeHandle(e) {
-        formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:462", "@keyboard", e);
         const height = e.detail.height;
         if (!this.keyboardHeight && height) {
           this.keyboardHeight = height + 200;
@@ -1734,7 +3347,6 @@ if (uni.restoreGlobal) {
     watch: {
       inputContent: {
         handler() {
-          formatAppLog("log", "at components/chat/yx-chat-detail-input.vue:491", "\u76D1\u542C\u5230\u957F\u5EA6\u53D8\u5316", this.inputContent.length);
           this.isText = this.inputContent.length > 0;
           if (this.isText) {
             this.isClickUtil = false;
@@ -1760,7 +3372,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: "fixed-bottom transition-ease-fast-plus bg-white-four-deep flex justify-between align-center p-1",
@@ -1843,7 +3455,7 @@ if (uni.restoreGlobal) {
       ])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
+  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
   var chatMesssage = [
     {
       id: "a1",
@@ -1968,7 +3580,7 @@ if (uni.restoreGlobal) {
         id: "001",
         text: "\u76F8\u518C",
         img_src: "/static/images/extends/pic.png",
-        event: "uploadImage"
+        event: "upload"
       },
       {
         id: "002",
@@ -2025,12 +3637,13 @@ if (uni.restoreGlobal) {
     };
     data.push(obj);
   }
-  const _sfc_main$1 = {
+  const _sfc_main$b = {
     components: {
       YxNavBar,
       YxChatItemDetail,
       YxChatDetailInput,
-      YxPopup
+      YxPopup,
+      YxCommonWrapper
     },
     provide() {
       return {
@@ -2041,7 +3654,6 @@ if (uni.restoreGlobal) {
     },
     onLoad(query) {
       this.name = query.name;
-      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:81", "@\u663E\u793A\u5F97\u4E3A", query);
     },
     mounted() {
       this.scrollBottom();
@@ -2061,6 +3673,7 @@ if (uni.restoreGlobal) {
         touchTarget: "",
         touchStartTime: 0,
         isBottom: false,
+        isChat: false,
         popupHeight: 0,
         bottomMode: "",
         utilArr: chatUtils,
@@ -2078,38 +3691,58 @@ if (uni.restoreGlobal) {
           longPressActions: {
             itemList: ["\u53D1\u9001\u7ED9\u670B\u53CB", "\u4FDD\u5B58\u56FE\u7247", "\u6536\u85CF"],
             success: function(data2) {
-              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:145", "\u6267\u884C\u957F\u6309\u64CD\u4F5C", data2);
-              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:146", "\u9009\u4E2D\u4E86\u7B2C" + (data2.tapIndex + 1) + "\u4E2A\u6309\u94AE,\u7B2C" + (data2.index + 1) + "\u5F20\u56FE\u7247");
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:150", "\u6267\u884C\u957F\u6309\u64CD\u4F5C", data2);
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:151", "\u9009\u4E2D\u4E86\u7B2C" + (data2.tapIndex + 1) + "\u4E2A\u6309\u94AE,\u7B2C" + (data2.index + 1) + "\u5F20\u56FE\u7247");
             },
             fail: function(err) {
-              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:149", err.errMsg);
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:154", err.errMsg);
             }
           }
         });
       },
       utilEventHandle(event) {
+        const self2 = this;
         switch (event) {
-          case "uploadImage":
-            uni.chooseImage({
-              count: 4,
-              success(e) {
-                e.tempFilePaths.forEach((path) => {
+          case "upload":
+            plus.gallery.pick(({ files }) => {
+              files.forEach((path) => {
+                const imageType = ["BMP", "DIB", "PCP", "DIF", "WMF", "GIF", "JPG", "TIF", "EPS", "PSD", "CDR", "IFF", "TGA", "PCD", "MPT", "PNG"];
+                const videoType = ["AVI", "mov", "rmvb", "rm", "FLV", "mp4", "3GP"];
+                const sep = path.lastIndexOf(".") + 1;
+                const fileSuffix = path.substring(sep, path.length);
+                if (imageType.map((m) => m.toLowerCase()).includes(fileSuffix) || imageType.map((m) => m.toUpperCase()).includes(fileSuffix)) {
                   self2.addMessage(path, "image");
-                });
-              }
+                }
+                if (videoType.map((m) => m.toLowerCase()).includes(fileSuffix) || videoType.map((m) => m.toUpperCase()).includes(fileSuffix)) {
+                  plus.io.getVideoInfo({
+                    filePath: path,
+                    success(e) {
+                      formatAppLog("log", "at pages/chat-detail/chat-detail.vue:185", "io-e", e);
+                    }
+                  });
+                  self2.addMessage(path, "video");
+                }
+              });
+            }, (err) => {
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:193", err);
+            }, {
+              multiple: true,
+              permissionAlert: true,
+              filter: "none"
             });
             break;
           case "camera":
-            const self2 = this;
-            uni.chooseVideo({
-              sourceType: ["camera", "album"],
-              success: function(res) {
-                self2.addMessage(res.tempFilePath, "video");
-              }
+            const camera = plus.camera.getCamera();
+            camera.captureImage((path) => {
+              plus.gallery.save(path, (path2) => {
+                formatAppLog("log", "at pages/chat-detail/chat-detail.vue:206", "@success", path2);
+              });
+            }, (err) => {
+              formatAppLog("log", "at pages/chat-detail/chat-detail.vue:209", err);
             });
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:181", "utils event err");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:220", "utils event err");
             break;
         }
       },
@@ -2122,8 +3755,9 @@ if (uni.restoreGlobal) {
             this.popupBottomData = data;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:196", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:235", "\u6CA1\u6709\u547D\u4E2D\u4E8B\u4EF6");
         }
+        this.isChat = false;
         this.bottomClickTransition = true;
         this.bottomMode = event;
         this.isBottom = true;
@@ -2160,11 +3794,11 @@ if (uni.restoreGlobal) {
         this.scrollHeight -= 100;
         setTimeout(() => this.scrollHeight += 100, 5);
       },
-      convertln(target) {
+      convertln(target2) {
         let res = "";
         const patternln = /\n/g;
         const patternls = /\s/g;
-        res = target.replace(patternln, "<p></p>");
+        res = target2.replace(patternln, "<p></p>");
         res = res.replace(patternls, "&nbsp;");
         return res;
       },
@@ -2180,13 +3814,13 @@ if (uni.restoreGlobal) {
             this.curUserMessage.isDel = true;
             break;
           default:
-            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:285", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            formatAppLog("log", "at pages/chat-detail/chat-detail.vue:325", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
             break;
         }
       },
-      handleTouch(target, e) {
+      handleTouch(target2, e) {
         this.touchStartTime = e.timeStamp;
-        this.touchTarget = target;
+        this.touchTarget = target2;
         let x = e.touches[0].clientX;
         let y = e.touches[0].clientY;
         const device = uni.getSystemInfoSync();
@@ -2244,11 +3878,11 @@ if (uni.restoreGlobal) {
       },
       synMoveDistance() {
         this.scrollViewHeight = this.$refs.inputBar.chatInputHeight;
-        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:370", "\u5F53\u524D\u79FB\u52A8\u7684\u9AD8\u5EA6", this.scrollViewHeight);
+        formatAppLog("log", "at pages/chat-detail/chat-detail.vue:410", "\u5F53\u524D\u79FB\u52A8\u7684\u9AD8\u5EA6", this.scrollViewHeight);
         this.scrollBottom();
       }
     },
-    computed: {
+    computed: __spreadValues({
       userChatMessage() {
         if (!this.isCompleteConvert) {
           this.userMessage[0].data = this.convertln(this.userMessage[0].data);
@@ -2272,152 +3906,1621 @@ if (uni.restoreGlobal) {
         });
         return imageUrlStore;
       }
-    }
+    }, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_chat_item_detail = vue.resolveComponent("yx-chat-item-detail");
     const _component_yx_chat_detail_input = vue.resolveComponent("yx-chat-detail-input");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(" \u5F97\u5230\u6700\u65B0\u7684\u70B9\u51FB\u65F6\u95F4\uFF0C\u907F\u514D\u51FA\u73B0\u70B9\u51FB\u6D88\u606F\uFF0C\u677E\u5F00\uFF0C\u53C8\u957F\u6309\u89E6\u53D1\u7684\u9519\u8BEF\u8BA1\u6570\u884C\u4E3A "),
       vue.createCommentVNode(' <view class="page" @touchstart="touchStartTime=Date.now()"> '),
-      vue.createElementVNode("view", { class: "page" }, [
-        vue.createCommentVNode(" \u5BFC\u822A\u680F "),
-        vue.createVNode(_component_yx_nav_bar, {
-          title: this.name
-        }, null, 8, ["title"]),
-        vue.createCommentVNode(" \u6ED1\u52A8\u5185\u5BB9 "),
-        vue.createElementVNode("scroll-view", {
-          "scroll-y": "true",
-          onScroll: _cache[0] || (_cache[0] = (...args) => $options.scroll && $options.scroll(...args)),
-          "scroll-top": $data.scrollHeight,
-          class: "position-fixed",
-          style: vue.normalizeStyle(`top:95rpx;bottom:${$data.scrollViewHeight}rpx`)
-        }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userChatMessage, (message) => {
-            return vue.openBlock(), vue.createBlock(_component_yx_chat_item_detail, {
-              key: message.id,
-              chatMessage: message
-            }, null, 8, ["chatMessage"]);
-          }), 128)),
-          vue.createCommentVNode(' 	<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"\r\n				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail> ')
-        ], 44, ["scroll-top"]),
-        vue.createCommentVNode(" \u8F93\u5165\u6846 "),
-        vue.createVNode(_component_yx_chat_detail_input, {
-          onAddMessage: $options.addMessage,
-          ref: "inputBar",
-          onHide: $options.handlePopHide,
-          onSyn: $options.synMoveDistance,
-          onActiveUtil: $options.changeInputState
-        }, null, 8, ["onAddMessage", "onHide", "onSyn", "onActiveUtil"]),
-        vue.createVNode(_component_yx_popup, {
-          show: $data.popShow,
-          popPosittion: $data.popPosition,
-          popHeight: $data.popupHeight,
-          utilArr: $data.utilArr,
-          emoArr: $data.emoArr,
-          bottomMode: $data.bottomMode,
-          bottomClickTransition: $data.bottomClickTransition,
-          isDark: $data.popIsDark,
-          popItem: $data.popData,
-          isBottom: $data.isBottom,
-          popupContentOfUtilInBottom: $data.popupBottomData,
-          onHide: $options.handlePopHide,
-          onAction: $options.actionHandle
-        }, {
-          util: vue.withCtx(() => [
-            $data.bottomMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-              vue.createElementVNode("swiper", {
-                style: { "height": "500rpx", "width": "100%" },
-                circular: "",
-                "indicator-dots": true,
-                duration: 100
-              }, [
-                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.utilArr, (itemArr) => {
-                  return vue.openBlock(), vue.createElementBlock("swiper-item", {
+      vue.createVNode(_component_yx_common_wrapper, null, {
+        default: vue.withCtx(() => [
+          vue.createCommentVNode(" \u5BFC\u822A\u680F ,\u9700\u8981\u5BF9\u70B9\u51FB\u7684\u804A\u5929\u6846\u505A\u5224\u65AD\uFF0C\u5224\u65AD\u4E3A\u7528\u6237\u8FD8\u662F\u7FA4\u7EC4\uFF0C\u4ED6\u4EEC\u53BB\u5F80\u7684\u8DEF\u7531\u4E0D\u540C"),
+          vue.createVNode(_component_yx_nav_bar, {
+            title: this.name,
+            requireOccupy: false,
+            isChat: true,
+            routerPath: `/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${this.name}`
+          }, null, 8, ["title", "routerPath"]),
+          vue.createCommentVNode(" \u6ED1\u52A8\u5185\u5BB9 "),
+          vue.createElementVNode("scroll-view", {
+            "scroll-y": "true",
+            onScroll: _cache[1] || (_cache[1] = (...args) => $options.scroll && $options.scroll(...args)),
+            "scroll-top": $data.scrollHeight,
+            class: "position-fixed",
+            style: vue.normalizeStyle(`top:${95 + _ctx.fixedTop}rpx;bottom:${$data.scrollViewHeight}rpx`)
+          }, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userChatMessage, (message) => {
+              return vue.openBlock(), vue.createBlock(_component_yx_chat_item_detail, {
+                key: message.id,
+                onClick: _cache[0] || (_cache[0] = ($event) => {
+                  $data.isChat = true;
+                  $data.isBottom = false;
+                }),
+                chatMessage: message
+              }, null, 8, ["chatMessage"]);
+            }), 128)),
+            vue.createCommentVNode(' 	<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"\r\n				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail> ')
+          ], 44, ["scroll-top"]),
+          vue.createCommentVNode(" \u8F93\u5165\u6846 "),
+          vue.createVNode(_component_yx_chat_detail_input, {
+            onAddMessage: $options.addMessage,
+            ref: "inputBar",
+            onHide: $options.handlePopHide,
+            onSyn: $options.synMoveDistance,
+            onActiveUtil: $options.changeInputState
+          }, null, 8, ["onAddMessage", "onHide", "onSyn", "onActiveUtil"]),
+          vue.createVNode(_component_yx_popup, {
+            show: $data.popShow,
+            popPosittion: $data.popPosition,
+            popHeight: $data.popupHeight,
+            isChat: $data.isChat,
+            utilArr: $data.utilArr,
+            emoArr: $data.emoArr,
+            bottomMode: $data.bottomMode,
+            bottomClickTransition: $data.bottomClickTransition,
+            isDark: $data.popIsDark,
+            popItem: $data.popData,
+            isBottom: $data.isBottom,
+            popupContentOfUtilInBottom: $data.popupBottomData,
+            onHide: $options.handlePopHide,
+            onAction: $options.actionHandle
+          }, {
+            util: vue.withCtx(() => [
+              $data.bottomMode == "utils" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+                vue.createElementVNode("swiper", {
+                  style: { "height": "500rpx", "width": "100%" },
+                  circular: "",
+                  "indicator-dots": true,
+                  duration: 100
+                }, [
+                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.utilArr, (itemArr) => {
+                    return vue.openBlock(), vue.createElementBlock("swiper-item", {
+                      style: { "height": "100%" },
+                      class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
+                    }, [
+                      vue.createElementVNode("view", { class: "flex justify-between zTop flex-wrap" }, [
+                        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                          return vue.openBlock(), vue.createElementBlock("view", {
+                            onClick: ($event) => $options.utilEventHandle(item.event),
+                            key: item.id,
+                            style: { "flex": "0 0 25%", "height": "200rpx" },
+                            class: "justify-center flex flex-column align-center mt-1"
+                          }, [
+                            vue.createElementVNode("image", {
+                              src: item.img_src,
+                              mode: "aspectFit",
+                              style: { "height": "70%", "width": "70%" }
+                            }, null, 8, ["src"]),
+                            vue.createElementVNode("text", null, vue.toDisplayString(item.text), 1)
+                          ], 8, ["onClick"]);
+                        }), 128))
+                      ])
+                    ], 2);
+                  }), 256))
+                ])
+              ])) : vue.createCommentVNode("v-if", true)
+            ]),
+            emo: vue.withCtx(() => [
+              $data.bottomMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+                vue.createElementVNode("scroll-view", {
+                  "scroll-y": true,
+                  class: "transition-ease-fast",
+                  style: { "height": "550rpx" }
+                }, [
+                  vue.createElementVNode("view", {
                     style: { "height": "100%" },
                     class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
                   }, [
-                    vue.createElementVNode("view", { class: "flex justify-between zTop flex-wrap" }, [
-                      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(itemArr, (item) => {
+                    vue.createElementVNode("view", { class: "grid justify-between zTop grid-3" }, [
+                      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.emoArr, (emoItem) => {
                         return vue.openBlock(), vue.createElementBlock("view", {
-                          onClick: ($event) => $options.utilEventHandle(item.event),
-                          key: item.id,
+                          onClick: ($event) => $options.addMessage(emoItem.img_src, "image"),
+                          key: emoItem.id,
                           style: { "flex": "0 0 25%", "height": "200rpx" },
                           class: "justify-center flex flex-column align-center mt-1"
                         }, [
                           vue.createElementVNode("image", {
-                            src: item.img_src,
+                            src: emoItem.img_src,
                             mode: "aspectFit",
-                            style: { "height": "70%", "width": "70%" }
+                            style: { "height": "50%", "width": "50%" }
                           }, null, 8, ["src"]),
-                          vue.createElementVNode("text", null, vue.toDisplayString(item.text), 1)
+                          vue.createElementVNode("text", null, vue.toDisplayString(emoItem.text), 1)
                         ], 8, ["onClick"]);
                       }), 128))
                     ])
-                  ], 2);
-                }), 256))
-              ])
-            ])) : vue.createCommentVNode("v-if", true)
-          ]),
-          emo: vue.withCtx(() => [
-            $data.bottomMode == "emo" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-              vue.createElementVNode("scroll-view", {
-                "scroll-y": true,
-                class: "transition-ease-fast",
-                style: { "height": "550rpx" }
-              }, [
-                vue.createElementVNode("view", {
-                  style: { "height": "100%" },
-                  class: vue.normalizeClass($data.bottomClickTransition ? "opacity-0" : "opacity-1")
-                }, [
-                  vue.createElementVNode("view", { class: "grid justify-between zTop grid-3" }, [
-                    (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.emoArr, (emoItem) => {
-                      return vue.openBlock(), vue.createElementBlock("view", {
-                        onClick: ($event) => $options.addMessage(emoItem.img_src, "image"),
-                        key: emoItem.id,
-                        style: { "flex": "0 0 25%", "height": "200rpx" },
-                        class: "justify-center flex flex-column align-center mt-1"
-                      }, [
-                        vue.createElementVNode("image", {
-                          src: emoItem.img_src,
-                          mode: "aspectFit",
-                          style: { "height": "50%", "width": "50%" }
-                        }, null, 8, ["src"]),
-                        vue.createElementVNode("text", null, vue.toDisplayString(emoItem.text), 1)
-                      ], 8, ["onClick"]);
-                    }), 128))
-                  ])
-                ], 2)
-              ])
-            ])) : vue.createCommentVNode("v-if", true)
-          ]),
-          _: 1
-        }, 8, ["show", "popPosittion", "popHeight", "utilArr", "emoArr", "bottomMode", "bottomClickTransition", "isDark", "popItem", "isBottom", "popupContentOfUtilInBottom", "onHide", "onAction"])
-      ])
+                  ], 2)
+                ])
+              ])) : vue.createCommentVNode("v-if", true)
+            ]),
+            _: 1
+          }, 8, ["show", "popPosittion", "popHeight", "isChat", "utilArr", "emoArr", "bottomMode", "bottomClickTransition", "isDark", "popItem", "isBottom", "popupContentOfUtilInBottom", "onHide", "onAction"])
+        ]),
+        _: 1
+      })
     ], 2112);
   }
-  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
+  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
+  const _sfc_main$a = {
+    name: "yx-list-compo",
+    props: {
+      listData: [Object]
+    },
+    mounted() {
+      setTimeout(() => {
+        formatAppLog("log", "at components/yx-list-compo.vue:28", "list_----", this.listData);
+      }, 100);
+    },
+    components: { YxList },
+    data() {
+      return {};
+    }
+  };
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    return vue.openBlock(), vue.createElementBlock("view", null, [
+      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.listData, (list) => {
+        return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              title: data2.title,
+              isCell: data2.isCell,
+              key: data2.id
+            }, vue.createSlots({ _: 2 }, [
+              data2.suffix || data2.sign ? {
+                name: "suffix",
+                fn: vue.withCtx(() => [
+                  data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, vue.toDisplayString(data2.suffix), 1)) : vue.createCommentVNode("v-if", true),
+                  data2.sign === "qrCode" ? (vue.openBlock(), vue.createElementBlock("text", {
+                    key: 1,
+                    class: "iconfont icon-qrcode"
+                  })) : vue.createCommentVNode("v-if", true),
+                  data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, [
+                    vue.createElementVNode("switch", {
+                      onChange: (e) => _ctx.switchToggle(e, data2)
+                    }, null, 40, ["onChange"])
+                  ])) : vue.createCommentVNode("v-if", true)
+                ])
+              } : void 0
+            ]), 1032, ["title", "isCell"]);
+          }), 128))
+        ]);
+      }), 256))
+    ]);
+  }
+  var YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list-compo.vue"]]);
+  const _sfc_main$9 = {
+    onLoad(query) {
+      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:53", "query", query);
+      this.title = query.title;
+    },
+    components: {
+      YxNavBar,
+      YxList,
+      YxCommonWrapper,
+      YxListCompo
+    },
+    mounted() {
+      this.listData = [
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u7FA4\u804A\u540D\u79F0",
+            suffix: "\u4E00\u5BB6\u4EBA",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u7FA4\u4E8C\u7EF4\u7801",
+            sign: "qrCode",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u7FA4\u516C\u544A",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u5907\u6CE8",
+            isCell: true
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u6D88\u606F\u514D\u6253\u6270",
+            isCell: true
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u7F6E\u9876\u804A\u5929",
+            sign: "switch",
+            isCell: false
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u4FDD\u5B58\u5230\u901A\u8BAF\u5F55",
+            sign: "switch",
+            isCell: false
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u67E5\u770B\u804A\u5929\u8BB0\u5F55",
+            sign: "switch",
+            isCell: false
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u6211\u5728\u7FA4\u91CC\u7684\u6635\u79F0",
+            suffix: "\u5E05\u6C14",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u663E\u793A\u7FA4\u6210\u5458\u6635\u79F0",
+            sign: "switch",
+            isCell: false
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u8BBE\u7F6E\u5F53\u524D\u804A\u5929\u80CC\u666F",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u6E05\u7A7A\u804A\u5929\u8BB0\u5F55",
+            isCell: true
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u6295\u8BC9",
+            isCell: true
+          }
+        ]
+      ];
+      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:143", "@list,id", this.listData);
+    },
+    data() {
+      return {
+        title: "",
+        listData: ""
+      };
+    },
+    methods: {
+      switchToggle(e, target2) {
+        formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:153", "switch\u5207\u6362", e, target2);
+      }
+    },
+    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
+  };
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
+      default: vue.withCtx(() => [
+        vue.createCommentVNode(' <view class="bg-common fill-screen font-md"> '),
+        vue.createVNode(_component_yx_nav_bar, {
+          existMore: false,
+          title: $data.title
+        }, null, 8, ["title"]),
+        vue.createElementVNode("scroll-view", {
+          "scroll-y": "true",
+          class: "position-fixed font-sm",
+          style: vue.normalizeStyle(`top:${_ctx.fixedTop + 90}rpx;height:88vh`)
+        }, [
+          vue.createElementVNode("view", {
+            id: "group-member",
+            class: "bg-white p-1"
+          }, [
+            vue.createCommentVNode(" \u6700\u591A\u663E\u793A19\u4E2A\u89D2\u8272\u5934\u50CF\uFF0C\u6BCF\u884C5\u4E2A\uFF0C\u6700\u672B\u5C3E\u7684\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D(\u5982\u53EA\u6709\u4E24\u4E2A\u5219\uFF0C\u4E24\u4E2A\u7528\u6237\u6B63\u5E38\u663E\u793A\uFF0C\u6C14\u5019\u8DDF\u7740\u4E00\u4E2A\u6DFB\u52A0\u53F7\u5360\u4F4D\uFF08\u663E\u793A\u4E00\u884C\uFF09\uFF0C\u5982\u5927\u4E8E20\u4E2A\u7528\u6237\uFF0C\u663E\u793A19\u4E2A\u6700\u540E\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D) "),
+            vue.createCommentVNode(" \u671F\u5F85\u540E\u7EED\u8865\u5145\uFF0C\u5F97\u5230\u7FA4\u7EC4\u7684\u6240\u6709\u6210\u5458\u8FDB\u884C\u5C55\u793A\uFF0C\u6837\u5F0F\u548C\u5360\u4F4D\u7B26\u76F8\u4F3C "),
+            vue.createCommentVNode(" \u5360\u4F4D\u6DFB\u52A0\u7B26\u53F7 "),
+            vue.createElementVNode("view", { class: "grid grid-5 grid-gap-1 justify-between" }, [
+              vue.createElementVNode("view", {
+                class: "rounded font-lg text-center ml-2 cursor-pointer",
+                style: { "width": "100rpx", "height": "100rpx", "line-height": "100rpx", "border": "2rpx dashed #ccc" }
+              }, " + ")
+            ]),
+            vue.createElementVNode("view", { class: "text-center text-common mb-2" }, "\u67E5\u770B\u66F4\u591A\u7FA4\u6210\u5458 > ")
+          ]),
+          vue.createElementVNode("view", {
+            id: "detail-setting-operate",
+            class: "mt-2"
+          }, [
+            vue.createCommentVNode(" \u4F7F\u7528 list-compo\u96C6\u5408\u6570\u636E\u53EF\u80FD\u51FA\u73B0\u4E8B\u4EF6\u5904\u7406\u6324\u5151\uFF0C\u5373\u6240\u6709\u7684\u53EF\u80FD\u884C\u90FD\u9700\u8981\u5728yx-list-compo\u7EC4\u4EF6\u5185\u8FDB\u884C\u5B8C\u6210\uFF0C\u53EF\u80FD\u4E0D\u662F\u4E00\u4E2A\u597D\u7684\u9009\u62E9 "),
+            vue.createCommentVNode(` 	<yx-list-compo :listData="listData">\r
+					<view v-if="data.suffix">{{data.suffix}}</view>\r
+					<text v-if="data.sign === 'qrCode'" class="iconfont icon-qrcode" ></text>\r
+					<view v-if="data.sign === 'switch'">\r
+						<switch @change="(e)=>switchToggle(e,data)" />\r
+					</view>\r
+				</yx-list-compo> `),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+              return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+                  return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                    title: data2.title,
+                    isCell: data2.isCell,
+                    key: data2.id
+                  }, vue.createSlots({ _: 2 }, [
+                    data2.suffix || data2.sign ? {
+                      name: "suffix",
+                      fn: vue.withCtx(() => [
+                        data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, vue.toDisplayString(data2.suffix), 1)) : vue.createCommentVNode("v-if", true),
+                        data2.sign === "qrCode" ? (vue.openBlock(), vue.createElementBlock("text", {
+                          key: 1,
+                          class: "iconfont icon-qrcode"
+                        })) : vue.createCommentVNode("v-if", true),
+                        data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, [
+                          vue.createElementVNode("switch", {
+                            onChange: (e) => $options.switchToggle(e, data2)
+                          }, null, 40, ["onChange"])
+                        ])) : vue.createCommentVNode("v-if", true)
+                      ])
+                    } : void 0
+                  ]), 1032, ["title", "isCell"]);
+                }), 128))
+              ]);
+            }), 256))
+          ]),
+          vue.createElementVNode("view", { class: "text-center font-md text-danger bg-white p-2" }, "\u9000\u51FA\u7FA4\u804A")
+        ], 4),
+        vue.createCommentVNode(" </view> ")
+      ]),
+      _: 1
+    });
+  }
+  var PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
+  const _sfc_main$8 = {
+    onLoad(query) {
+      formatAppLog("log", "at pages/UserInfo/UserInfo.vue:39", "query", query);
+      this.targetId = query.id;
+    },
+    components: {
+      YxNavBar,
+      YxList,
+      YxCard
+    },
+    mounted() {
+      this.listData = [
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u8BBE\u7F6E\u6807\u7B7E\u548C\u6635\u79F0",
+            isCell: true,
+            event: "tag"
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u7535\u8BDD\u53F7\u7801",
+            suffix: "11203",
+            sign: "tel",
+            isCell: false
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u670B\u53CB\u6743\u9650",
+            isCell: true,
+            event: "auth"
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u670B\u53CB\u5708",
+            sign: "image",
+            isCell: true,
+            event: "friend"
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u66F4\u591A\u4FE1\u606F",
+            isCell: true,
+            event: "moreMsg"
+          }
+        ]
+      ];
+    },
+    data() {
+      return {
+        targetId: "",
+        listData: []
+      };
+    },
+    methods: {
+      toChat() {
+        this.routerGo("/pages/chat-detail/chat-detail");
+      },
+      handleEvent(data2) {
+        switch (data2.event) {
+          case "tag":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag");
+            break;
+          case "auth":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth");
+            break;
+          case "moreMsg":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/UserCustomSetting");
+            break;
+          case "friend":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    }
+  };
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_card = vue.resolveComponent("yx-card");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    return vue.openBlock(), vue.createElementBlock("view", { class: "fill-screen bg-common" }, [
+      vue.createVNode(_component_yx_nav_bar, {
+        routerPath: `/pages/UserInfo/UserCustomSetting/UserCustomSetting?id=${$data.targetId}`
+      }, null, 8, ["routerPath"]),
+      vue.createVNode(_component_yx_card, {
+        img: "/static/logo.png",
+        class: "bg-white font-weight-bold mt-5",
+        title: "\u6D4B\u8BD5"
+      }, {
+        desc: vue.withCtx(() => [
+          vue.createElementVNode("view", { class: "m-1" }, "\u6635\u79F0: \u6211\u662F\u6635\u79F0"),
+          vue.createElementVNode("view", { class: "m-1" }, "\u5FAE\u4FE1\u53F7: qiDaiTianChong"),
+          vue.createElementVNode("view", { class: "m-1" }, "\u5730\u533A\uFF1A\u6E56\u5317 \u6B66\u6C49")
+        ]),
+        right: vue.withCtx(() => [
+          vue.createCommentVNode(" \u5982\u679C\u662F\u5173\u5FC3\u7528\u6237\u5219\u8FDB\u884C\u663E\u793A\uFF0C\u901A\u8FC7\u540E\u53F0\u5B57\u6BB5\u8FD4\u56DE "),
+          vue.createElementVNode("text", {
+            style: { "color": "#ffbf01" },
+            class: "font-lg"
+          }, "\u2665"),
+          vue.createCommentVNode(" \u2665\u2B50\u{1F9E1}\u{1F31F}\u2B50\u{1F31F} ")
+        ]),
+        _: 1
+      }),
+      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+        return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              onClick: ($event) => $options.handleEvent(data2),
+              title: data2.title,
+              isCell: data2.isCell,
+              key: data2.id
+            }, vue.createSlots({ _: 2 }, [
+              data2.suffix || data2.sign ? {
+                name: "suffix",
+                fn: vue.withCtx(() => [
+                  data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", {
+                    key: 0,
+                    style: { "width": "550rpx" },
+                    class: vue.normalizeClass(data2.sign === "tel" ? "text-danger" : "")
+                  }, vue.toDisplayString(data2.suffix), 3)) : vue.createCommentVNode("v-if", true),
+                  data2.sign === "image" ? (vue.openBlock(), vue.createElementBlock("view", {
+                    key: 1,
+                    style: { "width": "520rpx" }
+                  }, [
+                    vue.createElementVNode("image", {
+                      style: { "width": "75rpx", "height": "75rpx" },
+                      src: "/static/images/demo/cate_09.png",
+                      mode: "aspectFit"
+                    }),
+                    vue.createElementVNode("image", {
+                      style: { "width": "75rpx", "height": "75rpx" },
+                      src: "/static//logo.png",
+                      mode: "aspectFit"
+                    })
+                  ])) : vue.createCommentVNode("v-if", true)
+                ])
+              } : void 0
+            ]), 1032, ["onClick", "title", "isCell"]);
+          }), 128))
+        ]);
+      }), 256)),
+      vue.createElementVNode("view", {
+        class: "text-center font-md bg-white p-2",
+        style: { "color": "#6b859a" },
+        onClick: _cache[0] || (_cache[0] = (...args) => $options.toChat && $options.toChat(...args))
+      }, "\u53D1\u9001\u6D88\u606F"),
+      vue.createCommentVNode(" \u6839\u636E\u540E\u53F0\u5B57\u6BB5\u67E5\u770B\u662F\u5426\u88AB\u6DFB\u52A0\u5230\u9ED1\u540D\u5355 "),
+      vue.createElementVNode("view", { class: "mt-2 font-small text-common-font text-center" }, "\u5DF2\u52A0\u5165\u9ED1\u540D\u5355\uFF0C\u4F60\u5C06\u65E0\u6CD5\u63A5\u53D7\u5230\u5B83\u7684\u6D88\u606F")
+    ]);
+  }
+  var PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserInfo.vue"]]);
+  const _sfc_main$7 = {
+    onLoad(query) {
+    },
+    components: {
+      YxNavBar,
+      YxList
+    },
+    mounted() {
+      this.listData = [
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u8BBE\u7F6E\u5907\u6CE8\u548C\u6807\u7B7E",
+            isCell: true,
+            event: "tag"
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u670B\u53CB\u6743\u9650",
+            isCell: true,
+            event: "auth"
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u628A\u5B83\u63A8\u8350\u7ED9\u670B\u53CB",
+            isCell: true,
+            event: "recommend"
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u8BBE\u4E3A\u661F\u6807\u670B\u53CB",
+            sign: "switch"
+          }
+        ],
+        [
+          {
+            id: Math.random() * 2e3,
+            title: "\u52A0\u5165\u9ED1\u540D\u5355",
+            sign: "switch"
+          },
+          {
+            id: Math.random() * 2e3,
+            title: "\u6295\u8BC9",
+            isCell: true
+          }
+        ]
+      ];
+    },
+    data() {
+      return {
+        targetId: "",
+        listData: []
+      };
+    },
+    methods: {
+      handleObjEvent(data2) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:81", "data", data2);
+        switch (data2.event) {
+          case "tag":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag");
+            break;
+          case "auth":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth");
+            break;
+          case "recommend":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend");
+            break;
+          default:
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:93", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    }
+  };
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    return vue.openBlock(), vue.createElementBlock("view", { class: "fill-screen bg-common" }, [
+      vue.createVNode(_component_yx_nav_bar, {
+        title: "\u8D44\u6599\u8BBE\u7F6E",
+        class: "mb-4",
+        existMore: false
+      }),
+      vue.createElementVNode("view", { class: "pt-5" }),
+      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list, i2) => {
+        return vue.openBlock(), vue.createElementBlock("view", {
+          class: "mb-2 bg-white",
+          key: i2
+        }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              onClick: ($event) => $options.handleObjEvent(data2),
+              title: data2.title,
+              isCell: data2.isCell,
+              key: data2.id
+            }, vue.createSlots({ _: 2 }, [
+              data2.suffix || data2.sign ? {
+                name: "suffix",
+                fn: vue.withCtx(() => [
+                  data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+                    vue.createElementVNode("switch", {
+                      onChange: (e) => _ctx.switchToggle(e, data2)
+                    }, null, 40, ["onChange"])
+                  ])) : vue.createCommentVNode("v-if", true)
+                ])
+              } : void 0
+            ]), 1032, ["onClick", "title", "isCell"]);
+          }), 128))
+        ]);
+      }), 128)),
+      vue.createElementVNode("view", { class: "text-center font-md bg-white p-2 text-danger" }, "\u5220\u9664")
+    ]);
+  }
+  var PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
+  const _sfc_main$6 = {
+    components: {
+      YxNavBar
+    },
+    data() {
+      return {};
+    },
+    methods: {
+      routerPath(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    }
+  };
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    return vue.openBlock(), vue.createElementBlock("view", { class: "bg-white" }, [
+      vue.createVNode(_component_yx_nav_bar, { existMore: false }, {
+        suffix: vue.withCtx(() => [
+          vue.createElementVNode("button", {
+            size: "mini",
+            class: "text-white main-bg-color"
+          }, "\u5B8C\u6210")
+        ]),
+        _: 1
+      }),
+      vue.createElementVNode("view", { class: "p-2 mt-5" }, [
+        vue.createElementVNode("view", { class: "text-center px-2 font-weight-bold font-md" }, " \u8BBE\u7F6E\u5907\u6CE8\u548C\u6807\u7B7E "),
+        vue.createElementVNode("view", { class: "p-1" }, [
+          vue.createElementVNode("view", { class: "m-1" }, "\u5907\u6CE8"),
+          vue.createElementVNode("view", { class: "p-2 rounded bg-common" }, [
+            vue.createElementVNode("input", { type: "text" })
+          ])
+        ]),
+        vue.createElementVNode("view", {
+          class: "p-1",
+          onClick: _cache[0] || (_cache[0] = ($event) => $options.routerPath("/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick"))
+        }, [
+          vue.createElementVNode("view", { class: "m-1" }, "\u6807\u7B7E"),
+          vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
+            vue.createElementVNode("view", { class: "flex-1" }, "\u6DFB\u52A0\u6807\u7B7E"),
+            vue.createElementVNode("view", null, ">")
+          ])
+        ]),
+        vue.createElementVNode("view", { class: "p-1" }, [
+          vue.createElementVNode("view", { class: "m-1" }, "\u7535\u8BDD\u53F7\u7801"),
+          vue.createElementVNode("view", { class: "rounded bg-common font-md justify-around flex" }, [
+            vue.createElementVNode("view", { class: "ml-2 p-1 font-lg" }, "+"),
+            vue.createElementVNode("input", {
+              type: "text",
+              class: "mt-1 flex-1"
+            })
+          ])
+        ]),
+        vue.createElementVNode("view", { class: "p-1" }, [
+          vue.createElementVNode("view", { class: "m-1" }, "\u63CF\u8FF0"),
+          vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
+            vue.createElementVNode("input", {
+              type: "text",
+              class: "flex-1",
+              placeholder: "\u6DFB\u52A0\u6587\u5B57\u63CF\u8FF0"
+            })
+          ])
+        ])
+      ])
+    ]);
+  }
+  var PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
+  const _sfc_main$5 = {
+    components: {
+      YxNavBar,
+      YxCommonWrapper
+    },
+    mounted() {
+      this.tagList.push({ id: Math.random() * 1e3, title: "+ \u65B0\u5EFA\u6807\u7B7E", oftenExist: true }, { id: Math.random() * 1e3, title: "\u4FC4\u5F0F", isSelected: false }, { id: Math.random() * 1e3, title: "+ \u5927\u54E5", isSelected: false });
+    },
+    data() {
+      return {
+        tagList: [],
+        tagVal: "",
+        creatingTag: false,
+        userTag: []
+      };
+    },
+    methods: {
+      createTag(val) {
+        return { id: Math.random() * 1e3, title: val };
+      },
+      createTagBox(tag) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue:68", tag);
+        if (tag.oftenExist) {
+          this.creatingTag = true;
+        } else {
+          tag.isSelected = !tag.isSelected;
+          if (tag.isSelected) {
+            this.userTag.unshift(tag);
+          } else {
+            const i2 = this.userTag.findIndex((obj) => obj.id === tag.id);
+            this.userTag.splice(i2, 1);
+          }
+        }
+      },
+      inputCheck(e) {
+        this.tagVal = e.detail.value;
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue:84", this.tagVal.length);
+        if (this.tagVal.length >= 10) {
+          uni.showToast({
+            title: "\u6700\u591A\u53EA\u80FD\u8F93\u516510\u4E2A\u5B57",
+            icon: "none",
+            duration: 500
+          });
+        }
+      },
+      hideInputBox(type) {
+        switch (type) {
+          case "create":
+            if (this.tagVal.length) {
+              this.tagList.push(this.createTag(this.tagVal));
+              this.tagVal = "";
+            }
+            break;
+        }
+        this.creatingTag = false;
+      },
+      goBack() {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue:107", "\u8FD4\u56DE");
+        uni.navigateBack();
+      }
+    },
+    computed: {}
+  };
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, { class: "position-relative" }, {
+      default: vue.withCtx(() => [
+        vue.createVNode(_component_yx_nav_bar, {
+          existMore: false,
+          titleCenter: true,
+          title: "\u4ECE\u5168\u90E8\u6807\u7B7E\u4E2D\u6DFB\u52A0"
+        }, {
+          suffix: vue.withCtx(() => [
+            vue.createElementVNode("button", {
+              size: "mini",
+              class: "text-white main-bg-color",
+              onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
+            }, "\u5B8C\u6210")
+          ]),
+          _: 1
+        }),
+        vue.createElementVNode("view", { class: "bg-white pt-5" }, [
+          vue.createElementVNode("text", { class: "font-small text-common pl-2" }, "\u4ECE\u4EE5\u4E0B\u6807\u7B7E\u8FDB\u884C\u9009\u62E9"),
+          vue.createElementVNode("view", { class: "text-common p-3 flex font-small flex-wrap align-center" }, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTag, (tag) => {
+              return vue.openBlock(), vue.createElementBlock("view", {
+                key: tag.id,
+                onClick: ($event) => $options.createTagBox(tag),
+                class: vue.normalizeClass([tag.isSelected ? "bg-white main-bg-color text-white " : "bg-white", "p-1 px-2 mr-2 mt-2 rounded-circle"])
+              }, vue.toDisplayString(tag.title), 11, ["onClick"]);
+            }), 128)),
+            vue.createElementVNode("view", { class: "flex font-sm mt-2" }, " \u9009\u62E9\u6807\u7B7E ")
+          ])
+        ]),
+        vue.createElementVNode("view", {
+          class: "p-2 text-white",
+          style: { "color": "#9ca3af" }
+        }, [
+          vue.createElementVNode("view", { class: "flex justify-between font-sm" }, [
+            vue.createElementVNode("view", null, "\u5168\u90E8\u6807\u7B7E"),
+            vue.createElementVNode("view", null, "\u7F16\u8F91 > ")
+          ]),
+          vue.createElementVNode("view", {
+            class: "mt-1 flex flex-wrap",
+            id: "tag-region-choose",
+            style: { "font-size": "22rpx" }
+          }, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.tagList, (tag) => {
+              return vue.openBlock(), vue.createElementBlock("view", {
+                key: tag.id,
+                onClick: ($event) => $options.createTagBox(tag),
+                class: vue.normalizeClass([tag.oftenExist ? "border " : tag.isSelected ? "bg-white main-bg-color text-white " : "bg-white", "p-1 px-2 mr-2 mt-2 rounded-circle"])
+              }, vue.toDisplayString(tag.title), 11, ["onClick"]);
+            }), 128))
+          ])
+        ]),
+        vue.createElementVNode("view", {
+          id: "create-tag-region",
+          class: vue.normalizeClass(["flex align-center flex-row position-absolute zTop bg-white p-2 rounded", $data.creatingTag ? "display-block" : "display-none"]),
+          style: { "left": "50rpx", "top": "450rpx", "width": "300rpx" }
+        }, [
+          vue.createElementVNode("textarea", {
+            maxlength: 10,
+            "auto-height": "",
+            class: "font-small",
+            value: $data.tagVal,
+            onInput: _cache[1] || (_cache[1] = (...args) => $options.inputCheck && $options.inputCheck(...args))
+          }, null, 40, ["value"]),
+          vue.createElementVNode("button", {
+            onClick: _cache[2] || (_cache[2] = ($event) => $options.hideInputBox("create")),
+            class: "text-white main-bg-color mt-1 font-small",
+            style: { "height": "50rpx", "line-height": "50rpx" }
+          }, "\u786E\u5B9A")
+        ], 2),
+        vue.createElementVNode("view", {
+          id: "mask",
+          class: vue.normalizeClass(["fill-screen bg-danger lucency-hide position-absolute", $data.creatingTag ? "display-block" : "display-none"]),
+          onClick: _cache[3] || (_cache[3] = (...args) => $options.hideInputBox && $options.hideInputBox(...args)),
+          style: { "left": "0", "top": "0" }
+        }, null, 2)
+      ]),
+      _: 1
+    });
+  }
+  var PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue"]]);
+  const _sfc_main$4 = {
+    onLoad(query) {
+    },
+    components: {
+      YxNavBar,
+      YxList,
+      YxCommonWrapper
+    },
+    mounted() {
+      this.listData = [
+        {
+          title: "\u8BBE\u7F6E\u670B\u53CB\u6743\u9650",
+          list: [
+            {
+              id: Math.random() * 2e3,
+              title: "\u804A\u5929\u3001\u670B\u53CB\u5708\u7B49",
+              sign: "auth",
+              radio: true,
+              event: "moreAuth"
+            },
+            {
+              id: Math.random() * 2e3,
+              title: "\u4EC5\u804A\u5929",
+              sign: "auth",
+              radio: false,
+              event: "chat"
+            }
+          ]
+        },
+        {
+          title: "\u670B\u53CB\u5708\u548C\u72B6\u6001",
+          list: [
+            {
+              id: Math.random() * 2e3,
+              title: "\u4E0D\u8BA9\u4ED6\u770B\u6211",
+              sign: "switch",
+              event: "forbidSeekMe"
+            },
+            {
+              id: Math.random() * 2e3,
+              title: "\u4E0D\u770B\u5B83",
+              sign: "switch",
+              event: "notSeekIt"
+            }
+          ]
+        }
+      ];
+    },
+    data() {
+      return {
+        targetId: "",
+        listData: []
+      };
+    },
+    methods: {
+      handleObjEvent(data2) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:77", "data", data2);
+        switch (data2.event) {
+          case "chat":
+          case "moreAuth":
+            data2.radio = true;
+            const authList = this.authList;
+            authList.filter((list) => list.id !== data2.id).forEach((list) => list.radio = false);
+            break;
+          default:
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:86", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    },
+    computed: {
+      authList() {
+        return this.listData[0].list;
+      }
+    }
+  };
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
+      default: vue.withCtx(() => [
+        vue.createVNode(_component_yx_nav_bar, {
+          title: "\u670B\u53CB\u6743\u9650",
+          existMore: false
+        }),
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+          return vue.openBlock(), vue.createElementBlock("view", { class: "mt-2" }, [
+            vue.createElementVNode("view", { class: "font-small my-1 mx-2 text-common-font" }, vue.toDisplayString(list.title), 1),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list.list, (data2) => {
+              return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                title: data2.title,
+                onClick: ($event) => $options.handleObjEvent(data2),
+                class: "bg-white px-2",
+                key: data2.id
+              }, {
+                suffix: vue.withCtx(() => [
+                  data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("switch", {
+                    key: 0,
+                    checked: "true",
+                    onChange: _cache[0] || (_cache[0] = () => {
+                    })
+                  }, null, 32)) : vue.createCommentVNode("v-if", true),
+                  data2.sign === "auth" && data2.radio ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, [
+                    vue.createElementVNode("text", { class: "main-text-color" }, " \u221A ")
+                  ])) : vue.createCommentVNode("v-if", true)
+                ]),
+                _: 2
+              }, 1032, ["title", "onClick"]);
+            }), 128))
+          ]);
+        }), 256))
+      ]),
+      _: 1
+    });
+  }
+  var PagesUserInfoUserCustomSettingUserAuthUserAuth = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue"]]);
+  const _sfc_main$3 = {
+    onLoad(query) {
+    },
+    components: {
+      YxNavBar,
+      YxList,
+      YxCommonWrapper,
+      YxPopup
+    },
+    mounted() {
+      this.userList = this.userList.map((user) => {
+        user.isSelected = false;
+        return user;
+      });
+      this.userTopList = this.userList.filter((user) => user.is_top);
+      this.recentContact = [...this.userList].splice(2, 2);
+      plus.key.addEventListener("keyup", (e) => {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue:135", "key", e);
+      });
+    },
+    data() {
+      return {
+        targetId: "",
+        selectedUserList: [],
+        userTopList: [],
+        recentContact: [],
+        userList,
+        sendSingle: true,
+        selectedTargetInMoreChoseMode: false,
+        show: false,
+        popPosition: {
+          x: 140,
+          y: 400
+        },
+        selectedCount: 0,
+        havingSearchUser: false,
+        searchVal: ""
+      };
+    },
+    methods: {
+      inputWatcher(e) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue:163", "\u8F93\u5165", e);
+        if (!this.sendSingle && this.searchVal.length === 0 && this.selectedUserList.length) {
+          const last = this.selectedUserList.length - 1;
+          this.selectedUserList[last].isSelected = false;
+          this.selectedUserList.pop();
+        }
+      },
+      handleObjEvent(data2) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue:171", "data", data2);
+        switch (data2.event) {
+          case "chat":
+          case "moreAuth":
+            data2.radio = true;
+            const authList = this.authList;
+            authList.filter((list) => list.id !== data2.id).forEach((list) => list.radio = false);
+            break;
+          default:
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue:180", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      },
+      sendToIt(user) {
+        if (this.sendSingle) {
+          this.selectedTargetInMoreChoseMode = false;
+          this.selectedUserList.push(user);
+          this.show = true;
+        } else {
+          this.selectedTargetInMoreChoseMode = true;
+          user.isSelected = !user.isSelected;
+          if (user.isSelected) {
+            this.selectedUserList.push(user);
+          } else {
+            const i2 = this.selectedUserList.findIndex((u) => user.id == u.id);
+            this.selectedUserList.splice(i2, 1);
+          }
+        }
+      },
+      changeSelectedMode() {
+        this.sendSingle = !this.sendSingle;
+      },
+      hidePopup() {
+        if (this.sendSingle) {
+          this.selectedUserList = [];
+        }
+        this.show = false;
+      },
+      sendDataToUser() {
+        this.show = true;
+      },
+      handleSearchUser(e) {
+      }
+    },
+    computed: {
+      authList() {
+        return this.listData[0].list;
+      },
+      userListOfNotTop() {
+        return this.userList.filter((user) => !user.is_top);
+      }
+    },
+    watch: {
+      userList: {
+        deep: true,
+        handler() {
+          formatAppLog("log", "at pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue:240", "c", userList.filter((user) => user.isSelected).length);
+          this.selectedCount = userList.filter((user) => user.isSelected).length;
+          if (this.selectedCount === 0) {
+            this.selectedTargetInMoreChoseMode = false;
+          }
+        }
+      },
+      searchVal() {
+        this.havingSearchUser = this.searchVal.length > 0;
+      }
+    }
+  };
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_popup = vue.resolveComponent("yx-popup");
+    const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
+    return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
+      default: vue.withCtx(() => [
+        vue.createVNode(_component_yx_nav_bar, {
+          titleCenter: true,
+          title: `\u9009\u62E9${$data.sendSingle ? "\u4E00" : "\u591A"}\u4E2A\u804A\u5929`,
+          existMore: false
+        }, {
+          suffix: vue.withCtx(() => [
+            vue.createCommentVNode(" \u5355\u9009\u6A21\u5F0F\u6216\u591A\u9009\u6A21\u5F0F\u6CA1\u6709\u9009\u62E9\u65F6\u5C55\u793A\u6B64 "),
+            !$data.selectedTargetInMoreChoseMode ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              onClick: _cache[0] || (_cache[0] = (...args) => $options.changeSelectedMode && $options.changeSelectedMode(...args))
+            }, vue.toDisplayString($data.sendSingle ? "\u591A" : "\u5355") + "\u9009", 1)) : vue.createCommentVNode("v-if", true),
+            vue.createCommentVNode(" \u591A\u9009\u6A21\u5F0F\u4E14\u9009\u62E9\u4E86\u76EE\u6807\u5C55\u793A\u6B64 "),
+            $data.selectedTargetInMoreChoseMode ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 1,
+              class: "p-1 rounded main-bg-color text-white",
+              onClick: _cache[1] || (_cache[1] = (...args) => $options.sendDataToUser && $options.sendDataToUser(...args))
+            }, "\u53D1\u9001(" + vue.toDisplayString($data.selectedCount) + ")", 1)) : vue.createCommentVNode("v-if", true)
+          ]),
+          _: 1
+        }, 8, ["title"]),
+        vue.createCommentVNode(" \u641C\u7D22\u6846\uFF08\u76D2\u5B50\u5360\u4F4D\uFF0C\u70B9\u51FB\u540E\u4E0A\u65B9\u5F00\u59CB\u641C\u7D22\u6846(\u8DDF\u7740\u906E\u7F69\u5C42)\uFF09 | \u6700\u8FD1\u8F6C\u53D1\u7684\u5BF9\u8C61(\u5982\u679C\u6700\u8FD1\u6CA1\u8F6C\u53D1\u5219\u4E0D\u663E\u793A) "),
+        vue.createElementVNode("view", { class: "p-2" }, [
+          vue.createElementVNode("view", {
+            class: "py-2 rounded bg-white text-center text-common-font font-sm",
+            onClick: _cache[4] || (_cache[4] = () => {
+            })
+          }, [
+            vue.createCommentVNode(" \u5728\u591A\u9009\u65F6\uFF0C\u9009\u62E9\u7684\u7528\u6237\u4F1A\u6B64\u8FDB\u884C\u663E\u793A "),
+            !$data.sendSingle ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              class: "flex flex-wrap"
+            }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.selectedUserList, (user) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "m-2 rounded font-small text-common-font text-center text-ellipsis position-relative",
+                  style: { "width": "50rpx" },
+                  key: user.id
+                }, [
+                  vue.createElementVNode("image", {
+                    src: user.image_src,
+                    style: { "width": "100%", "height": "50rpx" }
+                  }, null, 8, ["src"]),
+                  vue.createCommentVNode(' <image src="/static/logo.png"></image> ')
+                ]);
+              }), 128))
+            ])) : vue.createCommentVNode("v-if", true),
+            vue.withDirectives(vue.createElementVNode("textarea", {
+              "auto-height": "",
+              maxlength: -1,
+              onKeyup: _cache[2] || (_cache[2] = (...args) => $options.inputWatcher && $options.inputWatcher(...args)),
+              "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $data.searchVal = $event),
+              style: { "max-height": "75rpx", "max-width": "400rpx", "overflow": "auto", "margin": "auto" },
+              placeholder: "\u{1F50D} \u641C\u7D22"
+            }, null, 544), [
+              [vue.vModelText, $data.searchVal]
+            ])
+          ]),
+          vue.createCommentVNode(" \u6700\u8FD1\u8F6C\u53D1\u7684\u5BF9\u8C61\u7528\u6237\uFF0C\u5982\u679C\u6CA1\u6709\u8F6C\u53D1\u8FC7\u5219\u4E0D\u663E\u793A "),
+          !$data.havingSearchUser ? (vue.openBlock(), vue.createElementBlock("view", {
+            key: 0,
+            class: "py-4"
+          }, [
+            vue.createElementVNode("view", { class: "font-small" }, "\u6700\u8FD1\u8F6C\u53D1"),
+            vue.createCommentVNode(" \u8F6C\u53D1\u7684\u5BF9\u8C61 "),
+            vue.createElementVNode("view", { class: "flex flex-wrap" }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.recentContact, (user) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "m-2 rounded font-small text-common-font text-center text-ellipsis position-relative",
+                  style: { "width": "100rpx" },
+                  onClick: ($event) => $options.sendToIt(user),
+                  key: user.id
+                }, [
+                  vue.createCommentVNode("  \u5706\u5708\u9009\u62E9\u6846 "),
+                  !$data.sendSingle ? (vue.openBlock(), vue.createElementBlock("view", {
+                    key: 0,
+                    class: "position-absolute zTop flex justify-center align-center rounded-circle border",
+                    style: { "top": "5rpx", "right": "5rpx", "width": "30rpx", "height": "30rpx" }
+                  }, [
+                    vue.createCommentVNode(" \u9009\u4E2D\u65F6\u6B64\u6837\u5F0F\u663E\u793A "),
+                    user.isSelected ? (vue.openBlock(), vue.createElementBlock("view", {
+                      key: 0,
+                      style: { "height": "15rpx", "width": "15rpx" },
+                      class: "main-bg-color rounded-circle"
+                    })) : vue.createCommentVNode("v-if", true)
+                  ])) : vue.createCommentVNode("v-if", true),
+                  vue.createElementVNode("image", {
+                    src: user.image_src,
+                    style: { "width": "100%", "height": "100rpx" }
+                  }, null, 8, ["src"]),
+                  vue.createElementVNode("view", { class: "text-ellipsis" }, vue.toDisplayString(user.user_name), 1),
+                  vue.createCommentVNode(' <image src="/static/logo.png"></image> ')
+                ], 8, ["onClick"]);
+              }), 128))
+            ])
+          ])) : vue.createCommentVNode("v-if", true)
+        ]),
+        vue.createCommentVNode(" \u53EF\u5206\u4EAB\u7684\u5BF9\u8C61\u7528\u6237 "),
+        !$data.havingSearchUser ? (vue.openBlock(), vue.createElementBlock("view", {
+          key: 0,
+          class: "bg-white"
+        }, [
+          vue.createElementVNode("view", { class: "flex p-2 font-small justify-between bg-common-shallow" }, [
+            vue.createElementVNode("view", null, "\u6700\u8FD1\u804A\u5929"),
+            vue.createElementVNode("view", { class: "main-text-color" }, "+ \u521B\u5EFA\u65B0\u7684\u804A\u5929")
+          ]),
+          vue.createCommentVNode(" \u7F6E\u9876\u5BF9\u8C61\u7528\u6237 "),
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTopList, (user) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              onClick: ($event) => $options.sendToIt(user),
+              class: "bg-common-shallow",
+              title: user.user_name,
+              img: user.image_src,
+              key: user.id
+            }, {
+              prefix: vue.withCtx(() => [
+                !$data.sendSingle ? (vue.openBlock(), vue.createElementBlock("view", {
+                  key: 0,
+                  class: "pr-2"
+                }, [
+                  vue.createElementVNode("view", {
+                    class: "zTop flex justify-center align-center rounded-circle border",
+                    style: { "top": "5rpx", "right": "5rpx", "width": "30rpx", "height": "30rpx", "border-color": "black" }
+                  }, [
+                    vue.createCommentVNode(" \u9009\u4E2D\u65F6\u6B64\u6837\u5F0F\u663E\u793A "),
+                    user.isSelected ? (vue.openBlock(), vue.createElementBlock("view", {
+                      key: 0,
+                      style: { "height": "15rpx", "width": "15rpx" },
+                      class: "main-bg-color rounded-circle"
+                    })) : vue.createCommentVNode("v-if", true)
+                  ])
+                ])) : vue.createCommentVNode("v-if", true)
+              ]),
+              _: 2
+            }, 1032, ["onClick", "title", "img"]);
+          }), 128)),
+          vue.createCommentVNode(" \u975E\u7F6E\u9876\u5BF9\u8C61\u7528\u6237 "),
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.userListOfNotTop, (user) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              onClick: ($event) => $options.sendToIt(user),
+              title: user.user_name,
+              img: user.image_src,
+              key: user.id
+            }, {
+              prefix: vue.withCtx(() => [
+                !$data.sendSingle ? (vue.openBlock(), vue.createElementBlock("view", {
+                  key: 0,
+                  class: "pr-2"
+                }, [
+                  vue.createElementVNode("view", {
+                    class: "zTop flex justify-center align-center rounded-circle border",
+                    style: { "top": "5rpx", "right": "5rpx", "width": "30rpx", "height": "30rpx", "border-color": "black" }
+                  }, [
+                    vue.createCommentVNode(" \u9009\u4E2D\u65F6\u6B64\u6837\u5F0F\u663E\u793A "),
+                    user.isSelected ? (vue.openBlock(), vue.createElementBlock("view", {
+                      key: 0,
+                      style: { "height": "15rpx", "width": "15rpx" },
+                      class: "main-bg-color rounded-circle"
+                    })) : vue.createCommentVNode("v-if", true)
+                  ])
+                ])) : vue.createCommentVNode("v-if", true)
+              ]),
+              _: 2
+            }, 1032, ["onClick", "title", "img"]);
+          }), 128))
+        ])) : vue.createCommentVNode("v-if", true),
+        vue.createCommentVNode(" \u641C\u7D22\u7528\u6237\u65F6\u663E\u793A ,\u663E\u793A\u591A\u9009\u6846 "),
+        $data.havingSearchUser ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, [
+          vue.createCommentVNode(" \u8054\u7CFB\u4EBA \uFF0C\u663E\u793A\u6635\u79F0"),
+          vue.createElementVNode("view", null, [
+            vue.createElementVNode("view", { class: "font-small text-common-font m-2" }, "\u8054\u7CFB\u4EBA")
+          ]),
+          vue.createCommentVNode(" \u7FA4\u804A \uFF0C\u4E0D\u663E\u793A\u6635\u79F0"),
+          vue.createElementVNode("view", { class: "font-small text-common-font m-2" }, "\u7FA4\u804A"),
+          vue.createElementVNode("view"),
+          vue.createTextVNode(" \u6B63\u5728\u641C\u7D22\u7528\u6237\uFF0C\u6709\u65F6\u95F4\u5728\u8FDB\u884C\u529F\u80FD\u5B8C\u5584\uFF0C\u6574\u4F53\u548C\u7528\u6237\u663E\u793A\u76F8\u540C ")
+        ])) : vue.createCommentVNode("v-if", true),
+        vue.createVNode(_component_yx_popup, {
+          show: $data.show,
+          isCustom: true,
+          onHide: $options.hidePopup,
+          popPosittion: $data.popPosition
+        }, {
+          custom: vue.withCtx(() => [
+            vue.createElementVNode("view", { class: "p-2 mt-1" }, [
+              vue.createElementVNode("view", { class: "m-1 font-weight-bold font-sm" }, "\u53D1\u9001\u7ED9\uFF1A"),
+              vue.createCommentVNode(" \u53D1\u9001\u5BF9\u8C61\u7528\u6237\u5217\u8868 "),
+              vue.createElementVNode("view", { class: "flex flex-wrap m-2" }, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.selectedUserList, (user) => {
+                  return vue.openBlock(), vue.createElementBlock("view", {
+                    key: user.id,
+                    class: "rounded overflow-hidden m-1",
+                    style: { "width": "60rpx", "height": "60rpx" }
+                  }, [
+                    vue.createElementVNode("image", {
+                      src: user.image_src,
+                      style: { "width": "100%", "height": "100%" },
+                      mode: "aspectFill"
+                    }, null, 8, ["src"])
+                  ]);
+                }), 128))
+              ]),
+              vue.createElementVNode("view", { class: "ml-1 my-2 font-sm text-common-font" }, "[\u4E2A\u4EBA\u540D\u7247]\u8D85\u4EBA"),
+              vue.createElementVNode("view", { class: "my-4 bg-common p-1" }, [
+                vue.createElementVNode("textarea", {
+                  "auto-height": "",
+                  maxlength: -1,
+                  style: { "max-height": "75rpx", "max-width": "400rpx", "overflow": "auto" },
+                  placeholder: "\u7ED9\u670B\u53CB\u7559\u8A00"
+                })
+              ]),
+              vue.createCommentVNode(" \u63D0\u4EA4\u6A21\u5757 "),
+              vue.createElementVNode("view", { class: "font-sm pt-3 font-weight-bold flex text-center justify-center align-center" }, [
+                vue.createElementVNode("view", {
+                  style: { "border-right": "1px solid #ccc", "height": "50rpx", "line-height": "50rpx" },
+                  class: "flex-1",
+                  onClick: _cache[5] || (_cache[5] = (...args) => $options.hidePopup && $options.hidePopup(...args))
+                }, "\u53D6\u6D88"),
+                vue.createElementVNode("view", {
+                  class: "main-text-color flex-1",
+                  style: { "height": "50rpx", "line-height": "50rpx" },
+                  onClick: _cache[6] || (_cache[6] = (...args) => $options.sendDataToUser && $options.sendDataToUser(...args))
+                }, "\u53D1\u9001")
+              ])
+            ])
+          ]),
+          _: 1
+        }, 8, ["show", "onHide", "popPosittion"])
+      ]),
+      _: 1
+    });
+  }
+  var PagesUserInfoUserCustomSettingShareFriendShareFriend = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue"]]);
+  const _sfc_main$2 = {
+    onLoad(query) {
+    },
+    components: {
+      YxNavBar,
+      YxList
+    },
+    mounted() {
+      this.listData = [
+        {
+          id: Math.random() * 2e3,
+          publish_time: "\u6628\u5929",
+          img: "/static/logo.png",
+          message: "\u6211\u53D1\u4E0D\u4E86\u4E00\u4E2A\u8BC4\u8BBA\uFF0C\u5FEB\u6765\u548C\u6211\u4E00\u8D77\u8BA8\u8BBA\u5427\uFF0C\u671F\u5F85\u4F60\u7684\u52A0\u5165"
+        },
+        {
+          id: Math.random() * 2e3,
+          publish_time: "\u4ECA\u5929",
+          img: "/static/logo.png",
+          message: "\u5929\u884C\u5065\uFF0C\u541B\u5B50\u4EE5\u81EA\u5F3A\u4E0D\u606F\u3002\u4EBA\u751F\u662F\u4E00\u573A\u52AA\u529B\uFF0C\u5C31\u7B97\u7ED3\u5C40\u662F\u4E00\u4E2A\u70E7\u7CCA\u7684\u82B1\u5377\u5B50\uFF0C\u4E5F\u4E0D\u8981\u61CA\u6094\u81EA\u5DF1\u66FE\u7ECF\u7684\u4E00\u756A\u70C8\u706B\u953B\u70BC\u3002\u4EBA\u751F\u98CE\u666F\u5728\u8DEF\u8FC7\uFF0C\u4E0D\u5728\u7ED3\u5C40"
+        },
+        {
+          id: Math.random() * 2e3,
+          publish_time: "16\u70B9",
+          img: "/static/logo.png",
+          message: "\u4EBA\u751F\u5C31\u662F\u8FD9\u6837\uFF0C\u5F97\u5931\u65E0\u5E38\uFF0C\u5E38\u5B58\u5B89\u9759\u4E4B\u5FC3\uFF0C\u5E38\u5B58\u5BBD\u5BB9\u4E4B\u5FC3\uFF0C\u5FC3\u91CC\u653E\u4E0D\u4E0B\uFF0C\u81EA\u7136\u5C31\u6210\u4E86\u8D1F\u62C5\uFF0C\u8D1F\u62C5\u8D8A\u591A\uFF0C\u4EBA\u751F\u5C31\u8D8A\u4E0D\u5FEB\u4E50\u3002\u4F18\u96C5\u7684\u4EBA\u751F\uFF0C\u5C31\u662F\u7528\u5E73\u9759\u7684\u5FC3\uFF0C\u5E73\u548C\u7684\u5FC3\u6001\uFF0C\u522B\u518D\u4E3A\u9519\u8FC7\u4E86\u4EC0\u4E48\u800C\u61CA\u6094\u3002"
+        },
+        {
+          id: Math.random() * 2e3,
+          publish_time: "\u524D\u5929",
+          img: "/static/logo.png",
+          message: "\u3010\u8282\u4FED\u683C\u8A00\u3011\uFF1A\u5929\u4E0B\u4E4B\u4E8B\uFF0C\u5E38\u6210\u4E8E\u52E4\u4FED\u800C\u8D25\u4E8E\u5962\u9761\u3002\u2014\u2014\u9646\u6E38 \u4EBA\u751F\u683C\u8A00 \u8EAB\u5916\u969C\u788D\u4E8B\u5C0F\uFF0C\u5FC3\u4E2D\u969C\u788D\u4E8B\u5927\u3002\u2014\u2014\u7231\u9ED8\u751F \u8D22\u5BCC\u4E0E\u80C6\u8BC6\u540C\u5728\u3002\u2014\u2014\u7EF4\u5409\u5C14\uFF08\u53E4\u7F57\u9A6C\u8BD7\u4EBA\uFF09\u5B9E\u529B\u7684\u6765\u6E90\u4E0D\u662F\u80DC\u5229\u3002\u552F\u6709\u594B\u6597\u624D\u80FD\u589E\u5F3A\u5B9E\u529B\u3002\u5F53\u4F60\u5386\u7ECF\u82E6\u96BE\u800C\u4E0D\u6C14\u9981\uFF0C\u90A3\u5C31\u662F..."
+        }
+      ];
+      if (window) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:86", "\u6D4F\u89C8\u5668\u5C4F\u5E55", window == null ? void 0 : window.screen);
+        this.screenInfo.width = window.screen.width;
+        this.screenInfo.height = window.screen.height;
+      } else if (plus) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:90", plus.device);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:91", "\u624B\u673A\u8BBE\u5907\u4FE1\u606F", plus.screen);
+        this.screenInfo.width = plus.screen.resolutionWidth;
+        this.screenInfo.height = plus.screen.resolutionHeight;
+      }
+    },
+    data() {
+      return {
+        targetId: "",
+        expandBackground: false,
+        listData: [],
+        sliderStartY: 0,
+        sliderHeight: 0,
+        screenInfo: {
+          width: "",
+          height: ""
+        }
+      };
+    },
+    methods: {
+      handleTouchStart(e) {
+        this.sliderStartY = e.changedTouches[0].clientY;
+      },
+      handleTouchMove(e) {
+        let y = e.changedTouches[0].clientY;
+        let target2 = y - this.sliderStartY;
+        let dest = target2 > 0 ? 100 / this.screenInfo.height * target2 : 0;
+        dest = dest > 25 ? 25 + dest * 0.2 : dest;
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:130", "dest", dest);
+        this.sliderHeight = dest;
+      },
+      handleTouchEnd(e) {
+        this.expandBackground = this.sliderHeight > 25;
+        if (this.expandBackground) {
+          this.sliderHeight = 120;
+        } else {
+          this.sliderStartY = 0;
+          this.sliderHeight = 0;
+        }
+      },
+      handleObjEvent(data2) {
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:148", "data", data2);
+        switch (data2.event) {
+          case "tag":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag");
+            break;
+          case "auth":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth");
+            break;
+          case "recommend":
+            this.routerGo("/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend");
+            break;
+          default:
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:160", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    },
+    computed: {
+      sliderBgDistance() {
+        const distance = -50 + this.sliderHeight;
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:179", "slider", this.sliderHeight);
+        return distance > 0 ? 0 : distance;
+      },
+      commentCount() {
+        return this.listData.length;
+      },
+      showList() {
+        return this.listData.splice(0, 2);
+      },
+      sliderVh() {
+        return 100 / this.screenInfo.height * target;
+      }
+    }
+  };
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    return vue.openBlock(), vue.createElementBlock("view", null, [
+      !$data.expandBackground ? (vue.openBlock(), vue.createBlock(_component_yx_nav_bar, {
+        key: 0,
+        title: "",
+        existMore: false,
+        isOpacity: true,
+        requireOccupy: false
+      })) : vue.createCommentVNode("v-if", true),
+      vue.createElementVNode("view", {
+        onTouchstart: _cache[0] || (_cache[0] = (...args) => $options.handleTouchStart && $options.handleTouchStart(...args)),
+        onTouchmove: _cache[1] || (_cache[1] = (...args) => $options.handleTouchMove && $options.handleTouchMove(...args)),
+        onTouchend: _cache[2] || (_cache[2] = (...args) => $options.handleTouchEnd && $options.handleTouchEnd(...args))
+      }, [
+        vue.createCommentVNode(" \u4E3A\u4E86\u9002\u914D\u5C4F\u5E55\u800C\u5355\u4F4D\u9700\u8981\u7EDF\u4E00\uFF0C\u8FD9\u91CC\u4F7F\u7528vh\u4F5C\u4E3A\u5355\u4F4D\u5219\u4E0B\u9762\u7684\u5916\u8FB9\u8DDD\u4E5F\u8981\u4F7F\u7528vh\uFF08\u4E0D\u9002\u7528vh\u5219\u65E0\u6CD5\u8FBE\u5230\u9002\u914D\uFF09,\u4F7F\u7528device\u62FF\u5230\u5F53\u524D\u5C4F\u5E55\u7684\u4FE1\u606F\u6839\u636E\u79FB\u52A8\u8DDD\u79BB\u6362\u7B97\u51FAvw | vh "),
+        vue.createCommentVNode(' <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> '),
+        vue.createElementVNode("view", {
+          class: "position-absolute bg-common",
+          style: vue.normalizeStyle([{ "left": "0", "height": "80vh", "width": "100vw" }, `top:${$options.sliderBgDistance}vh`])
+        }, [
+          vue.createElementVNode("image", {
+            src: "/static/images/friendCircleBg.png",
+            style: { "width": "100%", "height": "100%" }
+          }),
+          vue.createElementVNode("view", { class: "zTop position-relative" }, [
+            $data.expandBackground ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              class: "position-absolute p-1 rounded-circle border font-sm text-white text-center",
+              style: { "right": "30rpx", "top": "-80rpx", "border-color": "white", "width": "80rpx" }
+            }, "\u2764 \u8D5E")) : vue.createCommentVNode("v-if", true)
+          ])
+        ], 4),
+        vue.createCommentVNode(" \u5C55\u793A\u7528\u6237\u56FE\u7247\u548C\u59D3\u540D "),
+        vue.createCommentVNode(" \u4E0A\u9762\u5E03\u5C40\u4F7F\u7528\u4E86absolute\u8131\u79BB\u4E86\u6587\u6863\u6D41\uFF0C\u56E0\u6B64\u6211\u4EEC\u8FD9\u91CC\u7684\u76D2\u5B50\u4F1A\u51FA\u73B0\u5728\u7B2C\u4E00\u884C\uFF0C\u56E0\u6B64\u9700\u8981\u4F7F\u7528\u5916\u8FB9\u8DDD\u6765\u8FDB\u884C\u79FB\u52A8\u8FBE\u5230\u6B63\u786E\u7684\u4F4D\u7F6E "),
+        vue.createCommentVNode(' <view class="flex  justify-end p-2 align-center " :style="`padding-top: ${350+sliderHeight}rpx;`"> '),
+        vue.createElementVNode("view", {
+          class: "flex justify-end p-2 align-center",
+          style: vue.normalizeStyle(`padding-top: ${25 + $data.sliderHeight}vh;`)
+        }, [
+          vue.createElementVNode("view", { class: "mr-2 zTop text-common-font font-sm" }, "\u6211\u662Fmera"),
+          vue.createElementVNode("view", {
+            class: "rounded overflow-hidden",
+            style: { "width": "100rpx", "height": "100rpx" }
+          }, [
+            vue.createElementVNode("image", {
+              src: "/static/logo.png",
+              style: { "width": "100%", "height": "100%" }
+            })
+          ])
+        ], 4),
+        vue.createCommentVNode(" \u5C55\u793A\u5177\u4F53\u4FE1\u606F "),
+        vue.createElementVNode("view", { class: "mt-5 pt-5" }, [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.showList, (data2) => {
+            return vue.openBlock(), vue.createElementBlock("view", {
+              class: "flex align-start p-2",
+              key: data2.id
+            }, [
+              vue.createElementVNode("view", { class: "font-lg font-weight-bold" }, vue.toDisplayString(data2.publish_time), 1),
+              vue.createElementVNode("view", {
+                class: "rounded overflow-hidden mx-2",
+                style: { "width": "140rpx", "height": "140rpx" }
+              }, [
+                vue.createElementVNode("image", {
+                  src: data2.img,
+                  style: { "width": "100%", "height": "100%" }
+                }, null, 8, ["src"])
+              ]),
+              vue.createElementVNode("view", { class: "flex-1 text-overflow-line-2" }, vue.toDisplayString(data2.message), 1)
+            ]);
+          }), 128)),
+          $options.commentCount > 3 ? (vue.openBlock(), vue.createElementBlock("view", {
+            key: 0,
+            class: "font-sm text-common text-center"
+          }, "\u70B9\u51FB\u67E5\u770B\u66F4\u591A\u4FE1\u606F >")) : vue.createCommentVNode("v-if", true)
+        ]),
+        vue.createElementVNode("view", { class: "p-5 font-small flex text-common align-center" }, [
+          vue.createElementVNode("view", {
+            class: "flex-1",
+            style: { "border": "1rpx solid #ccc" }
+          }),
+          vue.createElementVNode("view", { class: "mx-2" }, "\u670B\u53CB\u4EC5\u5C55\u793A" + vue.toDisplayString("\u4E09\u5929") + "\u7684\u670B\u53CB\u5708"),
+          vue.createElementVNode("view", {
+            class: "flex-1",
+            style: { "border": "1rpx solid #ccc" }
+          })
+        ])
+      ], 32)
+    ]);
+  }
+  var PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
+  const _sfc_main$1 = {
+    data() {
+      return {};
+    },
+    methods: {}
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view");
+  }
+  var PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
   __definePage("pages/tabbar/friend/friend", PagesTabbarFriendFriend);
   __definePage("pages/chat-detail/chat-detail", PagesChatDetailChatDetail);
+  __definePage("pages/chat-detail/chat-about-group-setting/chat-about-group-setting", PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting);
+  __definePage("pages/UserInfo/UserInfo", PagesUserInfoUserInfo);
+  __definePage("pages/UserInfo/UserCustomSetting/UserCustomSetting", PagesUserInfoUserCustomSettingUserCustomSetting);
+  __definePage("pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag", PagesUserInfoUserCustomSettingSetUserTagSetUserTag);
+  __definePage("pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick", PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick);
+  __definePage("pages/UserInfo/UserCustomSetting/UserAuth/UserAuth", PagesUserInfoUserCustomSettingUserAuthUserAuth);
+  __definePage("pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend", PagesUserInfoUserCustomSettingShareFriendShareFriend);
+  __definePage("pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle", PagesUserInfoUserCustomSettingFriendCircleFriendCircle);
+  __definePage("pages/tabbar/find/FriendCIrcle/FriendCIrcle", PagesTabbarFindFriendCIrcleFriendCIrcle);
   const _sfc_main = {
     onLaunch: function() {
-      formatAppLog("log", "at App.vue:4", "App Launch");
+      formatAppLog("log", "at App.vue:6", "App Launch");
     },
     onShow: function() {
-      formatAppLog("log", "at App.vue:7", "App Show");
+      formatAppLog("log", "at App.vue:9", "App Show");
     },
     onHide: function() {
-      formatAppLog("log", "at App.vue:10", "App Hide");
-    }
+      formatAppLog("log", "at App.vue:12", "App Hide");
+    },
+    mounted() {
+      const { statusBarHeight, brand } = uni.getSystemInfoSync();
+      this.statusBarHeight = statusBarHeight;
+      if (brand) {
+        this.device = "android";
+      }
+      formatAppLog("log", "at App.vue:26", "device", uni.getSystemInfoSync());
+    },
+    computed: __spreadValues(__spreadValues({}, mapWritableState(useDeviceStore, ["statusBarHeight"])), mapWritableState(useDeviceStore, ["device"]))
   };
   var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/\u804A\u5929/App.vue"]]);
+  const pinia = createPinia();
   function createApp() {
     const app = vue.createVueApp(App);
+    app.use(pinia);
+    formatAppLog("log", "at main.js:22", "@app", app);
     return {
       app
     };

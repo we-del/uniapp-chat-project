@@ -23,16 +23,16 @@ export default [
 					},
 					{
 					  id:3,
-					  image_src: '/static/logo.png',
+					  image_src: '/static/images/extends/voice.png',
 					  messagge_count:1,
-					  user_name:'乌来',
+					  user_name:'乌来3333332222222111133',
 					  user_message:'乌拉',
 					  message_time:Date.now()-150000,
 						is_top:false
 					},
 					{
 					  id:4,
-					  image_src: '/static/logo1.png',
+					  image_src: '/static/images/extends/star.png',
 					  messagge_count:0,
 					  user_name:'莉娜',
 					  user_message:'我来辣',
@@ -41,7 +41,7 @@ export default [
 					},
 					{
 					  id:5,
-					  image_src: '/static/logo.png',
+					  image_src: '/static/images/extends/man.png',
 					  messagge_count:1,
 					  user_name:'阿芳',
 					  user_message:'你好，我哦是阿芳',
@@ -50,7 +50,7 @@ export default [
 					},
 					{
 					  id:6,
-					  image_src: '/static/logo1.png',
+					  image_src: '/static/images/extends/location.png',
 					  messagge_count:0,
 					  user_name:'珍妮特',
 					  user_message:'起飞',
@@ -59,7 +59,7 @@ export default [
 					},
 					{
 					  id:7,
-					  image_src: '/static/logo.png',
+					  image_src: '/static/images/extends/hongbao.png',
 					  messagge_count:1,
 					  user_name:'蝎子莱莱',
 					  user_message:'我会变身',
@@ -68,11 +68,11 @@ export default [
 					},
 					{
 					  id:8,
-					  image_src: '/static/logo1.png',
+					  image_src: '/static/images/extends/camera.png',
 					  messagge_count:0,
 					  user_name:'炎龙铠甲',
 					  user_message:'炎龙之力',
 					  message_time:Date.now()-340000,
 					  is_top:false
 					},
-				]
+				];

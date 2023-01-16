@@ -23,6 +23,57 @@
 		{
             "path" : "pages/chat-detail/chat-detail",
             "style" :   {} 
+        },
+		{
+            "path" : "pages/chat-detail/chat-about-group-setting/chat-about-group-setting",
+            "style" :   {} 
+        },
+		{
+            "path" : "pages/UserInfo/UserInfo",
+            "style" :   {} 
+        },
+		{
+            "path" : "pages/UserInfo/UserCustomSetting/UserCustomSetting",
+            "style" :   {} 
+        },
+		{
+            "path" : "pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag",
+            "style" :   {} 
+        },
+		{
+            "path" : "pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick",
+            "style" :   {} 
+        },
+		{
+            "path" : "pages/UserInfo/UserCustomSetting/UserAuth/UserAuth",
+            "style" :   {} 
+        }
+        ,{
+            "path" : "pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/tabbar/find/FriendCIrcle/FriendCIrcle",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
         }
     ],
 	"globalStyle": {

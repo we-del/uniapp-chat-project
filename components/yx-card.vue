@@ -4,7 +4,10 @@
 		<image class="rounded size-1" :src="img" mode="aspectFill"></image>
 		<view  class="flex flex-1 ml-2 flex-column justify-between">
 			<view class="text-ellipsis font-md text-dark text-primary">{{title}}</view>
-			<view class="text-ellipsis font-sm text-common mb-1">{{desc}}</view>
+			<view class="text-ellipsis font-sm text-common mb-1">
+			{{desc}}
+				<slot name="desc"></slot>
+			</view>
 		</view>
 		<view  class="font-sm text-common">
 			<slot name="right"></slot>

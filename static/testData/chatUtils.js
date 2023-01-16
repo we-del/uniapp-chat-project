@@ -10,7 +10,7 @@ export default [
 			id: '001',
 			text: '相册',
 			img_src: '/static/images/extends/pic.png',
-			event:'uploadImage'
+			event:'upload'
 		},
 		{
 			id: '002',

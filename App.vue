@@ -1,4 +1,6 @@
 <script>
+	import {mapActions,mapWritableState} from 'pinia'
+	import {useDeviceStore} from '@/store/device.js'
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
@@ -8,6 +10,33 @@
 		},
 		onHide: function() {
 			console.log('App Hide')
+		},
+		mounted(){
+			// console.log('app mounted')
+			// console.log(this)
+			const {statusBarHeight,brand} = uni.getSystemInfoSync()
+			this.statusBarHeight = statusBarHeight
+			if(brand){
+				// h5端没有此属性，移动端有
+				this.device = 'android'
+			}
+			// console.log(this.statusBarHeight)
+			// console.log(this.device)
+			// console.log('model',plus.device.model)
+			console.log('device',uni.getSystemInfoSync())
+			// plus.device.getInfo((e)=>{
+			// 	console.log('获取设备信息成功',e)
+			// },(e)=>{
+			// 	console.log('获取设备信息失败',e)
+			// },(e)=>{
+			// 	console.log('信息获取完成',e)
+			// });
+			
+		},
+		computed:{
+			// computed其实就是defineProperty数据劫持  mapState只读 ，mapWritableState可读可写
+			...mapWritableState(useDeviceStore,['statusBarHeight']),
+			...mapWritableState(useDeviceStore,['device'])
 		}
 	}
 </script>
@@ -19,5 +48,20 @@
 	.uni-app--showtopwindow uni-page-head {
 		display: none;
 	}
+	/* For Chrome and Safari */
+	::-webkit-scrollbar {
+	  width:0;
+	  background-color: transparent;
+	}
+	 
+	::-webkit-scrollbar-thumb {
+	  background-color: #000000;
+	}
+	
+	/* For Internet Explorer and Edge */
+	body {
+	    -ms-overflow-style: none;
+	}
+
 	/*每个页面公共css */
 </style>

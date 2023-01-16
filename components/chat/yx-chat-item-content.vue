@@ -1,5 +1,5 @@
 <template>
-	<view @click="handleAudio" @touchstart="(e)=>touchMessageOfChat(chatMessage,e)" @touchend="(e)=>touchLeaveMessageOfChat(chatMessage,e)"  style="overflow: auto;" class="font-md">
+	<view @click="handleAudio" @touchstart="(e)=>touchMessageOfChat(chatMessage,e)" @touchend="(e)=>touchLeaveMessageOfChat(chatMessage,e)"   class="font-md overflow-hidden">
 		<view v-if="chatMessage.type === 'text'" class="text-overflow-line p-1" > 
 			<view v-html="chatMessage.data"></view>
 			<!-- {{}} -->
@@ -12,17 +12,19 @@
 			<!-- 我方录音消息 -->
 			<view v-if="chatMessage.user_id == 0"   class="flex justify-end  ">
 				{{chatMessage.record_time}}"
-				<text class="iconfont icon-wifi rotate-right-90 ml-2"></text>
+				<image v-if="playAudio" src="/static/audio/play.gif" class="play-icon" ></image>
+				<text v-else class=" iconfont icon-wifi rotate-right-90 ml-2"></text>
 			</view>
 			<!-- 对方录音消息 -->
 			<view v-if="chatMessage.user_id != 0" class="flex justify-start ">
-				
-				<text class="iconfont icon-wifi rotate-left-90 mr-2"></text>
+				<image v-if="playAudio" class="play-icon" src="/static/audio/play.gif" ></image>
+				<text v-else class="iconfont icon-wifi rotate-left-90 mr-2"></text>
 				{{chatMessage.record_time}}"
 			</view>
 		</view>
-		<view v-if="chatMessage.type==='video'">
-			
+		<view v-if="chatMessage.type==='video'" class="overflow-hidden">
+			<video  :src="chatMessage.data" style="width:300rpx;height:400rpx"  play-btn-position="center"  @loadedmetadata="videoFirstLoad"></video>
+		<!-- <image :src="videoImage"></image> -->
 		</view>
 	</view>
 </template>
@@ -35,22 +37,45 @@
 			chatMessage:[Object]
 		},
 		mounted(){
-			
+			// this.getVideoPoster()
 		},
 		data() {
 			return {
 				// 音频管理器
 				// #ifdef APP-PLUS
-				audioManager: plus.audio.createPlayer({})
+				audioManager: plus.audio.createPlayer({}),
 				// #endif
+				playAudio:false,
+				videoImage:''
 			}
 		},
 		methods: {
+			videoFirstLoad(width,height,during){
+				console.log(width,height,during)
+			},
 			handleAudio(){
 				if(this.chatMessage.type !=='audio') return
-				console.log('播放录音',this.chatMessage)
+				// 监听播放录音开始
+				this.audioManager.addEventListener('play', ()=>{
+					// 回到初始状态
+					this.audioManager.seekTo(0)
+					this.playAudio = true
+				});
+				// 监听播放录音结束(自然结束，播放完成)
+				this.audioManager.addEventListener('stop', ()=>{
+					this.playAudio = false
+				});
+				// 监听播放录音结束(手动结束，播放终止)
+				this.audioManager.addEventListener('ended', ()=>{
+					this.playAudio = false
+				})
+				// 监听播放录音结束(暂停)
+				this.audioManager.addEventListener('pause', ()=>{
+					this.playAudio = false
+				})
 				this.audioManager.setStyles({src:this.chatMessage.data})
 				this.audioManager.play()
+				
 			}
 		},
 		computed:{
@@ -80,6 +105,12 @@
 	}
 </script>
 
-<style>
 
+<style scoped>
+	.play-icon{
+		display:inline-block;
+		margin: 0 10rpx;
+		height: 40rpx;
+		width: 40rpx;
+	}
 </style>

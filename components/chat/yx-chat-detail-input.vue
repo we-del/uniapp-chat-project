@@ -54,25 +54,6 @@
 		mounted() {
 			this.getInputHeight()
 			this.autoFocus = true
-			// 得到录音管理器
-			// this.recordManager = uni.getRecorderManager()
-			console.log('录音对象', this.recordManager)
-			// console.log('录音对象',uni.getRecorderManager())
-			// if(judgeIosPermissionRecord()){
-
-			// }
-			console.log('录音', )
-			// this.recordManager.onStart = (e,a)=>{
-			// 	console.log('开始录音,'e,a)
-			// }
-			// this.recordManager.onStop = (e,a)=>{
-			// 	console.log('开始录音,'e,a)	
-			// }
-			// this.recordManager.onInterruptionBegin = (e,a)=>{
-			// 	console.log('中断录音,'e,a)	
-			// 	this.recordManager.stop()
-			// }
-
 		},
 		data() {
 			return {
@@ -257,11 +238,8 @@
 				this.getRecordAuth() 
 				// 查看是否会等待权限回调完成，如果没有等待使用promise达到同步（不需要完成同步第一次执行touch操作用于完成权限注入，第二次点击即可拥有对应权限）
 				if(!this.havingRecordAuth){
-					console.log('异步执行的')
 					return 
 				}
-				// await Number permision.requestAndroidPermission(String permisionID)
-				console.log('开始录音', e)
 				// 文件名必须以  _doc/开头，否则无法判断路径准确性，其是一个相对路径
 				const recordObj = {
 					filename: '_doc/audio/',
@@ -271,7 +249,6 @@
 				
 				// 开始录音
 				this.recordManager.record(recordObj, (e) => {
-					console.log('录音完成,路径为', e)
 					self.audioPath = e
 					// 无法正确的播放，音频地址只能瞬时记录？
 					self.audioManager.setStyles({src:e})
@@ -284,7 +261,6 @@
 							// 进行存储
 							const audio_time = Math.ceil(self.audioManager.getDuration())
 							self.$emit('addMessage',self.audioPath,'audio',audio_time)
-							console.log(`此录音有${audio_time}秒`)
 						}
 						// 恢复录制状态
 						self.isValidRecord = true
@@ -315,8 +291,6 @@
 				if(!this.havingRecordAuth){
 					return 
 				}
-				// 如果时长不足1s则取消录音
-				console.log('结束', e)
 				// 只对y的坐标进行一个判断
 				const y = e.changedTouches[0].clientY
 				const endTime = e.timeStamp
@@ -324,7 +298,6 @@
 				if (Math.abs(this.touchPosition.y - y) >= 60 ||
 					endTime - this.recordingTime < limitTime) {
 					// 取消录音，执行对应操作
-					console.log('结束时取消录音')
 					// 不是有效的录音，即不进行存储
 					this.isValidRecord = false
 					if (Math.abs(this.touchPosition.y - y) >= 60) {
@@ -389,13 +362,11 @@
 						break;
 					case 'util':
 						this.chatInputHeight = this.activeKeyboardHeight + this.originVal + this.stepVal
-						console.log('点击了功能框完成', this.chatInputHeight)
 						break
 
 						// 处理多行输入，导致内容高度增高，在切换到录音模式时，高度异常问题
 					case 'audio':
 						this.chatInputHeight = this.originVal
-						console.log('点击了功能框完成', this.chatInputHeight)
 						break
 					default:
 						console.log('错误的事件')
@@ -432,7 +403,6 @@
 				// 在录音模式下点击表情等弹出键盘时，会触发行高模式，导致无法正确得到高度
 				// 增加判断是否点击的是工具即可
 				if (this.isClickUtil) return
-				console.log('lineChange', e)
 				this.curLine = e.detail.lineCount
 				this.inputChangeHeight = e.detail.height
 				this.getInputHeight()
@@ -453,13 +423,10 @@
 			},
 			sendMessage() {
 				if (!this.inputContent) return
-				console.log('@content---', this.inputContent)
-				console.log(this.inputContent)
 				this.$emit('addMessage', this.inputContent, 'text')
 				this.inputContent = ''
 			},
 			keyboardHeightChangeHandle(e) {
-				console.log('@keyboard', e)
 				const height = e.detail.height
 
 				if (!this.keyboardHeight && height) {
@@ -488,7 +455,6 @@
 		watch: {
 			inputContent: {
 				handler() {
-					console.log('监听到长度变化', this.inputContent.length)
 					this.isText = this.inputContent.length > 0
 					if (this.isText) {
 						this.isClickUtil = false

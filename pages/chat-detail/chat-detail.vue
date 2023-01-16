@@ -1,19 +1,20 @@
 <template>
 	<!-- 得到最新的点击时间，避免出现点击消息，松开，又长按触发的错误计数行为 -->
 	<!-- <view class="page" @touchstart="touchStartTime=Date.now()"> -->
-	<view class="page">
-		 <!-- 导航栏 -->
-		<yx-nav-bar :title="this.name"/>
+	<yx-common-wrapper>
+		
+		 <!-- 导航栏 ,需要对点击的聊天框做判断，判断为用户还是群组，他们去往的路由不同-->
+		<yx-nav-bar :title="this.name" :requireOccupy="false" :isChat="true" :routerPath="`/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${this.name}`"/>
 		<!-- 滑动内容 -->
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
-		class="position-fixed " :style="`top:95rpx;bottom:${scrollViewHeight}rpx`">
-			<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"></yx-chat-item-detail>
+		class="position-fixed " :style="`top:${95+fixedTop}rpx;bottom:${scrollViewHeight}rpx`">
+			<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" @click="isChat = true;isBottom=false" :chatMessage="message"></yx-chat-item-detail>
 		<!-- 	<yx-chat-item-detail v-for="message in userChatMessage" :key="message.id" :chatMessage="message"
 				 @touchend="(e)=>handleLeave(message,e)"></yx-chat-item-detail> -->
 		</scroll-view>
 		<!-- 输入框 -->
 		<yx-chat-detail-input @addMessage="addMessage" ref="inputBar" @hide="handlePopHide" @syn="synMoveDistance" @activeUtil="changeInputState"></yx-chat-detail-input>
-		<yx-popup :show="popShow" :popPosittion="popPosition" :popHeight="popupHeight" 
+		<yx-popup :show="popShow" :popPosittion="popPosition" :popHeight="popupHeight"  :isChat="isChat"
 			:utilArr="utilArr" :emoArr="emoArr" :bottomMode="bottomMode" :bottomClickTransition="bottomClickTransition"
 			:isDark="popIsDark" :popItem="popData" :isBottom="isBottom" :popupContentOfUtilInBottom="popupBottomData"
 			@hide="handlePopHide" @action="actionHandle" >
@@ -53,10 +54,11 @@
 			
 		</yx-popup>
 		
-	</view>
+	</yx-common-wrapper>
 </template>
 
 <script>
+	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
 	import YxNavBar from '@/components/yx-nav-bar.vue'
 	import YxChatItemDetail from '@/components/chat/yx-chat-item-detail.vue'
 	import YxChatDetailInput from '@/components/chat/yx-chat-detail-input.vue'
@@ -64,9 +66,11 @@
 	import chatMesssage from '@/static/testData/chatMessage.js'
 	import chatUtils from '@/static/testData/chatUtils.js'
 	import chatEmo from '@/static/testData/chatEmo.js'
+	import {mapState} from 'pinia'
+	import {useDeviceStore} from '@/store/device.js'
 	export default {
 		components:{
-			YxNavBar,YxChatItemDetail,YxChatDetailInput,YxPopup
+			YxNavBar,YxChatItemDetail,YxChatDetailInput,YxPopup,YxCommonWrapper
 		},
 		provide(){
 			return {
@@ -78,7 +82,6 @@
 		},
 		onLoad(query){
 			this.name=query.name
-			console.log('@显示得为',query)
 		},
 		mounted(){
 			// data,methods,computed的初始化在模板解析之前，
@@ -117,6 +120,8 @@
 				touchStartTime:0,
 				// popup是否处于底部，如果为底部则说明是功能框，需要指定高度
 				isBottom:false,
+				// popup为chat模式
+				isChat:false,
 				// 在底部的情况下popup的高度
 				popupHeight:0,
 				// 在底部的情况下popup的展示内容，为 util | emo
@@ -156,25 +161,59 @@
 			utilEventHandle(event){
 				const self = this
 				switch (event){
-					case 'uploadImage':
-						uni.chooseImage({
-							count:4, // 最多选择图片个数
-							success(e){
-								e.tempFilePaths.forEach(path=>{
-									// 底层掉用的函数，因此this的指向不能满足我们的预期，需要进行缓存
+					case 'upload':
+						plus.gallery.pick(({files})=>{
+							files.forEach(path=>{
+								
+								// 需要对选中的资源进行进一布处理，判断是视频还是图片，通过后缀判断
+								const imageType = ['BMP', 'DIB', 'PCP', 'DIF', 'WMF', 'GIF', 'JPG', 'TIF', 'EPS', 'PSD', 'CDR', 'IFF', 'TGA', 'PCD', 'MPT', 'PNG']
+								const videoType = ['AVI', 'mov', 'rmvb', 'rm', 'FLV', 'mp4', '3GP']
+								
+								// 定位到 n.mp4 中的.的后一位索引即 m
+								const sep = path.lastIndexOf('.') + 1 
+								const fileSuffix = path.substring(sep,path.length)
+								// 判断是否为视频
+								if(imageType.map(m=>m.toLowerCase()).includes(fileSuffix) ||imageType.map(m=>m.toUpperCase()).includes(fileSuffix) ){
+									
 									self.addMessage(path,'image')
-								})
-							}
-						})
+								}
+								// 判断是否为音频
+								if(videoType.map(m=>m.toLowerCase()).includes(fileSuffix) ||videoType.map(m=>m.toUpperCase()).includes(fileSuffix) ){
+									plus.io.getVideoInfo({
+										filePath:path,
+										success(e){
+											console.log('io-e',e)
+										}
+										
+									});
+									self.addMessage(path,'video')
+								}
+							})
+						},(err)=>{
+							console.log(err)
+						},{
+							multiple:true,
+							permissionAlert:true,
+							filter:'none'
+						});
 						break;
 					case 'camera':
-						const self = this;
-						uni.chooseVideo({
-							sourceType: ['camera', 'album'],
-							success: function (res) {
-								self.addMessage(res.tempFilePath,'video')
-							}
+						// const self = this;
+						const camera = plus.camera.getCamera();
+						camera.captureImage((path)=>{
+							// 照片虚拟路径，将虚拟路径存储到手机存储中
+							plus.gallery.save(path,(path)=>{
+								console.log('@success',path)
+							})
+						}, (err)=>{
+							console.log(err)
 						});
+						// uni.chooseVideo({
+						// 	sourceType: ['camera', 'album'],
+						// 	success: function (res) {
+						// 		self.addMessage(res.tempFilePath,'video')
+						// 	}
+						// });
 						break;
 						
 					default:
@@ -195,6 +234,7 @@
 					default:
 					console.log('没有命中事件')
 				}				
+				this.isChat = false
 				this.bottomClickTransition = true
 				this.bottomMode = event
 				this.isBottom = true
@@ -399,7 +439,8 @@
 					}
 				})
 				return imageUrlStore
-			}
+			},
+			...mapState(useDeviceStore,['fixedTop']),
 		}
 	}
 </script>

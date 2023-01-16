@@ -1,0 +1,124 @@
+<template>
+	<view class="fill-screen bg-common">
+		<yx-nav-bar :routerPath="`/pages/UserInfo/UserCustomSetting/UserCustomSetting?id=${targetId}`"></yx-nav-bar>
+		<yx-card img="/static/logo.png" class="bg-white font-weight-bold mt-5"  title="测试">
+			<template #desc>
+				<view class="m-1">昵称: 我是昵称</view>
+				<view class="m-1">微信号: qiDaiTianChong</view>
+				<view class="m-1">地区：湖北 武汉</view>
+			</template>
+			<template #right>
+				<!-- 如果是关心用户则进行显示，通过后台字段返回 -->
+				<text style="color:#ffbf01" class="font-lg">♥</text>
+				<!-- ♥⭐🧡🌟⭐🌟 -->
+			</template>
+		</yx-card>
+		<view v-for="list in listData" class="mb-2 bg-white">
+			<yx-list v-for="data in list" @click="handleEvent(data)" :title="data.title" :isCell="data.isCell" :key="data.id">
+				<template #suffix v-if="data.suffix || data.sign">
+					<view v-if="data.suffix" style="width: 550rpx;" :class="data.sign==='tel' ? 'text-danger':''">{{data.suffix}}</view>
+					<view v-if="data.sign === 'image'" style="width: 520rpx;">
+						<image style="width: 75rpx;height: 75rpx;" src="/static/images/demo/cate_09.png" mode="aspectFit"></image>
+						<image style="width: 75rpx;height: 75rpx;" src="/static//logo.png" mode="aspectFit"></image>
+					</view>
+				</template>
+			</yx-list>
+		</view>
+		<view class="text-center font-md  bg-white p-2" style="color:#6b859a" @click="toChat">发送消息</view>
+		<!-- 根据后台字段查看是否被添加到黑名单 -->
+		<view class="mt-2 font-small text-common-font text-center">已加入黑名单，你将无法接受到它的消息</view>
+	</view>
+</template>
+
+<script>
+	import YxNavBar from '@/components/yx-nav-bar.vue'
+	import YxList from '@/components/yx-list.vue'
+	import YxCard from '@/components/yx-card.vue'
+	export default {
+		onLoad(query){
+			console.log('query',query)
+			this.targetId = query.id
+		},
+		components:{
+			YxNavBar,YxList,YxCard
+		},
+		mounted(){
+			this.listData = [
+				[
+					{
+						id: Math.random()*2000,
+						title:'设置标签和昵称',
+						isCell:true,
+						event:'tag'
+					},
+					{
+						id: Math.random()*2000,
+						title:'电话号码',
+						suffix:'11203',
+						sign:'tel',
+						isCell:false,
+					},
+					{
+						id: Math.random()*2000,
+						title:'朋友权限',
+						isCell:true,
+						event:'auth'
+					}
+				],
+				[
+					{
+						id: Math.random()*2000,
+						title:'朋友圈',
+						sign:'image',
+						isCell:true,
+						event:'friend'
+					},
+					{
+						id: Math.random()*2000,
+						title:'更多信息',
+						isCell:true,
+						event:'moreMsg'
+					}
+				]
+			]
+		},
+		data() {
+			return {
+				targetId:'',
+				listData:[]
+			}
+		},
+		methods: {
+			toChat(){
+				this.routerGo('/pages/chat-detail/chat-detail')
+			},
+			handleEvent(data){
+				switch (data.event){
+					case 'tag':
+					this.routerGo('/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag')
+						break;
+					case 'auth':
+					this.routerGo('/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth')
+						break;
+					case 'moreMsg':
+					this.routerGo('/pages/UserInfo/UserCustomSetting/UserCustomSetting')
+						break;
+					case 'friend':
+						this.routerGo('/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle')
+						break;
+					default:
+						break;
+				}
+			},
+			routerGo(path){
+				uni.navigateTo({
+					url:path
+				})
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

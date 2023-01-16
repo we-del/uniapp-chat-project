@@ -1,23 +1,26 @@
 <template>
-	<view class="page">
-		<block v-for="group in data">
-			<yx-list v-for="d in group" style="background-color: white;" :key="d.id" hover-class="main-bg-hover-color"
-			:title="d.title" :isCell="d.isCell" :icon="d.icon">
-			 <!-- 做成属性传入更好，插槽无法独立展示数据(需要组件内部做判断) -->
-			 <template #suffix>
-				 {{d.suffix && d.suffix.content}}
-			 </template>
-			</yx-list>
-			<yx-divider></yx-divider>
-		</block>
-	</view>
+	<yx-common-wrapper>
+		<view class="page">
+			<block v-for="(group,i) in data" :key="i">
+				<yx-list v-for="d in group" style="background-color: white;" :key="d.id" hover-class="main-bg-hover-color"
+				:title="d.title" :isCell="d.isCell" :icon="d.icon">
+				 <!-- 做成属性传入更好，插槽无法独立展示数据(需要组件内部做判断) -->
+				 <template #suffix>
+					 {{d.suffix && d.suffix.content}}
+				 </template>
+				</yx-list>
+				<yx-divider></yx-divider>
+			</block>
+		</view>
+	</yx-common-wrapper>
 </template>
 
 <script>
 	import YxList from '@/components/yx-list.vue'
 	import YxDivider from '@/components/yx-divider.vue'
+	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
 	export default {
-		components:{YxList,YxDivider},
+		components:{YxList,YxDivider,YxCommonWrapper},
 		data() {
 			return {
 				data:[
@@ -26,7 +29,8 @@
 							id:0,
 							title:'朋友圈',
 							icon:'icon-iconfontzhizuobiaozhunbduan36',
-							isCell:true
+							isCell:true,
+							event:'circle'
 						},
 						{
 							id:12,
@@ -75,7 +79,8 @@
 		},
 		methods: {
 			
-		}
+		},
+		
 	}
 </script>
 

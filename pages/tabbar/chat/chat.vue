@@ -1,39 +1,41 @@
 <template>
-	<view>
-		<yx-tool-bar @clickNav="clickNav" :title="`微信(${userCount})`" isSelf></yx-tool-bar>
-		<!-- <yx-tool-bar  :title="`微信(${userCount})`"></yx-tool-bar> -->
-		<!-- 置顶聊天 -->
-		<scroll-view scroll-y="true" class="position-fixed"  style="top:100rpx;bottom:100rpx">
-			<block  v-for="user in userTopList" :key="user.id">
-				<chat-item :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-			 @touchend="(e)=>handleLeave(user,e)" class="bg-common" hover-class="bg-dark"></chat-item>
-			</block>
-			<!-- 常规聊天 -->
-			<block  v-for="user in userList" :key="user.id">
-				<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-			 @touchend="(e)=>handleLeave(user,e)"></chat-item>
-			</block>
-		</scroll-view>
-		
-		<yx-popup :show="popShow" :popPosittion="popPosition" 
-		:isDark="popIsDark" 
-		:popItem="popData" @action="popAction"
-		@hide="handlePopHide"></yx-popup>
-	</view>
+		<yx-common-wrapper bg="white">	
+			<yx-tool-bar @clickNav="clickNav" :title="`微信(${userCount})`" isSelf></yx-tool-bar>
+			<!-- <yx-tool-bar  :title="`微信(${userCount})`"></yx-tool-bar> -->
+			<!-- 置顶聊天 -->
+			<scroll-view scroll-y="true" class="position-fixed font-md"  :style="`top:${fixedTop+100}rpx;bottom:100rpx`">
+				<block  v-for="user in userTopList" :key="user.id">
+					<chat-item :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+				 @touchend="(e)=>handleLeave(user,e)" class="bg-common" hover-class="bg-dark"></chat-item>
+				</block>
+				<!-- 常规聊天 -->
+				<block  v-for="user in userList" :key="user.id">
+					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
+				</block>
+			</scroll-view>
+			
+			<yx-popup :show="popShow" :popPosittion="popPosition" 
+			:isDark="popIsDark"  :isChat="true"
+			:popItem="popData" @action="popAction"
+			@hide="handlePopHide"></yx-popup>
+		</yx-common-wrapper>
 </template>
 
 <script>
+	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
 	import YxToolBar from '@/components/yx-tool-bar.vue'
 	import chatItem from '@/components/chat-item.vue'
 	import YxPopup from '@/components/yx-popup.vue'
 	import userList from '@/static/testData/userList.js'
+	import {mapState} from 'pinia'
+	import {useDeviceStore} from '@/store/device.js'
 	export default {
 		components:{
-			YxToolBar,chatItem,YxPopup
+			YxToolBar,chatItem,YxPopup,YxCommonWrapper
 		},
 		mounted(){
-			// console.log('@device',uni.getSystemInfoSync())
-			// console.log('@chat',this)
+			this.userTopList =  this.userList.filter(user=>user.is_top)
 		}
 		,
 		data() {
@@ -187,7 +189,8 @@
 		computed:{
 			userCount(){
 				return this.userList.length
-			}
+			},
+			...mapState(useDeviceStore,['fixedTop']),
 		}
 	}
 </script>
