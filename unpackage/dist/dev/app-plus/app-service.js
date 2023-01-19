@@ -1468,7 +1468,7 @@ This will fail in production.`);
     }
     return target2;
   };
-  const _sfc_main$r = {
+  const _sfc_main$s = {
     name: "yx-common-wrapper",
     props: {
       bg: {
@@ -1496,16 +1496,16 @@ This will fail in production.`);
       }
     })
   };
-  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
-      class: vue.normalizeClass(["bg-common fill-screen font-sm position-fixed", $options.bgColor]),
+      class: vue.normalizeClass(["bg-common fill-screen font-sm position-fixed overflow-hidden", $options.bgColor]),
       style: vue.normalizeStyle(`top:${_ctx.fixedTop}rpx;`)
     }, [
       vue.renderSlot(_ctx.$slots, "default")
     ], 6);
   }
-  var YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-common-wrapper.vue"]]);
-  const _sfc_main$q = {
+  var YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-common-wrapper.vue"]]);
+  const _sfc_main$r = {
     name: "yx-popup",
     emits: ["hide", "action"],
     props: {
@@ -1557,19 +1557,23 @@ This will fail in production.`);
       utilArr: [Array],
       emoArr: [Array],
       bottomMode: [String],
-      bottomClickTransition: [Boolean]
+      bottomClickTransition: [Boolean],
+      isCoverTop: {
+        type: Boolean,
+        default: false
+      }
     },
     data() {
       return {};
     },
     methods: {
       handleReactive(item) {
-        formatAppLog("log", "at components/yx-popup.vue:100", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
+        formatAppLog("log", "at components/yx-popup.vue:106", "\u6307\u4EE4\u5373\u5C06\u4FEE\u6539\u66F4\u6539", item);
         this.$emit("action", item.event);
         this.$emit("hide");
       },
       hide() {
-        formatAppLog("log", "at components/yx-popup.vue:106", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
+        formatAppLog("log", "at components/yx-popup.vue:112", "\u6211\u6765\u5B8C\u6210\u9690\u85CF");
         this.$emit("hide");
       }
     },
@@ -1592,10 +1596,20 @@ This will fail in production.`);
           res += this.isDark ? " bg-dark text-white " : "bg-white text-dark ";
         }
         return res;
+      },
+      maskClass() {
+        let res = "";
+        if (this.isCoverTop) {
+          res += "zTop";
+        }
+        if (this.isCustom) {
+          res += "bg-dark lucency-5";
+        }
+        return res;
       }
     }
   };
-  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex position-fixed rounded font-md"]),
@@ -1634,16 +1648,17 @@ This will fail in production.`);
           vue.renderSlot(_ctx.$slots, "custom")
         ])
       ], 6),
+      vue.createCommentVNode(" \u70B9\u51FB\u53D6\u6D88 "),
       vue.createElementVNode("view", {
         onClick: _cache[0] || (_cache[0] = (...args) => $options.hide && $options.hide(...args)),
         style: vue.normalizeStyle([$props.show ? "display:block" : "display:none", { "left": "0", "top": "0" }]),
-        class: vue.normalizeClass([$props.isCustom ? "bg-dark lucency-5" : "", "fill-screen position-absolute"]),
+        class: vue.normalizeClass([$options.maskClass, "fill-screen position-absolute"]),
         id: "mask"
       }, null, 6)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
-  const _sfc_main$p = {
+  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
+  const _sfc_main$q = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
     props: {
@@ -1657,8 +1672,9 @@ This will fail in production.`);
     mounted() {
       if (!this.isSelf) {
         this.initPopup();
+        formatAppLog("log", "at components/yx-tool-bar.vue:36", "\u521D\u59CB\u5316");
       }
-      formatAppLog("log", "at components/yx-tool-bar.vue:37", "@tool", this);
+      formatAppLog("log", "at components/yx-tool-bar.vue:38", "@tool", this);
     },
     data() {
       return {
@@ -1672,7 +1688,7 @@ This will fail in production.`);
         const device = uni.getSystemInfoSync();
         const maxX = device.screenWidth;
         device.screenHeight;
-        this.popPosition = { x: maxX - 160, y: 60 };
+        this.popPosition = { x: maxX - 170, y: 100 };
         this.popIsDark = true;
         this.popShow = false;
         this.popData = [
@@ -1707,7 +1723,7 @@ This will fail in production.`);
         this.popShow = true;
       },
       handleClick() {
-        formatAppLog("log", "at components/yx-tool-bar.vue:88", "@clickcc", this);
+        formatAppLog("log", "at components/yx-tool-bar.vue:89", "@clickcc", this);
         if (this.isSelf) {
           this.$emit("clickNav");
         } else {
@@ -1717,7 +1733,7 @@ This will fail in production.`);
     },
     computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
   };
-  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_popup = vue.resolveComponent("yx-popup");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(' <view class="fixed-top flex justify-between p-2 align-center pr-4 " :style="`top:${fixedTop}rpx`" style="background-color: #efefeb;"> '),
@@ -1741,13 +1757,15 @@ This will fail in production.`);
         popPosittion: $data.popPosition,
         show: $data.popShow,
         isDark: true,
+        isChat: true,
+        isCoverTop: true,
         onHide: _cache[1] || (_cache[1] = ($event) => $data.popShow = false)
       }, null, 8, ["popItem", "popPosittion", "show"])) : vue.createCommentVNode("v-if", true),
       vue.createCommentVNode(" \u5360\u4F4D\u5899 "),
       vue.createCommentVNode(' <view style="margin-top: 100rpx;"> </view> ')
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
+  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -1958,7 +1976,7 @@ This will fail in production.`);
     });
   })(dayjs_min);
   var dayjs = dayjs_min.exports;
-  const _sfc_main$o = {
+  const _sfc_main$p = {
     name: "yx-badge",
     props: {
       messageCount: {
@@ -1975,14 +1993,14 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       id: "badge",
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
-  const _sfc_main$n = {
+  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
+  const _sfc_main$o = {
     name: "chat-item",
     components: { YxBadge },
     props: {
@@ -2001,7 +2019,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_badge = vue.resolveComponent("yx-badge");
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-2",
@@ -2035,7 +2053,7 @@ This will fail in production.`);
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
+  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
   var userList = [
     {
       id: 1,
@@ -2110,12 +2128,178 @@ This will fail in production.`);
       is_top: false
     }
   ];
+  const _sfc_main$n = {
+    name: "yx-flexible-wrapperer",
+    emits: ["scroll"],
+    props: {
+      bottom: {
+        type: String,
+        default: "12vh"
+      },
+      height: {
+        type: String,
+        default: "100vh"
+      },
+      scrollIntoView: {
+        type: String
+      },
+      scrollTop: {
+        type: Number,
+        default: 1
+      }
+    },
+    data() {
+      return {
+        havingContentScrolling: true,
+        reachBorder: true,
+        scrollDirection: "top",
+        movingPosition: {},
+        movingDistance: 0,
+        isReachingBorder: false,
+        contentLack: true,
+        contentLackToTop: false
+      };
+    },
+    methods: {
+      scrolling(e) {
+        if (!this.havingContentScrolling)
+          return;
+        this.contentLack = false;
+        this.reachBorder = false;
+        this.isReachingBorder = false;
+        this.scrollDirection = "";
+        this.$emit("scroll");
+      },
+      scrollToTop(e) {
+        formatAppLog("log", "at components/yx-flexible-wrapperer.vue:91", "\u6EDA\u52A8\u5230\u9876\u90E8", e);
+        this.reachBorder = true;
+        this.scrollDirection = e.detail.direction;
+        this.havingContentScrolling = false;
+      },
+      scrollToBottom(e) {
+        formatAppLog("log", "at components/yx-flexible-wrapperer.vue:97", "\u6EDA\u52A8\u5230\u5E95\u90E8", e);
+        this.reachBorder = true;
+        this.scrollDirection = e.detail.direction;
+        this.havingContentScrolling = false;
+      },
+      handleTouchStart(e) {
+        if (this.reachBorder) {
+          let x = e.changedTouches[0].clientX;
+          let y = e.changedTouches[0].clientY;
+          this.movingPosition = { x, y };
+          formatAppLog("log", "at components/yx-flexible-wrapperer.vue:109", "\u5F00\u59CB\u89E6\u6478", e);
+        }
+      },
+      handleTouchMove(e) {
+        if (this.reachBorder) {
+          e.changedTouches[0].clientX;
+          let y = e.changedTouches[0].clientY;
+          let distance;
+          if (this.contentLack) {
+            distance = this.movingPosition.y - y;
+            this.contentLackToTop = distance > 0;
+            this.movingDistance = distance;
+            this.isReachingBorder = true;
+          } else if (this.scrollDirection === "top") {
+            distance = this.movingPosition.y - y;
+            if (distance < 0) {
+              this.movingDistance = distance;
+              this.isReachingBorder = true;
+            } else {
+              this.havingContentScrolling = true;
+              this.reachBorder = false;
+              this.isReachingBorder = false;
+            }
+          } else if (this.scrollDirection === "bottom") {
+            distance = this.movingPosition.y - y;
+            if (distance > 0) {
+              this.movingDistance = distance;
+              formatAppLog("log", "at components/yx-flexible-wrapperer.vue:144", this.movingDistance);
+              this.isReachingBorder = true;
+            } else {
+              this.havingContentScrolling = true;
+              this.reachBorder = false;
+              this.isReachingBorder = false;
+            }
+          }
+        }
+      },
+      handleTouchEnd(e) {
+        if (this.reachBorder) {
+          formatAppLog("log", "at components/yx-flexible-wrapperer.vue:158", "\u7ED3\u675F\u79FB\u52A8", e);
+          this.havingContentScrolling = true;
+          this.reachBorder = true;
+          this.isReachingBorder = false;
+          this.movingDistance = 0;
+        }
+      }
+    },
+    computed: __spreadProps(__spreadValues({}, mapState(useDeviceStore, ["fixedTop"])), {
+      contentShowBorder() {
+        if (this.scrollDirection === "bottom" || this.contentLackToTop) {
+          return `top:${this.fixedTop + 100 - this.movingDistance}rpx;bottom:${this.bottom};height:${this.height}`;
+        } else if (this.scrollDirection === "top") {
+          return `top:${this.fixedTop + 100 + Math.abs(this.movingDistance)}rpx;bottom:${this.bottom};height:${this.height}`;
+        }
+        return `top:${this.fixedTop + 100}rpx;bottom:${this.bottom};height:${this.height}`;
+      }
+    })
+  };
+  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+      vue.createCommentVNode(" \u589E\u52A0\u72B6\u6001\u680F\u906E\u6321\u5C42\uFF0C\u9632\u6B62\u5143\u7D20\u66B4\u9732 "),
+      vue.createElementVNode("view", {
+        class: "zTop bg-common position-fixed",
+        style: vue.normalizeStyle(`height:${_ctx.fixedTop}rpx;top:0;width:100%`)
+      }, null, 4),
+      vue.createCommentVNode(' <view class="fill-screen overflow-hidden "> '),
+      vue.createCommentVNode(" scroll-top \u7528\u4E8E\u521D\u59CB\u5316\u52A0\u8F7D\u4E00\u6B21\u6EDA\u52A8 "),
+      vue.createElementVNode("scroll-view", {
+        onScrolltoupper: _cache[3] || (_cache[3] = (...args) => $options.scrollToTop && $options.scrollToTop(...args)),
+        onScroll: _cache[4] || (_cache[4] = (...args) => $options.scrolling && $options.scrolling(...args)),
+        onScrolltolower: _cache[5] || (_cache[5] = (...args) => $options.scrollToBottom && $options.scrollToBottom(...args)),
+        "scroll-y": "true",
+        "scroll-top": $props.scrollTop,
+        "scrollinto-view": $props.scrollIntoView,
+        class: "position-fixed font-md",
+        style: vue.normalizeStyle($options.contentShowBorder)
+      }, [
+        vue.createCommentVNode(" \u5185\u5BB9\u533A\u57DF "),
+        vue.createCommentVNode(" \u9876\u90E8\u5360\u4F4D "),
+        vue.createCommentVNode(' <view  class="bg-transparent"  :style="topBox"></view> '),
+        vue.createCommentVNode(" \uFF01\uFF01\u6EDA\u52A8\u5230\u9876\u90E8\u548C\u5E95\u90E8\u4E8B\u4EF6\u53EA\u6709\u5728\u80FD\u5B8C\u6210\u6EDA\u52A8\u65F6\u624D\u80FD\u591F\u89E6\u53D1\uFF0C\u8FBE\u5230\u6EDA\u52A8\u6761\u4EF6 "),
+        vue.createCommentVNode(" \u5F53\u89E6\u5E95\u6216\u89E6\u9876\u65F6\u6309\u56FA\u5B9A\u5B9A\u4F4D\u8FDB\u884C\u663E\u793A "),
+        vue.createCommentVNode(' <view class="position-fixed" > '),
+        vue.createCommentVNode(" \u6ED1\u52A8\u7B56\u75651 \u7ED9\u4E00\u4E2Aposition:fixed\u8FDB\u884C\u6ED1\u52A8\u5931\u8D25 \u4E0A\u6ED1\u52A8\u751F\u6548\uFF0C\u4E0B\u6ED1\u52A8\u56E0\u4E3A\u5176\u9ED8\u8BA4\u884C\u4E3A\u6BCF\u6B21\u90FD\u4F1A\u56DE\u5230\u9876\u90E8\u5931\u8D25 ;; bug\u4EE5\u89E3\u51B3\uFF0C\u901A\u8FC7\u6539\u53D8scroll-view\u5185\u5BB9\u8FDB\u884C\u5904\u7406\u5373\u53EF "),
+        vue.createCommentVNode(" \u6ED1\u52A8\u7B56\u75652 \u7ED9\u4E00\u4E2Aposition:absolute\u8FDB\u884C\u6ED1\u52A8 "),
+        vue.createCommentVNode(" \u6ED1\u52A8\u7B56\u75653 \u7ED9\u4E00\u4E2A\u4E0A\u4E0B\u5360\u4F4D\u6846(\u900F\u660E)\uFF0C\u5176\u9AD8\u5EA6\u4E3A0\uFF0C\u5B9E\u9645\u9AD8\u5EA6\u901A\u8FC7\u6ED1\u52A8\u7684\u8DDD\u79BB\u786E\u5B9A \uFF0C\u4E0B\u62C9\u5B58\u5728bug\uFF0C\u56E0\u4E3A\u53EA\u6709\u6ED1\u52A8\u65F6\u5185\u5BB9\u624D\u80FD\u88AB\u5C55\u793A(\u4E0A\u62C9\u4E4B\u6240\u4EE5\u4E3Abug\u56E0\u4E3A\u9996\u5143\u7D20\u5728\u5176\u524D\uFF0C\u4E0D\u9700\u8981\u6ED1\u52A8\u5373\u53EF\u52A0\u8F7D)\u3002\u4F7F\u7528\u5B9A\u4F4D\u89E3\u51B3\uFF1F"),
+        vue.createCommentVNode(" \u53EF\u5B8C\u6210\u5E95\u90E8\u6EDA\u52A8\uFF0C\u5F53\u89E6\u6478\u4E8B\u4EF6\u6DFB\u52A0\u5230scroll-view\u4E0A\u65F6\u65E0\u6CD5\u5B8C\u6210\u5E95\u90E8\u6EDA\u52A8 "),
+        vue.createCommentVNode(" \u7B56\u7565\u4E00 "),
+        vue.createCommentVNode(' <view :style="requireScroll"   @touchstart="handleTouchStart"   @touchend="handleTouchEnd" @touchmove="handleTouchMove" style="height: 100vh;"> '),
+        vue.createCommentVNode(" \u7B56\u7565\u4E8C "),
+        vue.createCommentVNode(' <view  style="height:90%"  @touchstart="handleTouchStart"   @touchend="handleTouchEnd" @touchmove="handleTouchMove" > '),
+        vue.createElementVNode("view", {
+          style: { "height": "100vh" },
+          onTouchstart: _cache[0] || (_cache[0] = (...args) => $options.handleTouchStart && $options.handleTouchStart(...args)),
+          onTouchend: _cache[1] || (_cache[1] = (...args) => $options.handleTouchEnd && $options.handleTouchEnd(...args)),
+          onTouchmove: _cache[2] || (_cache[2] = (...args) => $options.handleTouchMove && $options.handleTouchMove(...args))
+        }, [
+          vue.renderSlot(_ctx.$slots, "default")
+        ], 32),
+        vue.createCommentVNode(" \u5E95\u90E8\u5360\u4F4D "),
+        vue.createCommentVNode(' <view  class="bg-transparent" :style="bottomBox"></view> ')
+      ], 44, ["scroll-top", "scrollinto-view"]),
+      vue.createCommentVNode(" </view> ")
+    ], 64);
+  }
+  var YxFlexibleWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-flexible-wrapperer.vue"]]);
   const _sfc_main$m = {
     components: {
       YxToolBar,
       chatItem,
       YxPopup,
-      YxCommonWrapper
+      YxCommonWrapper,
+      YxFlexibleWrapper
     },
     mounted() {
       this.userTopList = this.userList.filter((user) => user.is_top);
@@ -2129,10 +2313,14 @@ This will fail in production.`);
         popPosition: {},
         popShow: false,
         popIsDark: false,
+        touchPosition: {},
         touchStartTime: 0
       };
     },
     methods: {
+      scrollBottom(e) {
+        formatAppLog("log", "at pages/tabbar/chat/chat.vue:73", "\u6EDA\u52A8\u5230\u5E95\u90E8\u4E86", e);
+      },
       goChat(user) {
         uni.navigateTo({
           url: `/pages/chat-detail/chat-detail?id=${user.id}&name=${user.user_name}`
@@ -2142,6 +2330,7 @@ This will fail in production.`);
         this.touchStartTime = e.timeStamp;
         let x = e.touches[0].clientX;
         let y = e.touches[0].clientY;
+        this.touchPosition = { x, y };
         const device = uni.getSystemInfoSync();
         const maxX = device.screenWidth;
         const maxY = device.screenHeight;
@@ -2152,11 +2341,11 @@ This will fail in production.`);
       },
       handleLeave(user, e) {
         const endTime = e.timeStamp;
-        if (endTime - this.touchStartTime > 400) {
+        let y = e.changedTouches[0].clientY;
+        if (endTime - this.touchStartTime > 400 && Math.abs(this.touchPosition.y - y) < 100) {
           this.popShow = true;
           this.popIsDark = false;
           this.curUser = user;
-          formatAppLog("log", "at pages/tabbar/chat/chat.vue:102", "@user", user);
           this.popData = [
             {
               id: 1,
@@ -2199,17 +2388,17 @@ This will fail in production.`);
             });
             return;
           default:
-            formatAppLog("log", "at pages/tabbar/chat/chat.vue:147", "\u9519\u8BEF\u5F97\u4E8B\u4EF6\u8C03\u7528");
+            formatAppLog("log", "at pages/tabbar/chat/chat.vue:155", "\u9519\u8BEF\u5F97\u4E8B\u4EF6\u8C03\u7528");
         }
       },
       clickNav() {
         const device = uni.getSystemInfoSync();
         const maxX = device.screenWidth;
         device.screenHeight;
-        this.popPosition = { x: maxX - 160, y: 60 };
+        this.popPosition = { x: maxX - 180, y: 100 };
         this.popIsDark = true;
         this.popShow = true;
-        formatAppLog("log", "at pages/tabbar/chat/chat.vue:158", "@clickNav");
+        formatAppLog("log", "at pages/tabbar/chat/chat.vue:166", "@clickNav");
         this.popData = [
           {
             id: 1,
@@ -2248,6 +2437,7 @@ This will fail in production.`);
   function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_chat_item = vue.resolveComponent("chat-item");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, { bg: "white" }, {
@@ -2259,37 +2449,38 @@ This will fail in production.`);
         }, null, 8, ["onClickNav", "title"]),
         vue.createCommentVNode(' <yx-tool-bar  :title="`\u5FAE\u4FE1(${userCount})`"></yx-tool-bar> '),
         vue.createCommentVNode(" \u7F6E\u9876\u804A\u5929 "),
-        vue.createElementVNode("scroll-view", {
-          "scroll-y": "true",
-          class: "position-fixed font-md",
-          style: vue.normalizeStyle(`top:${_ctx.fixedTop + 100}rpx;bottom:100rpx`)
-        }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTopList, (user) => {
-            return vue.openBlock(), vue.createBlock(_component_chat_item, {
-              key: user.id,
-              user,
-              onClick: ($event) => $options.goChat(user),
-              onTouchstart: (e) => $options.handleTouch(user, e),
-              onTouchend: (e) => $options.handleLeave(user, e),
-              class: "bg-common",
-              "hover-class": "bg-dark"
-            }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"]);
-          }), 128)),
-          vue.createCommentVNode(" \u5E38\u89C4\u804A\u5929 "),
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userList, (user) => {
-            return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
-              key: user.id
-            }, [
-              !user.is_top ? (vue.openBlock(), vue.createBlock(_component_chat_item, {
-                key: 0,
+        vue.createCommentVNode(' <scroll-view @scrolltolower="scrollBottom" scroll-y="true" class="position-fixed font-md"  :style="`top:${fixedTop+100}rpx;bottom:100rpx`"> '),
+        vue.createVNode(_component_yx_flexible_wrapper, null, {
+          default: vue.withCtx(() => [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userTopList, (user) => {
+              return vue.openBlock(), vue.createBlock(_component_chat_item, {
+                key: user.id,
                 user,
                 onClick: ($event) => $options.goChat(user),
                 onTouchstart: (e) => $options.handleTouch(user, e),
-                onTouchend: (e) => $options.handleLeave(user, e)
-              }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"])) : vue.createCommentVNode("v-if", true)
-            ], 64);
-          }), 128))
-        ], 4),
+                onTouchend: (e) => $options.handleLeave(user, e),
+                class: "bg-common",
+                "hover-class": "bg-dark"
+              }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"]);
+            }), 128)),
+            vue.createCommentVNode(" \u5E38\u89C4\u804A\u5929 "),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.userList, (user) => {
+              return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
+                key: user.id
+              }, [
+                !user.is_top ? (vue.openBlock(), vue.createBlock(_component_chat_item, {
+                  key: 0,
+                  user,
+                  onClick: ($event) => $options.goChat(user),
+                  onTouchstart: (e) => $options.handleTouch(user, e),
+                  onTouchend: (e) => $options.handleLeave(user, e)
+                }, null, 8, ["user", "onClick", "onTouchstart", "onTouchend"])) : vue.createCommentVNode("v-if", true)
+              ], 64);
+            }), 128))
+          ]),
+          _: 1
+        }),
+        vue.createCommentVNode(" </scroll-view> "),
         vue.createVNode(_component_yx_popup, {
           show: $data.popShow,
           popPosittion: $data.popPosition,
@@ -2371,7 +2562,7 @@ This will fail in production.`);
   }
   var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
   const _sfc_main$j = {
-    components: { YxList, YxDivider, YxCommonWrapper },
+    components: { YxList, YxDivider, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
         data: [
@@ -2428,36 +2619,59 @@ This will fail in production.`);
         ]
       };
     },
-    methods: {}
+    methods: {
+      handleEvent(data2) {
+        switch (data2.event) {
+          case "circle":
+            this.routerGo("/pages/tabbar/find/FriendCIrcle/FriendCIrcle");
+            break;
+          default:
+            formatAppLog("log", "at pages/tabbar/find/find.vue:90", "\u6CA1\u6709\u6B64\u4E8B\u4EF6");
+            break;
+        }
+      },
+      routerGo(path) {
+        uni.navigateTo({
+          url: path
+        });
+      }
+    }
   };
   function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
       default: vue.withCtx(() => [
-        vue.createElementVNode("view", { class: "page" }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group, i2) => {
-            return vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: i2 }, [
-              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
-                return vue.openBlock(), vue.createBlock(_component_yx_list, {
-                  style: { "background-color": "white" },
-                  key: d.id,
-                  "hover-class": "main-bg-hover-color",
-                  title: d.title,
-                  isCell: d.isCell,
-                  icon: d.icon
-                }, {
-                  suffix: vue.withCtx(() => [
-                    vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
-                  ]),
-                  _: 2
-                }, 1032, ["title", "isCell", "icon"]);
-              }), 128)),
-              vue.createVNode(_component_yx_divider)
-            ], 64);
-          }), 128))
-        ])
+        vue.createVNode(_component_yx_tool_bar, { title: "" }),
+        vue.createVNode(_component_yx_flexible_wrapper, null, {
+          default: vue.withCtx(() => [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group, i2) => {
+              return vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: i2 }, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
+                  return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                    onClick: ($event) => $options.handleEvent(d),
+                    style: { "background-color": "white" },
+                    key: d.id,
+                    "hover-class": "main-bg-hover-color",
+                    title: d.title,
+                    isCell: d.isCell,
+                    icon: d.icon
+                  }, {
+                    suffix: vue.withCtx(() => [
+                      vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
+                    ]),
+                    _: 2
+                  }, 1032, ["onClick", "title", "isCell", "icon"]);
+                }), 128)),
+                vue.createVNode(_component_yx_divider)
+              ], 64);
+            }), 128))
+          ]),
+          _: 1
+        })
       ]),
       _: 1
     });
@@ -2468,7 +2682,11 @@ This will fail in production.`);
     props: {
       img: [String],
       title: [String],
-      desc: [String]
+      desc: [String],
+      isCover: {
+        type: [Boolean],
+        default: true
+      }
     },
     data() {
       return {};
@@ -2477,8 +2695,7 @@ This will fail in production.`);
   function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-3",
-      "hover-class": "bg-common",
-      onClick: _cache[0] || (_cache[0] = (...args) => _ctx.handleClick && _ctx.handleClick(...args))
+      "hover-class": $props.isCover ? "bg-common" : ""
     }, [
       vue.createElementVNode("image", {
         class: "rounded size-1",
@@ -2495,11 +2712,11 @@ This will fail in production.`);
       vue.createElementVNode("view", { class: "font-sm text-common" }, [
         vue.renderSlot(_ctx.$slots, "right")
       ])
-    ]);
+    ], 8, ["hover-class"]);
   }
   var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
   const _sfc_main$h = {
-    components: { YxCard, YxDivider, YxList, YxCommonWrapper },
+    components: { YxCard, YxDivider, YxList, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
         data: [
@@ -2548,55 +2765,66 @@ This will fail in production.`);
     methods: {}
   };
   function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
     const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
       default: vue.withCtx(() => [
-        vue.createElementVNode("view", {
-          class: "position-relative",
-          style: { "width": "100%", "height": "150rpx", "background-color": "white" }
-        }, [
-          vue.createElementVNode("text", {
-            class: "iconfont icon-help position-absolute",
-            style: { "right": "20rpx", "top": "30rpx" }
-          })
-        ]),
-        vue.createVNode(_component_yx_card, {
-          img: "/static/logo.png",
-          class: "bg-white",
-          title: "\u695A\u4E91",
-          desc: "\u6D4B\u8BD5\u6570\u636E"
-        }, {
-          right: vue.withCtx(() => [
-            vue.createElementVNode("view", { class: "mt-3" }, [
-              vue.createElementVNode("text", { class: "iconfont icon-saoyisao font-lg" }),
-              vue.createElementVNode("text", { class: "iconfont icon-right font-lg" })
-            ])
+        vue.createVNode(_component_yx_tool_bar, { title: "" }),
+        vue.createVNode(_component_yx_flexible_wrapper, null, {
+          default: vue.withCtx(() => [
+            vue.createElementVNode("view", {
+              class: "position-relative",
+              style: { "width": "100%", "height": "150rpx", "background-color": "white" }
+            }, [
+              vue.createElementVNode("text", {
+                class: "iconfont icon-help position-absolute",
+                style: { "right": "20rpx", "top": "30rpx" }
+              })
+            ]),
+            vue.createVNode(_component_yx_card, {
+              img: "/static/logo.png",
+              class: "bg-white",
+              title: "\u695A\u4E91",
+              desc: "\u6D4B\u8BD5\u6570\u636E"
+            }, {
+              right: vue.withCtx(() => [
+                vue.createElementVNode("view", { class: "mt-3" }, [
+                  vue.createElementVNode("text", { class: "iconfont icon-saoyisao font-lg" }),
+                  vue.createElementVNode("text", { class: "iconfont icon-right font-lg" })
+                ])
+              ]),
+              _: 1
+            }),
+            vue.createVNode(_component_yx_divider),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group, i2) => {
+              return vue.openBlock(), vue.createElementBlock("view", {
+                key: i2,
+                class: "bg-white"
+              }, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
+                  return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                    key: d.id,
+                    "hover-class": "bg-common",
+                    title: d.title,
+                    isCell: d.isCell,
+                    icon: d.icon
+                  }, {
+                    suffix: vue.withCtx(() => [
+                      vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
+                    ]),
+                    _: 2
+                  }, 1032, ["title", "isCell", "icon"]);
+                }), 128)),
+                vue.createVNode(_component_yx_divider)
+              ]);
+            }), 128))
           ]),
           _: 1
-        }),
-        vue.createVNode(_component_yx_divider),
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group) => {
-          return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
-            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(group, (d) => {
-              return vue.openBlock(), vue.createBlock(_component_yx_list, {
-                key: d.id,
-                "hover-class": "bg-dark",
-                title: d.title,
-                isCell: d.isCell,
-                icon: d.icon
-              }, {
-                suffix: vue.withCtx(() => [
-                  vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
-                ]),
-                _: 2
-              }, 1032, ["title", "isCell", "icon"]);
-            }), 128)),
-            vue.createVNode(_component_yx_divider)
-          ], 64);
-        }), 256))
+        })
       ]),
       _: 1
     });
@@ -2622,9 +2850,9 @@ This will fail in production.`);
   }
   formatAppLog("log", "at static/testData/friendList.js:26", "@group", groups);
   const _sfc_main$g = {
-    components: { YxToolBar, YxList },
+    components: { YxToolBar, YxList, YxFlexibleWrapper },
     mounted() {
-      formatAppLog("log", "at pages/tabbar/friend/friend.vue:34", "@rrrr", groups);
+      formatAppLog("log", "at pages/tabbar/friend/friend.vue:33", "@rrrr", groups);
       this.friendList = groups;
       for (var i2 = 65; i2 <= 90; i2++) {
         this.friendPrefixPosition.push(String.fromCharCode(i2));
@@ -2657,13 +2885,16 @@ This will fail in production.`);
     },
     methods: {
       startSlide(target2) {
-        formatAppLog("log", "at pages/tabbar/friend/friend.vue:71", "\u70B9\u51FB\u5F97\u4E3A", target2);
-        formatAppLog("log", "at pages/tabbar/friend/friend.vue:72", this.friendList.find((obj) => obj.group == target2));
+        formatAppLog("log", "at pages/tabbar/friend/friend.vue:70", "\u70B9\u51FB\u5F97\u4E3A", target2);
+        formatAppLog("log", "at pages/tabbar/friend/friend.vue:71", this.friendList.find((obj) => obj.group == target2));
         if (this.friendList.find((obj) => obj.group == target2)) {
           this.sliderTarget = target2;
         } else {
           this.slsiderTarget = "";
         }
+      },
+      toast() {
+        formatAppLog("log", "at pages/tabbar/friend/friend.vue:79", "click");
       }
     },
     computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
@@ -2673,7 +2904,7 @@ This will fail in production.`);
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createVNode(_component_yx_tool_bar, { title: "\u901A\u8BAF\u5F55" }),
-      vue.createCommentVNode(' <scroll-view scroll-y="true" style="width: 100vw;height: 100vh;" :scroll-into-view="`hash-abc-1-${sliderTarget}`"  > '),
+      vue.createCommentVNode(" \u65E0\u6CD5\u5305\u88C5\u4E3A\u6ED1\u52A8\u5757\uFF0C\u5BFC\u822A\u4F1A\u4E22\u5931 "),
       vue.createElementVNode("scroll-view", {
         "scroll-y": "true",
         class: "position-fixed font-sm",
@@ -2683,13 +2914,16 @@ This will fail in production.`);
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.base_com, (item) => {
           return vue.openBlock(), vue.createBlock(_component_yx_list, {
             key: item.id,
+            onClick: $options.toast,
             img: item.img,
             title: item.title
-          }, null, 8, ["img", "title"]);
+          }, null, 8, ["onClick", "img", "title"]);
         }), 128)),
-        vue.createCommentVNode(" <view >\u597D\u53CB\u5217\u8868</view> "),
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendList, (friends) => {
-          return vue.openBlock(), vue.createElementBlock("view", { class: "font-md" }, [
+        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendList, (friends, i2) => {
+          return vue.openBlock(), vue.createElementBlock("view", {
+            class: "font-md",
+            key: i2
+          }, [
             vue.createElementVNode("view", {
               class: "bg-common pl-2",
               style: { "width": "100vw" },
@@ -2703,18 +2937,18 @@ This will fail in production.`);
               }, null, 8, ["img", "title"]);
             }), 128))
           ]);
-        }), 256))
+        }), 128))
       ], 12, ["scroll-into-view"]),
-      vue.createCommentVNode(" \u5FEB\u901F\u79FB\u52A8\u5230\u5BF9\u5E94\u5F97\u5206\u7EC4\u4E0A "),
       vue.createElementVNode("view", {
         class: "flex flex-column position-fixed text-center font-sm text-dark",
         style: { "right": "10rpx", "top": "200rpx" }
       }, [
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendPrefixPosition, (prefix) => {
           return vue.openBlock(), vue.createElementBlock("view", {
-            onClick: ($event) => $options.startSlide(prefix)
+            onClick: ($event) => $options.startSlide(prefix),
+            key: prefix
           }, vue.toDisplayString(prefix), 9, ["onClick"]);
-        }), 256))
+        }), 128))
       ])
     ]);
   }
@@ -3921,10 +4155,10 @@ This will fail in production.`);
         default: vue.withCtx(() => [
           vue.createCommentVNode(" \u5BFC\u822A\u680F ,\u9700\u8981\u5BF9\u70B9\u51FB\u7684\u804A\u5929\u6846\u505A\u5224\u65AD\uFF0C\u5224\u65AD\u4E3A\u7528\u6237\u8FD8\u662F\u7FA4\u7EC4\uFF0C\u4ED6\u4EEC\u53BB\u5F80\u7684\u8DEF\u7531\u4E0D\u540C"),
           vue.createVNode(_component_yx_nav_bar, {
-            title: this.name,
+            title: $data.name,
             requireOccupy: false,
             isChat: true,
-            routerPath: `/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${this.name}`
+            routerPath: `/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${$data.name}`
           }, null, 8, ["title", "routerPath"]),
           vue.createCommentVNode(" \u6ED1\u52A8\u5185\u5BB9 "),
           vue.createElementVNode("scroll-view", {
@@ -4095,14 +4329,15 @@ This will fail in production.`);
   var YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list-compo.vue"]]);
   const _sfc_main$9 = {
     onLoad(query) {
-      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:53", "query", query);
+      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:55", "query", query);
       this.title = query.title;
     },
     components: {
       YxNavBar,
       YxList,
       YxCommonWrapper,
-      YxListCompo
+      YxListCompo,
+      YxFlexibleWrapper
     },
     mounted() {
       this.listData = [
@@ -4189,7 +4424,7 @@ This will fail in production.`);
           }
         ]
       ];
-      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:143", "@list,id", this.listData);
+      formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:145", "@list,id", this.listData);
     },
     data() {
       return {
@@ -4199,7 +4434,7 @@ This will fail in production.`);
     },
     methods: {
       switchToggle(e, target2) {
-        formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:153", "switch\u5207\u6362", e, target2);
+        formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:155", "switch\u5207\u6362", e, target2);
       }
     },
     computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
@@ -4207,6 +4442,7 @@ This will fail in production.`);
   function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
       default: vue.withCtx(() => [
@@ -4215,68 +4451,69 @@ This will fail in production.`);
           existMore: false,
           title: $data.title
         }, null, 8, ["title"]),
-        vue.createElementVNode("scroll-view", {
-          "scroll-y": "true",
-          class: "position-fixed font-sm",
-          style: vue.normalizeStyle(`top:${_ctx.fixedTop + 90}rpx;height:88vh`)
-        }, [
-          vue.createElementVNode("view", {
-            id: "group-member",
-            class: "bg-white p-1"
-          }, [
-            vue.createCommentVNode(" \u6700\u591A\u663E\u793A19\u4E2A\u89D2\u8272\u5934\u50CF\uFF0C\u6BCF\u884C5\u4E2A\uFF0C\u6700\u672B\u5C3E\u7684\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D(\u5982\u53EA\u6709\u4E24\u4E2A\u5219\uFF0C\u4E24\u4E2A\u7528\u6237\u6B63\u5E38\u663E\u793A\uFF0C\u6C14\u5019\u8DDF\u7740\u4E00\u4E2A\u6DFB\u52A0\u53F7\u5360\u4F4D\uFF08\u663E\u793A\u4E00\u884C\uFF09\uFF0C\u5982\u5927\u4E8E20\u4E2A\u7528\u6237\uFF0C\u663E\u793A19\u4E2A\u6700\u540E\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D) "),
-            vue.createCommentVNode(" \u671F\u5F85\u540E\u7EED\u8865\u5145\uFF0C\u5F97\u5230\u7FA4\u7EC4\u7684\u6240\u6709\u6210\u5458\u8FDB\u884C\u5C55\u793A\uFF0C\u6837\u5F0F\u548C\u5360\u4F4D\u7B26\u76F8\u4F3C "),
-            vue.createCommentVNode(" \u5360\u4F4D\u6DFB\u52A0\u7B26\u53F7 "),
-            vue.createElementVNode("view", { class: "grid grid-5 grid-gap-1 justify-between" }, [
-              vue.createElementVNode("view", {
-                class: "rounded font-lg text-center ml-2 cursor-pointer",
-                style: { "width": "100rpx", "height": "100rpx", "line-height": "100rpx", "border": "2rpx dashed #ccc" }
-              }, " + ")
+        vue.createCommentVNode(' <scroll-view scroll-y="true" class="position-fixed font-sm"  :style="`top:${fixedTop+90}rpx;height:88vh`"> '),
+        vue.createVNode(_component_yx_flexible_wrapper, { height: "93vh" }, {
+          default: vue.withCtx(() => [
+            vue.createElementVNode("view", {
+              id: "group-member",
+              class: "bg-white p-1"
+            }, [
+              vue.createCommentVNode(" \u6700\u591A\u663E\u793A19\u4E2A\u89D2\u8272\u5934\u50CF\uFF0C\u6BCF\u884C5\u4E2A\uFF0C\u6700\u672B\u5C3E\u7684\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D(\u5982\u53EA\u6709\u4E24\u4E2A\u5219\uFF0C\u4E24\u4E2A\u7528\u6237\u6B63\u5E38\u663E\u793A\uFF0C\u6C14\u5019\u8DDF\u7740\u4E00\u4E2A\u6DFB\u52A0\u53F7\u5360\u4F4D\uFF08\u663E\u793A\u4E00\u884C\uFF09\uFF0C\u5982\u5927\u4E8E20\u4E2A\u7528\u6237\uFF0C\u663E\u793A19\u4E2A\u6700\u540E\u4E00\u4E2A\u4F7F\u7528\u6DFB\u52A0\u7B26\u53F7\u5360\u4F4D) "),
+              vue.createCommentVNode(" \u671F\u5F85\u540E\u7EED\u8865\u5145\uFF0C\u5F97\u5230\u7FA4\u7EC4\u7684\u6240\u6709\u6210\u5458\u8FDB\u884C\u5C55\u793A\uFF0C\u6837\u5F0F\u548C\u5360\u4F4D\u7B26\u76F8\u4F3C "),
+              vue.createCommentVNode(" \u5360\u4F4D\u6DFB\u52A0\u7B26\u53F7 "),
+              vue.createElementVNode("view", { class: "grid grid-5 grid-gap-1 justify-between" }, [
+                vue.createElementVNode("view", {
+                  class: "rounded font-lg text-center ml-2 cursor-pointer",
+                  style: { "width": "100rpx", "height": "100rpx", "line-height": "100rpx", "border": "2rpx dashed #ccc" }
+                }, " + ")
+              ]),
+              vue.createElementVNode("view", { class: "text-center text-common mb-2" }, "\u67E5\u770B\u66F4\u591A\u7FA4\u6210\u5458 > ")
             ]),
-            vue.createElementVNode("view", { class: "text-center text-common mb-2" }, "\u67E5\u770B\u66F4\u591A\u7FA4\u6210\u5458 > ")
-          ]),
-          vue.createElementVNode("view", {
-            id: "detail-setting-operate",
-            class: "mt-2"
-          }, [
-            vue.createCommentVNode(" \u4F7F\u7528 list-compo\u96C6\u5408\u6570\u636E\u53EF\u80FD\u51FA\u73B0\u4E8B\u4EF6\u5904\u7406\u6324\u5151\uFF0C\u5373\u6240\u6709\u7684\u53EF\u80FD\u884C\u90FD\u9700\u8981\u5728yx-list-compo\u7EC4\u4EF6\u5185\u8FDB\u884C\u5B8C\u6210\uFF0C\u53EF\u80FD\u4E0D\u662F\u4E00\u4E2A\u597D\u7684\u9009\u62E9 "),
-            vue.createCommentVNode(` 	<yx-list-compo :listData="listData">\r
+            vue.createElementVNode("view", {
+              id: "detail-setting-operate",
+              class: "mt-2"
+            }, [
+              vue.createCommentVNode(" \u4F7F\u7528 list-compo\u96C6\u5408\u6570\u636E\u53EF\u80FD\u51FA\u73B0\u4E8B\u4EF6\u5904\u7406\u6324\u5151\uFF0C\u5373\u6240\u6709\u7684\u53EF\u80FD\u884C\u90FD\u9700\u8981\u5728yx-list-compo\u7EC4\u4EF6\u5185\u8FDB\u884C\u5B8C\u6210\uFF0C\u53EF\u80FD\u4E0D\u662F\u4E00\u4E2A\u597D\u7684\u9009\u62E9 "),
+              vue.createCommentVNode(` 	<yx-list-compo :listData="listData">\r
 					<view v-if="data.suffix">{{data.suffix}}</view>\r
 					<text v-if="data.sign === 'qrCode'" class="iconfont icon-qrcode" ></text>\r
 					<view v-if="data.sign === 'switch'">\r
 						<switch @change="(e)=>switchToggle(e,data)" />\r
 					</view>\r
 				</yx-list-compo> `),
-            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
-              return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
-                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
-                  return vue.openBlock(), vue.createBlock(_component_yx_list, {
-                    title: data2.title,
-                    isCell: data2.isCell,
-                    key: data2.id
-                  }, vue.createSlots({ _: 2 }, [
-                    data2.suffix || data2.sign ? {
-                      name: "suffix",
-                      fn: vue.withCtx(() => [
-                        data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, vue.toDisplayString(data2.suffix), 1)) : vue.createCommentVNode("v-if", true),
-                        data2.sign === "qrCode" ? (vue.openBlock(), vue.createElementBlock("text", {
-                          key: 1,
-                          class: "iconfont icon-qrcode"
-                        })) : vue.createCommentVNode("v-if", true),
-                        data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, [
-                          vue.createElementVNode("switch", {
-                            onChange: (e) => $options.switchToggle(e, data2)
-                          }, null, 40, ["onChange"])
-                        ])) : vue.createCommentVNode("v-if", true)
-                      ])
-                    } : void 0
-                  ]), 1032, ["title", "isCell"]);
-                }), 128))
-              ]);
-            }), 256))
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+                return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
+                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+                    return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                      title: data2.title,
+                      isCell: data2.isCell,
+                      key: data2.id
+                    }, vue.createSlots({ _: 2 }, [
+                      data2.suffix || data2.sign ? {
+                        name: "suffix",
+                        fn: vue.withCtx(() => [
+                          data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, vue.toDisplayString(data2.suffix), 1)) : vue.createCommentVNode("v-if", true),
+                          data2.sign === "qrCode" ? (vue.openBlock(), vue.createElementBlock("text", {
+                            key: 1,
+                            class: "iconfont icon-qrcode"
+                          })) : vue.createCommentVNode("v-if", true),
+                          data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, [
+                            vue.createElementVNode("switch", {
+                              onChange: (e) => $options.switchToggle(e, data2)
+                            }, null, 40, ["onChange"])
+                          ])) : vue.createCommentVNode("v-if", true)
+                        ])
+                      } : void 0
+                    ]), 1032, ["title", "isCell"]);
+                  }), 128))
+                ]);
+              }), 256))
+            ]),
+            vue.createElementVNode("view", { class: "text-center font-md text-danger bg-white p-2" }, "\u9000\u51FA\u7FA4\u804A"),
+            vue.createCommentVNode(" </scroll-view> ")
           ]),
-          vue.createElementVNode("view", { class: "text-center font-md text-danger bg-white p-2" }, "\u9000\u51FA\u7FA4\u804A")
-        ], 4),
+          _: 1
+        }),
         vue.createCommentVNode(" </view> ")
       ]),
       _: 1
@@ -4285,13 +4522,14 @@ This will fail in production.`);
   var PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
   const _sfc_main$8 = {
     onLoad(query) {
-      formatAppLog("log", "at pages/UserInfo/UserInfo.vue:39", "query", query);
+      formatAppLog("log", "at pages/UserInfo/UserInfo.vue:42", "query", query);
       this.targetId = query.id;
     },
     components: {
       YxNavBar,
       YxList,
-      YxCard
+      YxCard,
+      YxFlexibleWrapper
     },
     mounted() {
       this.listData = [
@@ -4370,75 +4608,81 @@ This will fail in production.`);
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock("view", { class: "fill-screen bg-common" }, [
       vue.createVNode(_component_yx_nav_bar, {
         routerPath: `/pages/UserInfo/UserCustomSetting/UserCustomSetting?id=${$data.targetId}`
       }, null, 8, ["routerPath"]),
-      vue.createVNode(_component_yx_card, {
-        img: "/static/logo.png",
-        class: "bg-white font-weight-bold mt-5",
-        title: "\u6D4B\u8BD5"
-      }, {
-        desc: vue.withCtx(() => [
-          vue.createElementVNode("view", { class: "m-1" }, "\u6635\u79F0: \u6211\u662F\u6635\u79F0"),
-          vue.createElementVNode("view", { class: "m-1" }, "\u5FAE\u4FE1\u53F7: qiDaiTianChong"),
-          vue.createElementVNode("view", { class: "m-1" }, "\u5730\u533A\uFF1A\u6E56\u5317 \u6B66\u6C49")
-        ]),
-        right: vue.withCtx(() => [
-          vue.createCommentVNode(" \u5982\u679C\u662F\u5173\u5FC3\u7528\u6237\u5219\u8FDB\u884C\u663E\u793A\uFF0C\u901A\u8FC7\u540E\u53F0\u5B57\u6BB5\u8FD4\u56DE "),
-          vue.createElementVNode("text", {
-            style: { "color": "#ffbf01" },
-            class: "font-lg"
-          }, "\u2665"),
-          vue.createCommentVNode(" \u2665\u2B50\u{1F9E1}\u{1F31F}\u2B50\u{1F31F} ")
+      vue.createVNode(_component_yx_flexible_wrapper, null, {
+        default: vue.withCtx(() => [
+          vue.createVNode(_component_yx_card, {
+            img: "/static/logo.png",
+            class: "bg-white font-weight-bold",
+            title: "\u6D4B\u8BD5"
+          }, {
+            desc: vue.withCtx(() => [
+              vue.createElementVNode("view", { class: "m-1" }, "\u6635\u79F0: \u6211\u662F\u6635\u79F0"),
+              vue.createElementVNode("view", { class: "m-1" }, "\u5FAE\u4FE1\u53F7: qiDaiTianChong"),
+              vue.createElementVNode("view", { class: "m-1" }, "\u5730\u533A\uFF1A\u6E56\u5317 \u6B66\u6C49")
+            ]),
+            right: vue.withCtx(() => [
+              vue.createCommentVNode(" \u5982\u679C\u662F\u5173\u5FC3\u7528\u6237\u5219\u8FDB\u884C\u663E\u793A\uFF0C\u901A\u8FC7\u540E\u53F0\u5B57\u6BB5\u8FD4\u56DE "),
+              vue.createElementVNode("text", {
+                style: { "color": "#ffbf01" },
+                class: "font-lg iconfont icon-aixin-xian"
+              }),
+              vue.createCommentVNode(" \u2665\u2B50\u{1F9E1}\u{1F31F}\u2B50\u{1F31F} ")
+            ]),
+            _: 1
+          }),
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+            return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+                return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                  onClick: ($event) => $options.handleEvent(data2),
+                  title: data2.title,
+                  isCell: data2.isCell,
+                  key: data2.id
+                }, vue.createSlots({ _: 2 }, [
+                  data2.suffix || data2.sign ? {
+                    name: "suffix",
+                    fn: vue.withCtx(() => [
+                      data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", {
+                        key: 0,
+                        style: { "width": "550rpx" },
+                        class: vue.normalizeClass(data2.sign === "tel" ? "text-danger" : "")
+                      }, vue.toDisplayString(data2.suffix), 3)) : vue.createCommentVNode("v-if", true),
+                      data2.sign === "image" ? (vue.openBlock(), vue.createElementBlock("view", {
+                        key: 1,
+                        style: { "width": "520rpx" }
+                      }, [
+                        vue.createElementVNode("image", {
+                          style: { "width": "75rpx", "height": "75rpx" },
+                          src: "/static/images/demo/cate_09.png",
+                          mode: "aspectFit"
+                        }),
+                        vue.createElementVNode("image", {
+                          style: { "width": "75rpx", "height": "75rpx" },
+                          src: "/static//logo.png",
+                          mode: "aspectFit"
+                        })
+                      ])) : vue.createCommentVNode("v-if", true)
+                    ])
+                  } : void 0
+                ]), 1032, ["onClick", "title", "isCell"]);
+              }), 128))
+            ]);
+          }), 256)),
+          vue.createElementVNode("view", {
+            class: "text-center font-md bg-white p-2",
+            style: { "color": "#6b859a" },
+            onClick: _cache[0] || (_cache[0] = (...args) => $options.toChat && $options.toChat(...args))
+          }, "\u53D1\u9001\u6D88\u606F"),
+          vue.createCommentVNode(" \u6839\u636E\u540E\u53F0\u5B57\u6BB5\u67E5\u770B\u662F\u5426\u88AB\u6DFB\u52A0\u5230\u9ED1\u540D\u5355 "),
+          vue.createElementVNode("view", { class: "mt-2 font-small text-common-font text-center" }, "\u5DF2\u52A0\u5165\u9ED1\u540D\u5355\uFF0C\u4F60\u5C06\u65E0\u6CD5\u63A5\u53D7\u5230\u5B83\u7684\u6D88\u606F")
         ]),
         _: 1
-      }),
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
-        return vue.openBlock(), vue.createElementBlock("view", { class: "mb-2 bg-white" }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
-            return vue.openBlock(), vue.createBlock(_component_yx_list, {
-              onClick: ($event) => $options.handleEvent(data2),
-              title: data2.title,
-              isCell: data2.isCell,
-              key: data2.id
-            }, vue.createSlots({ _: 2 }, [
-              data2.suffix || data2.sign ? {
-                name: "suffix",
-                fn: vue.withCtx(() => [
-                  data2.suffix ? (vue.openBlock(), vue.createElementBlock("view", {
-                    key: 0,
-                    style: { "width": "550rpx" },
-                    class: vue.normalizeClass(data2.sign === "tel" ? "text-danger" : "")
-                  }, vue.toDisplayString(data2.suffix), 3)) : vue.createCommentVNode("v-if", true),
-                  data2.sign === "image" ? (vue.openBlock(), vue.createElementBlock("view", {
-                    key: 1,
-                    style: { "width": "520rpx" }
-                  }, [
-                    vue.createElementVNode("image", {
-                      style: { "width": "75rpx", "height": "75rpx" },
-                      src: "/static/images/demo/cate_09.png",
-                      mode: "aspectFit"
-                    }),
-                    vue.createElementVNode("image", {
-                      style: { "width": "75rpx", "height": "75rpx" },
-                      src: "/static//logo.png",
-                      mode: "aspectFit"
-                    })
-                  ])) : vue.createCommentVNode("v-if", true)
-                ])
-              } : void 0
-            ]), 1032, ["onClick", "title", "isCell"]);
-          }), 128))
-        ]);
-      }), 256)),
-      vue.createElementVNode("view", {
-        class: "text-center font-md bg-white p-2",
-        style: { "color": "#6b859a" },
-        onClick: _cache[0] || (_cache[0] = (...args) => $options.toChat && $options.toChat(...args))
-      }, "\u53D1\u9001\u6D88\u606F"),
-      vue.createCommentVNode(" \u6839\u636E\u540E\u53F0\u5B57\u6BB5\u67E5\u770B\u662F\u5426\u88AB\u6DFB\u52A0\u5230\u9ED1\u540D\u5355 "),
-      vue.createElementVNode("view", { class: "mt-2 font-small text-common-font text-center" }, "\u5DF2\u52A0\u5165\u9ED1\u540D\u5355\uFF0C\u4F60\u5C06\u65E0\u6CD5\u63A5\u53D7\u5230\u5B83\u7684\u6D88\u606F")
+      })
     ]);
   }
   var PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserInfo.vue"]]);
@@ -4447,7 +4691,8 @@ This will fail in production.`);
     },
     components: {
       YxNavBar,
-      YxList
+      YxList,
+      YxFlexibleWrapper
     },
     mounted() {
       this.listData = [
@@ -4500,7 +4745,7 @@ This will fail in production.`);
     },
     methods: {
       handleObjEvent(data2) {
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:81", "data", data2);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:83", "data", data2);
         switch (data2.event) {
           case "tag":
             this.routerGo("/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag");
@@ -4512,7 +4757,7 @@ This will fail in production.`);
             this.routerGo("/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend");
             break;
           default:
-            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:93", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserCustomSetting.vue:95", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
             break;
         }
       },
@@ -4526,46 +4771,52 @@ This will fail in production.`);
   function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock("view", { class: "fill-screen bg-common" }, [
       vue.createVNode(_component_yx_nav_bar, {
         title: "\u8D44\u6599\u8BBE\u7F6E",
         class: "mb-4",
         existMore: false
       }),
-      vue.createElementVNode("view", { class: "pt-5" }),
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list, i2) => {
-        return vue.openBlock(), vue.createElementBlock("view", {
-          class: "mb-2 bg-white",
-          key: i2
-        }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
-            return vue.openBlock(), vue.createBlock(_component_yx_list, {
-              onClick: ($event) => $options.handleObjEvent(data2),
-              title: data2.title,
-              isCell: data2.isCell,
-              key: data2.id
-            }, vue.createSlots({ _: 2 }, [
-              data2.suffix || data2.sign ? {
-                name: "suffix",
-                fn: vue.withCtx(() => [
-                  data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
-                    vue.createElementVNode("switch", {
-                      onChange: (e) => _ctx.switchToggle(e, data2)
-                    }, null, 40, ["onChange"])
-                  ])) : vue.createCommentVNode("v-if", true)
-                ])
-              } : void 0
-            ]), 1032, ["onClick", "title", "isCell"]);
-          }), 128))
-        ]);
-      }), 128)),
-      vue.createElementVNode("view", { class: "text-center font-md bg-white p-2 text-danger" }, "\u5220\u9664")
+      vue.createVNode(_component_yx_flexible_wrapper, null, {
+        default: vue.withCtx(() => [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list, i2) => {
+            return vue.openBlock(), vue.createElementBlock("view", {
+              class: "mb-2 bg-white",
+              key: i2
+            }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list, (data2) => {
+                return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                  onClick: ($event) => $options.handleObjEvent(data2),
+                  title: data2.title,
+                  isCell: data2.isCell,
+                  key: data2.id
+                }, vue.createSlots({ _: 2 }, [
+                  data2.suffix || data2.sign ? {
+                    name: "suffix",
+                    fn: vue.withCtx(() => [
+                      data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+                        vue.createElementVNode("switch", {
+                          onChange: (e) => _ctx.switchToggle(e, data2)
+                        }, null, 40, ["onChange"])
+                      ])) : vue.createCommentVNode("v-if", true)
+                    ])
+                  } : void 0
+                ]), 1032, ["onClick", "title", "isCell"]);
+              }), 128))
+            ]);
+          }), 128)),
+          vue.createElementVNode("view", { class: "text-center font-md bg-white p-2 text-danger" }, "\u5220\u9664")
+        ]),
+        _: 1
+      })
     ]);
   }
   var PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
   const _sfc_main$6 = {
     components: {
-      YxNavBar
+      YxNavBar,
+      YxFlexibleWrapper
     },
     data() {
       return {};
@@ -4580,6 +4831,7 @@ This will fail in production.`);
   };
   function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_YxFlexibleWrapper = vue.resolveComponent("YxFlexibleWrapper");
     return vue.openBlock(), vue.createElementBlock("view", { class: "bg-white" }, [
       vue.createVNode(_component_yx_nav_bar, { existMore: false }, {
         suffix: vue.withCtx(() => [
@@ -4590,45 +4842,50 @@ This will fail in production.`);
         ]),
         _: 1
       }),
-      vue.createElementVNode("view", { class: "p-2 mt-5" }, [
-        vue.createElementVNode("view", { class: "text-center px-2 font-weight-bold font-md" }, " \u8BBE\u7F6E\u5907\u6CE8\u548C\u6807\u7B7E "),
-        vue.createElementVNode("view", { class: "p-1" }, [
-          vue.createElementVNode("view", { class: "m-1" }, "\u5907\u6CE8"),
-          vue.createElementVNode("view", { class: "p-2 rounded bg-common" }, [
-            vue.createElementVNode("input", { type: "text" })
+      vue.createVNode(_component_YxFlexibleWrapper, null, {
+        default: vue.withCtx(() => [
+          vue.createElementVNode("view", { class: "p-2 mt-5" }, [
+            vue.createElementVNode("view", { class: "text-center px-2 font-weight-bold font-md" }, " \u8BBE\u7F6E\u5907\u6CE8\u548C\u6807\u7B7E "),
+            vue.createElementVNode("view", { class: "p-1" }, [
+              vue.createElementVNode("view", { class: "m-1" }, "\u5907\u6CE8"),
+              vue.createElementVNode("view", { class: "p-2 rounded bg-common" }, [
+                vue.createElementVNode("input", { type: "text" })
+              ])
+            ]),
+            vue.createElementVNode("view", {
+              class: "p-1",
+              onClick: _cache[0] || (_cache[0] = ($event) => $options.routerPath("/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick"))
+            }, [
+              vue.createElementVNode("view", { class: "m-1" }, "\u6807\u7B7E"),
+              vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
+                vue.createElementVNode("view", { class: "flex-1" }, "\u6DFB\u52A0\u6807\u7B7E"),
+                vue.createElementVNode("view", null, ">")
+              ])
+            ]),
+            vue.createElementVNode("view", { class: "p-1" }, [
+              vue.createElementVNode("view", { class: "m-1" }, "\u7535\u8BDD\u53F7\u7801"),
+              vue.createElementVNode("view", { class: "rounded bg-common font-md justify-around flex" }, [
+                vue.createElementVNode("view", { class: "ml-2 p-1 font-lg" }, "+"),
+                vue.createElementVNode("input", {
+                  type: "text",
+                  class: "mt-1 flex-1"
+                })
+              ])
+            ]),
+            vue.createElementVNode("view", { class: "p-1" }, [
+              vue.createElementVNode("view", { class: "m-1" }, "\u63CF\u8FF0"),
+              vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
+                vue.createElementVNode("input", {
+                  type: "text",
+                  class: "flex-1",
+                  placeholder: "\u6DFB\u52A0\u6587\u5B57\u63CF\u8FF0"
+                })
+              ])
+            ])
           ])
         ]),
-        vue.createElementVNode("view", {
-          class: "p-1",
-          onClick: _cache[0] || (_cache[0] = ($event) => $options.routerPath("/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick"))
-        }, [
-          vue.createElementVNode("view", { class: "m-1" }, "\u6807\u7B7E"),
-          vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
-            vue.createElementVNode("view", { class: "flex-1" }, "\u6DFB\u52A0\u6807\u7B7E"),
-            vue.createElementVNode("view", null, ">")
-          ])
-        ]),
-        vue.createElementVNode("view", { class: "p-1" }, [
-          vue.createElementVNode("view", { class: "m-1" }, "\u7535\u8BDD\u53F7\u7801"),
-          vue.createElementVNode("view", { class: "rounded bg-common font-md justify-around flex" }, [
-            vue.createElementVNode("view", { class: "ml-2 p-1 font-lg" }, "+"),
-            vue.createElementVNode("input", {
-              type: "text",
-              class: "mt-1 flex-1"
-            })
-          ])
-        ]),
-        vue.createElementVNode("view", { class: "p-1" }, [
-          vue.createElementVNode("view", { class: "m-1" }, "\u63CF\u8FF0"),
-          vue.createElementVNode("view", { class: "p-2 rounded bg-common font-md justify-around flex" }, [
-            vue.createElementVNode("input", {
-              type: "text",
-              class: "flex-1",
-              placeholder: "\u6DFB\u52A0\u6587\u5B57\u63CF\u8FF0"
-            })
-          ])
-        ])
-      ])
+        _: 1
+      })
     ]);
   }
   var PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
@@ -4784,7 +5041,8 @@ This will fail in production.`);
     components: {
       YxNavBar,
       YxList,
-      YxCommonWrapper
+      YxCommonWrapper,
+      YxFlexibleWrapper
     },
     mounted() {
       this.listData = [
@@ -4834,7 +5092,7 @@ This will fail in production.`);
     },
     methods: {
       handleObjEvent(data2) {
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:77", "data", data2);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:81", "data", data2);
         switch (data2.event) {
           case "chat":
           case "moreAuth":
@@ -4843,7 +5101,7 @@ This will fail in production.`);
             authList.filter((list) => list.id !== data2.id).forEach((list) => list.radio = false);
             break;
           default:
-            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:86", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue:90", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
             break;
         }
       },
@@ -4862,6 +5120,7 @@ This will fail in production.`);
   function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, null, {
       default: vue.withCtx(() => [
@@ -4869,32 +5128,37 @@ This will fail in production.`);
           title: "\u670B\u53CB\u6743\u9650",
           existMore: false
         }),
-        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
-          return vue.openBlock(), vue.createElementBlock("view", { class: "mt-2" }, [
-            vue.createElementVNode("view", { class: "font-small my-1 mx-2 text-common-font" }, vue.toDisplayString(list.title), 1),
-            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list.list, (data2) => {
-              return vue.openBlock(), vue.createBlock(_component_yx_list, {
-                title: data2.title,
-                onClick: ($event) => $options.handleObjEvent(data2),
-                class: "bg-white px-2",
-                key: data2.id
-              }, {
-                suffix: vue.withCtx(() => [
-                  data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("switch", {
-                    key: 0,
-                    checked: "true",
-                    onChange: _cache[0] || (_cache[0] = () => {
-                    })
-                  }, null, 32)) : vue.createCommentVNode("v-if", true),
-                  data2.sign === "auth" && data2.radio ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, [
-                    vue.createElementVNode("text", { class: "main-text-color" }, " \u221A ")
-                  ])) : vue.createCommentVNode("v-if", true)
-                ]),
-                _: 2
-              }, 1032, ["title", "onClick"]);
-            }), 128))
-          ]);
-        }), 256))
+        vue.createVNode(_component_yx_flexible_wrapper, null, {
+          default: vue.withCtx(() => [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.listData, (list) => {
+              return vue.openBlock(), vue.createElementBlock("view", { class: "mt-2" }, [
+                vue.createElementVNode("view", { class: "font-small my-1 mx-2 text-common-font" }, vue.toDisplayString(list.title), 1),
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(list.list, (data2) => {
+                  return vue.openBlock(), vue.createBlock(_component_yx_list, {
+                    title: data2.title,
+                    onClick: ($event) => $options.handleObjEvent(data2),
+                    class: "bg-white px-2",
+                    key: data2.id
+                  }, {
+                    suffix: vue.withCtx(() => [
+                      data2.sign === "switch" ? (vue.openBlock(), vue.createElementBlock("switch", {
+                        key: 0,
+                        checked: "true",
+                        onChange: _cache[0] || (_cache[0] = () => {
+                        })
+                      }, null, 32)) : vue.createCommentVNode("v-if", true),
+                      data2.sign === "auth" && data2.radio ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, [
+                        vue.createElementVNode("text", { class: "main-text-color" }, " \u221A ")
+                      ])) : vue.createCommentVNode("v-if", true)
+                    ]),
+                    _: 2
+                  }, 1032, ["title", "onClick"]);
+                }), 128))
+              ]);
+            }), 256))
+          ]),
+          _: 1
+        })
       ]),
       _: 1
     });
@@ -5266,7 +5530,8 @@ This will fail in production.`);
     },
     components: {
       YxNavBar,
-      YxList
+      YxList,
+      YxFlexibleWrapper
     },
     mounted() {
       this.listData = [
@@ -5296,12 +5561,12 @@ This will fail in production.`);
         }
       ];
       if (window) {
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:86", "\u6D4F\u89C8\u5668\u5C4F\u5E55", window == null ? void 0 : window.screen);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:89", "\u6D4F\u89C8\u5668\u5C4F\u5E55", window == null ? void 0 : window.screen);
         this.screenInfo.width = window.screen.width;
         this.screenInfo.height = window.screen.height;
       } else if (plus) {
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:90", plus.device);
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:91", "\u624B\u673A\u8BBE\u5907\u4FE1\u606F", plus.screen);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:93", plus.device);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:94", "\u624B\u673A\u8BBE\u5907\u4FE1\u606F", plus.screen);
         this.screenInfo.width = plus.screen.resolutionWidth;
         this.screenInfo.height = plus.screen.resolutionHeight;
       }
@@ -5328,7 +5593,7 @@ This will fail in production.`);
         let target2 = y - this.sliderStartY;
         let dest = target2 > 0 ? 100 / this.screenInfo.height * target2 : 0;
         dest = dest > 25 ? 25 + dest * 0.2 : dest;
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:130", "dest", dest);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:133", "dest", dest);
         this.sliderHeight = dest;
       },
       handleTouchEnd(e) {
@@ -5341,7 +5606,7 @@ This will fail in production.`);
         }
       },
       handleObjEvent(data2) {
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:148", "data", data2);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:151", "data", data2);
         switch (data2.event) {
           case "tag":
             this.routerGo("/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag");
@@ -5353,7 +5618,7 @@ This will fail in production.`);
             this.routerGo("/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend");
             break;
           default:
-            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:160", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
+            formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:163", "\u65E0\u6CD5\u5904\u7406\u6B64\u914D\u7F6E");
             break;
         }
       },
@@ -5366,7 +5631,7 @@ This will fail in production.`);
     computed: {
       sliderBgDistance() {
         const distance = -50 + this.sliderHeight;
-        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:179", "slider", this.sliderHeight);
+        formatAppLog("log", "at pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue:182", "slider", this.sliderHeight);
         return distance > 0 ? 0 : distance;
       },
       commentCount() {
@@ -5382,6 +5647,7 @@ This will fail in production.`);
   };
   function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       !$data.expandBackground ? (vue.openBlock(), vue.createBlock(_component_yx_nav_bar, {
         key: 0,
@@ -5390,95 +5656,416 @@ This will fail in production.`);
         isOpacity: true,
         requireOccupy: false
       })) : vue.createCommentVNode("v-if", true),
-      vue.createElementVNode("view", {
-        onTouchstart: _cache[0] || (_cache[0] = (...args) => $options.handleTouchStart && $options.handleTouchStart(...args)),
-        onTouchmove: _cache[1] || (_cache[1] = (...args) => $options.handleTouchMove && $options.handleTouchMove(...args)),
-        onTouchend: _cache[2] || (_cache[2] = (...args) => $options.handleTouchEnd && $options.handleTouchEnd(...args))
-      }, [
-        vue.createCommentVNode(" \u4E3A\u4E86\u9002\u914D\u5C4F\u5E55\u800C\u5355\u4F4D\u9700\u8981\u7EDF\u4E00\uFF0C\u8FD9\u91CC\u4F7F\u7528vh\u4F5C\u4E3A\u5355\u4F4D\u5219\u4E0B\u9762\u7684\u5916\u8FB9\u8DDD\u4E5F\u8981\u4F7F\u7528vh\uFF08\u4E0D\u9002\u7528vh\u5219\u65E0\u6CD5\u8FBE\u5230\u9002\u914D\uFF09,\u4F7F\u7528device\u62FF\u5230\u5F53\u524D\u5C4F\u5E55\u7684\u4FE1\u606F\u6839\u636E\u79FB\u52A8\u8DDD\u79BB\u6362\u7B97\u51FAvw | vh "),
-        vue.createCommentVNode(' <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> '),
-        vue.createElementVNode("view", {
-          class: "position-absolute bg-common",
-          style: vue.normalizeStyle([{ "left": "0", "height": "80vh", "width": "100vw" }, `top:${$options.sliderBgDistance}vh`])
-        }, [
-          vue.createElementVNode("image", {
-            src: "/static/images/friendCircleBg.png",
-            style: { "width": "100%", "height": "100%" }
-          }),
-          vue.createElementVNode("view", { class: "zTop position-relative" }, [
-            $data.expandBackground ? (vue.openBlock(), vue.createElementBlock("view", {
-              key: 0,
-              class: "position-absolute p-1 rounded-circle border font-sm text-white text-center",
-              style: { "right": "30rpx", "top": "-80rpx", "border-color": "white", "width": "80rpx" }
-            }, "\u2764 \u8D5E")) : vue.createCommentVNode("v-if", true)
-          ])
-        ], 4),
-        vue.createCommentVNode(" \u5C55\u793A\u7528\u6237\u56FE\u7247\u548C\u59D3\u540D "),
-        vue.createCommentVNode(" \u4E0A\u9762\u5E03\u5C40\u4F7F\u7528\u4E86absolute\u8131\u79BB\u4E86\u6587\u6863\u6D41\uFF0C\u56E0\u6B64\u6211\u4EEC\u8FD9\u91CC\u7684\u76D2\u5B50\u4F1A\u51FA\u73B0\u5728\u7B2C\u4E00\u884C\uFF0C\u56E0\u6B64\u9700\u8981\u4F7F\u7528\u5916\u8FB9\u8DDD\u6765\u8FDB\u884C\u79FB\u52A8\u8FBE\u5230\u6B63\u786E\u7684\u4F4D\u7F6E "),
-        vue.createCommentVNode(' <view class="flex  justify-end p-2 align-center " :style="`padding-top: ${350+sliderHeight}rpx;`"> '),
-        vue.createElementVNode("view", {
-          class: "flex justify-end p-2 align-center",
-          style: vue.normalizeStyle(`padding-top: ${25 + $data.sliderHeight}vh;`)
-        }, [
-          vue.createElementVNode("view", { class: "mr-2 zTop text-common-font font-sm" }, "\u6211\u662Fmera"),
+      vue.createVNode(_component_yx_flexible_wrapper, null, {
+        default: vue.withCtx(() => [
           vue.createElementVNode("view", {
-            class: "rounded overflow-hidden",
-            style: { "width": "100rpx", "height": "100rpx" }
+            onTouchstart: _cache[0] || (_cache[0] = (...args) => $options.handleTouchStart && $options.handleTouchStart(...args)),
+            onTouchmove: _cache[1] || (_cache[1] = (...args) => $options.handleTouchMove && $options.handleTouchMove(...args)),
+            onTouchend: _cache[2] || (_cache[2] = (...args) => $options.handleTouchEnd && $options.handleTouchEnd(...args))
           }, [
-            vue.createElementVNode("image", {
-              src: "/static/logo.png",
-              style: { "width": "100%", "height": "100%" }
-            })
-          ])
-        ], 4),
-        vue.createCommentVNode(" \u5C55\u793A\u5177\u4F53\u4FE1\u606F "),
-        vue.createElementVNode("view", { class: "mt-5 pt-5" }, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.showList, (data2) => {
-            return vue.openBlock(), vue.createElementBlock("view", {
-              class: "flex align-start p-2",
-              key: data2.id
+            vue.createCommentVNode(" \u4E3A\u4E86\u9002\u914D\u5C4F\u5E55\u800C\u5355\u4F4D\u9700\u8981\u7EDF\u4E00\uFF0C\u8FD9\u91CC\u4F7F\u7528vh\u4F5C\u4E3A\u5355\u4F4D\u5219\u4E0B\u9762\u7684\u5916\u8FB9\u8DDD\u4E5F\u8981\u4F7F\u7528vh\uFF08\u4E0D\u9002\u7528vh\u5219\u65E0\u6CD5\u8FBE\u5230\u9002\u914D\uFF09,\u4F7F\u7528device\u62FF\u5230\u5F53\u524D\u5C4F\u5E55\u7684\u4FE1\u606F\u6839\u636E\u79FB\u52A8\u8DDD\u79BB\u6362\u7B97\u51FAvw | vh "),
+            vue.createCommentVNode(' <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> '),
+            vue.createElementVNode("view", {
+              class: "position-absolute bg-common",
+              style: vue.normalizeStyle([{ "left": "0", "height": "80vh", "width": "100vw" }, `top:${$options.sliderBgDistance}vh`])
             }, [
-              vue.createElementVNode("view", { class: "font-lg font-weight-bold" }, vue.toDisplayString(data2.publish_time), 1),
+              vue.createElementVNode("image", {
+                src: "/static/images/friendCircleBg.png",
+                style: { "width": "100%", "height": "100%" }
+              }),
+              vue.createElementVNode("view", { class: "zTop position-relative" }, [
+                $data.expandBackground ? (vue.openBlock(), vue.createElementBlock("view", {
+                  key: 0,
+                  class: "position-absolute p-1 rounded-circle border font-sm text-white text-center",
+                  style: { "right": "30rpx", "top": "-80rpx", "border-color": "white", "width": "80rpx" }
+                }, "\u2764 \u8D5E")) : vue.createCommentVNode("v-if", true)
+              ])
+            ], 4),
+            vue.createCommentVNode(" \u5C55\u793A\u7528\u6237\u56FE\u7247\u548C\u59D3\u540D "),
+            vue.createCommentVNode(" \u4E0A\u9762\u5E03\u5C40\u4F7F\u7528\u4E86absolute\u8131\u79BB\u4E86\u6587\u6863\u6D41\uFF0C\u56E0\u6B64\u6211\u4EEC\u8FD9\u91CC\u7684\u76D2\u5B50\u4F1A\u51FA\u73B0\u5728\u7B2C\u4E00\u884C\uFF0C\u56E0\u6B64\u9700\u8981\u4F7F\u7528\u5916\u8FB9\u8DDD\u6765\u8FDB\u884C\u79FB\u52A8\u8FBE\u5230\u6B63\u786E\u7684\u4F4D\u7F6E "),
+            vue.createCommentVNode(' <view class="flex  justify-end p-2 align-center " :style="`padding-top: ${350+sliderHeight}rpx;`"> '),
+            vue.createElementVNode("view", {
+              class: "flex justify-end p-2 align-center",
+              style: vue.normalizeStyle(`padding-top: ${25 + $data.sliderHeight}vh;`)
+            }, [
+              vue.createElementVNode("view", { class: "mr-2 zTop text-common-font font-sm" }, "\u6211\u662Fmera"),
               vue.createElementVNode("view", {
-                class: "rounded overflow-hidden mx-2",
-                style: { "width": "140rpx", "height": "140rpx" }
+                class: "rounded overflow-hidden",
+                style: { "width": "100rpx", "height": "100rpx" }
               }, [
                 vue.createElementVNode("image", {
-                  src: data2.img,
+                  src: "/static/logo.png",
                   style: { "width": "100%", "height": "100%" }
-                }, null, 8, ["src"])
-              ]),
-              vue.createElementVNode("view", { class: "flex-1 text-overflow-line-2" }, vue.toDisplayString(data2.message), 1)
-            ]);
-          }), 128)),
-          $options.commentCount > 3 ? (vue.openBlock(), vue.createElementBlock("view", {
-            key: 0,
-            class: "font-sm text-common text-center"
-          }, "\u70B9\u51FB\u67E5\u770B\u66F4\u591A\u4FE1\u606F >")) : vue.createCommentVNode("v-if", true)
+                })
+              ])
+            ], 4),
+            vue.createCommentVNode(" \u5C55\u793A\u5177\u4F53\u4FE1\u606F "),
+            vue.createElementVNode("view", { class: "mt-5 pt-5" }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.showList, (data2) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "flex align-start p-2",
+                  key: data2.id
+                }, [
+                  vue.createElementVNode("view", { class: "font-lg font-weight-bold" }, vue.toDisplayString(data2.publish_time), 1),
+                  vue.createElementVNode("view", {
+                    class: "rounded overflow-hidden mx-2",
+                    style: { "width": "140rpx", "height": "140rpx" }
+                  }, [
+                    vue.createElementVNode("image", {
+                      src: data2.img,
+                      style: { "width": "100%", "height": "100%" }
+                    }, null, 8, ["src"])
+                  ]),
+                  vue.createElementVNode("view", { class: "flex-1 text-overflow-line-2" }, vue.toDisplayString(data2.message), 1)
+                ]);
+              }), 128)),
+              $options.commentCount > 3 ? (vue.openBlock(), vue.createElementBlock("view", {
+                key: 0,
+                class: "font-sm text-common text-center"
+              }, "\u70B9\u51FB\u67E5\u770B\u66F4\u591A\u4FE1\u606F >")) : vue.createCommentVNode("v-if", true)
+            ]),
+            vue.createElementVNode("view", { class: "p-5 font-small flex text-common align-center" }, [
+              vue.createElementVNode("view", {
+                class: "flex-1",
+                style: { "border": "1rpx solid #ccc" }
+              }),
+              vue.createElementVNode("view", { class: "mx-2" }, "\u670B\u53CB\u4EC5\u5C55\u793A" + vue.toDisplayString("\u4E09\u5929") + "\u7684\u670B\u53CB\u5708"),
+              vue.createElementVNode("view", {
+                class: "flex-1",
+                style: { "border": "1rpx solid #ccc" }
+              })
+            ])
+          ], 32)
         ]),
-        vue.createElementVNode("view", { class: "p-5 font-small flex text-common align-center" }, [
-          vue.createElementVNode("view", {
-            class: "flex-1",
-            style: { "border": "1rpx solid #ccc" }
-          }),
-          vue.createElementVNode("view", { class: "mx-2" }, "\u670B\u53CB\u4EC5\u5C55\u793A" + vue.toDisplayString("\u4E09\u5929") + "\u7684\u670B\u53CB\u5708"),
-          vue.createElementVNode("view", {
-            class: "flex-1",
-            style: { "border": "1rpx solid #ccc" }
-          })
-        ])
-      ], 32)
+        _: 1
+      })
     ]);
   }
   var PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
-  const _sfc_main$1 = {
-    data() {
-      return {};
+  var friendDynamicList = [
+    {
+      id: Math.random() * 2e3,
+      user_img: "/static/logo.png",
+      user_name: "\u5149\u987E",
+      content: "\u5F88\u8212\u670D\u554A",
+      image_list: ["/static/images/bg.jpg", "/static/images/friendCircleBg.png"],
+      publish_time: Date.now() - Math.floor(Math.random() * 1e4),
+      like_list: ["001", "1"],
+      reply_list: [
+        {
+          id: "1",
+          name: "\u559C\u6B22",
+          having_reply_obj: "",
+          replay_content: "\u51FA\u53BB\u73A9\u554A"
+        },
+        {
+          id: 2,
+          name: "\u661F\u6674",
+          having_reply_obj: "1",
+          replay_content: "\u53EF\u4EE5\u554A\uFF0C\u6211\u627E\u4F60"
+        }
+      ]
     },
-    methods: {}
+    {
+      id: Math.random() * 2e3,
+      user_img: "/static/logo1.png",
+      user_name: "\u6B22\u8FCE",
+      content: "\u671F\u5F85\u4F60\u7684\u52A0\u5165",
+      image_list: ["/static/images/bg.jpg"],
+      publish_time: Date.now() - Math.floor(Math.random() * 99999) * 1e3 * 60,
+      like_list: ["001"],
+      reply_list: []
+    },
+    {
+      id: Math.random() * 2e3,
+      user_img: "/static/logo.png",
+      user_name: "\u4ECA\u5929\uFF0C\u6628\u5929\uFF0C\u660E\u5929",
+      content: "\u5E0C\u671B\u672A\u6765\u53EF\u4EE5\u66F4\u597D",
+      image_list: ["/static/images/friendCircleBg.png"],
+      publish_time: Date.now() - Math.floor(Math.random() * 99999) * 1e3,
+      like_list: ["001", "1"],
+      reply_list: [
+        {
+          id: "1",
+          name: "\u559C\u6B22",
+          having_reply_obj: "",
+          replay_content: "\u597D\u554A\uFF0C\u6211\u53EF\u4EE5"
+        }
+      ]
+    },
+    {
+      id: Math.random() * 2e3,
+      user_img: "/static/logo1.png",
+      user_name: "\u671F\u521D",
+      content: "\u8FD9\u662F\u6211\u7684\u7B2C\u4E00\u6761\u670B\u53CB\u5708\uFF0C\u8BF7\u591A\u5173\u7167",
+      image_list: [],
+      publish_time: Date.now() - Math.floor(Math.random() * 99999) * 1e5 * 60,
+      like_list: [],
+      reply_list: []
+    },
+    {
+      id: Math.random() * 2e3,
+      user_img: "/static/logo.png",
+      user_name: "VvZ",
+      content: "\u600E\u4E48\u6CA1\u4EBA\u627E\u6211\u73A9\uFF0C\u6211\u597D\u65E0\u804A",
+      image_list: [],
+      publish_time: Date.now() - Math.floor(Math.random() * 99999) * 1e3 * 60,
+      like_list: [],
+      reply_list: [
+        {
+          id: "1",
+          name: "\u661F\u6674",
+          having_reply_obj: "",
+          replay_content: "\u6211\u53BB\u627E\u4F60\uFF0C\u4F60\u7B49\u6211"
+        }
+      ]
+    }
+  ];
+  function publishTimeConvert(time) {
+    let now2 = dayjs();
+    let year = dayjs(now2).diff(time, "year");
+    let month = dayjs(now2).diff(time, "month");
+    let week = dayjs(now2).diff(time, "week");
+    let hour = dayjs(now2).diff(time, "hour");
+    let minute = dayjs(now2).diff(time, "minute");
+    let second = dayjs(now2).diff(time, "second");
+    if (year) {
+      return year + "\u5E74\u524D";
+    } else if (month) {
+      return month + "\u6708\u524D";
+    } else if (week) {
+      return week + "\u661F\u671F\u524D";
+    } else if (hour) {
+      return hour + "\u5C0F\u65F6\u524D";
+    } else if (minute) {
+      return minute + "\u5206\u949F\u524D";
+    } else if (second) {
+      return second + "\u79D2\u524D";
+    }
+    return "\u4F20\u5165\u7684\u65F6\u95F4\u4E0D\u6B63\u786E";
+  }
+  const _sfc_main$1 = {
+    components: { YxNavBar, YxFlexibleWrapper, YxCard },
+    mounted() {
+      this.friendDynamicList = this.friendDynamicList.map((dynamic) => {
+        dynamic.expandComment = false;
+        dynamic.isThumb = false;
+        return dynamic;
+      });
+      if (uni.onKeyboardHeightChange) {
+        uni.onKeyboardHeightChange((e) => {
+          formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:106", "\u952E\u76D8\u9AD8\u5EA6\u6539\u53D8\u4E86", e);
+          this.keyboardHeight = e;
+        });
+      }
+    },
+    data() {
+      return {
+        friendDynamicList,
+        isComment: false,
+        keyboardHeight: 0,
+        replyObj: ""
+      };
+    },
+    methods: {
+      publishTimeConvert,
+      touchStart() {
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:122", "\u5F00\u59CB\u89E6\u6478\u4E86");
+        this.friendDynamicList.forEach((dynamic) => dynamic.expandComment = false);
+        this.isComment = false;
+      },
+      toggleComment(dynamic) {
+        dynamic.expandComment = !dynamic.expandComment;
+      },
+      clickThumb(dynamic) {
+        dynamic.isThumb = !dynamic.isThumb;
+        if (dynamic.isThumb) {
+          dynamic.like_list.push("me");
+        } else {
+          const index = dynamic.like_list.findIndex((like) => like == "me");
+          dynamic.like_list.splice(index, 1);
+        }
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:139", "\u70B9\u8D5E");
+      },
+      clickComment() {
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:142", "\u8BC4\u8BBA");
+        this.isComment = true;
+      }
+    },
+    computed: {
+      commentInputStyle() {
+        let style = this.isComment ? "opacity:1;" : "opacity:0;";
+        style += `bottom:${this.keyboardHeight ? this.keyboardHeight * 2 : 500}rpx`;
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:150", "@style", style);
+        return style;
+      }
+    }
   };
   function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-    return vue.openBlock(), vue.createElementBlock("view");
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_card = vue.resolveComponent("yx-card");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
+    return vue.openBlock(), vue.createElementBlock("view", null, [
+      vue.createVNode(_component_yx_nav_bar, {
+        title: "",
+        existMore: false,
+        routerPath: `/pages/tabbar/find/find?${_ctx.name}`
+      }, {
+        suffix: vue.withCtx(() => [
+          vue.createElementVNode("view", { class: "p-1 font-sm main-bg-color text-white rounded" }, " \u53D1\u5E03 ")
+        ]),
+        _: 1
+      }, 8, ["routerPath"]),
+      vue.createVNode(_component_yx_flexible_wrapper, { height: "92vh" }, {
+        default: vue.withCtx(() => [
+          vue.createElementVNode("view", {
+            onTouchstart: _cache[1] || (_cache[1] = (...args) => $options.touchStart && $options.touchStart(...args))
+          }, [
+            vue.createCommentVNode(" \u9876\u90E8\u914D\u7F6E "),
+            vue.createElementVNode("view", { style: { "height": "40vh" } }, [
+              vue.createElementVNode("image", {
+                src: "/static/images/friendCircleBg.png",
+                mode: "aspectFill",
+                style: { "height": "100%", "width": "100%" }
+              })
+            ]),
+            vue.createElementVNode("view", {
+              class: "position-relative",
+              style: { "height": "150rpx" }
+            }, [
+              vue.createElementVNode("view", {
+                class: "position-absolute",
+                style: { "right": "20rpx", "top": "-80rpx" }
+              }, [
+                vue.createElementVNode("view", { class: "flex align-center justify-end font-md text-white" }, [
+                  vue.createTextVNode(" Zz "),
+                  vue.createElementVNode("view", {
+                    class: "rounded overflow-hidden ml-2",
+                    style: { "width": "120rpx", "height": "120rpx" }
+                  }, [
+                    vue.createElementVNode("image", {
+                      src: "/static/logo.png",
+                      mode: "aspectFill",
+                      style: { "width": "100%", "height": "100%" }
+                    })
+                  ])
+                ])
+              ])
+            ]),
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.friendDynamicList, (dynamic) => {
+              return vue.openBlock(), vue.createElementBlock("view", {
+                class: "mt-2 p-1",
+                style: { "border-bottom": "1rpx solid #ccc" },
+                key: dynamic.id
+              }, [
+                vue.createVNode(_component_yx_card, {
+                  img: dynamic.user_img,
+                  isCover: false
+                }, {
+                  desc: vue.withCtx(() => [
+                    vue.createCommentVNode(" \u5185\u5BB9\u8FB9\u8DDD "),
+                    vue.createElementVNode("view", { class: "pr-2" }, [
+                      vue.createElementVNode("view", { class: "dynamic-common-color font-md mb-1" }, vue.toDisplayString(dynamic.user_name), 1),
+                      vue.createElementVNode("view", { class: "mb-1 font-md text-dark" }, vue.toDisplayString(dynamic.content), 1),
+                      vue.createCommentVNode(" \u52A8\u6001\u56FE\u7247 "),
+                      dynamic.image_list.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+                        key: 0,
+                        class: "mb-2 flex flex-wrap"
+                      }, [
+                        (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(dynamic.image_list, (img, i2) => {
+                          return vue.openBlock(), vue.createElementBlock("view", {
+                            class: "size-2 m-1 flex-1",
+                            key: i2
+                          }, [
+                            vue.createElementVNode("image", {
+                              src: img,
+                              mode: "aspectFit",
+                              class: "el-full"
+                            }, null, 8, ["src"])
+                          ]);
+                        }), 128))
+                      ])) : vue.createCommentVNode("v-if", true),
+                      vue.createCommentVNode(" \u53D1\u5E03\u65F6\u95F4-\u70B9\u8D5E "),
+                      vue.createElementVNode("view", { class: "m-2 flex justify-between align-center position-relative" }, [
+                        vue.createCommentVNode(" <view>{{dynamic.publish_time}}</view> "),
+                        vue.createElementVNode("view", null, vue.toDisplayString($options.publishTimeConvert(dynamic.publish_time)), 1),
+                        vue.createElementVNode("view", {
+                          class: "bg-common p-1",
+                          onClick: ($event) => $options.toggleComment(dynamic)
+                        }, [
+                          vue.createElementVNode("text", { class: "font-sm" }, "\u66F4\u591A")
+                        ], 8, ["onClick"]),
+                        vue.createCommentVNode("  \u4F38\u5C55\u7684\u9009\u9879 "),
+                        vue.createElementVNode("view", {
+                          class: "position-absolute grid grid-2 bg-dark grid-center-by-el transition-ease-fast",
+                          style: vue.normalizeStyle([{ "right": "80rpx", "top": "0", "grid-auto-rows": "60rpx", "width": "300rpx" }, dynamic.expandComment ? "opacity:1" : "opacity:0"])
+                        }, [
+                          vue.createElementVNode("view", {
+                            onClick: ($event) => $options.clickThumb(dynamic)
+                          }, vue.toDisplayString(dynamic.isThumb ? "\u53D6\u6D88\u70B9\u8D5E" : "\u8D5E"), 9, ["onClick"]),
+                          vue.createElementVNode("view", {
+                            onClick: _cache[0] || (_cache[0] = (...args) => $options.clickComment && $options.clickComment(...args))
+                          }, "\u8BC4\u8BBA")
+                        ], 4)
+                      ]),
+                      dynamic.like_list.length > 0 || dynamic.reply_list.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+                        key: 1,
+                        class: "bg-common p-1"
+                      }, [
+                        vue.createCommentVNode(" like\u5217\u8868 "),
+                        dynamic.like_list.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+                          key: 0,
+                          class: "flex flex-wrap dynamic-common-color font-sm mb-1"
+                        }, [
+                          vue.createElementVNode("text", {
+                            class: "iconfont icon-aixin-xian mr-1",
+                            style: { "margin-top": "3rpx" }
+                          }),
+                          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(dynamic.like_list, (like_id, i2) => {
+                            return vue.openBlock(), vue.createElementBlock("view", { key: like_id }, vue.toDisplayString(like_id) + " " + vue.toDisplayString(i2 != dynamic.like_list.length - 1 ? "," : ""), 1);
+                          }), 128))
+                        ])) : vue.createCommentVNode("v-if", true),
+                        vue.createCommentVNode(" \u8BC4\u8BBA\u5BF9\u8BDD\u5BF9\u5217\u8868 "),
+                        dynamic.reply_list.length > 0 ? (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList(dynamic.reply_list, (reply_user) => {
+                          return vue.openBlock(), vue.createElementBlock("view", {
+                            class: "flex flex-wrap font-sm mb-1",
+                            key: reply_user.id
+                          }, [
+                            vue.createElementVNode("view", { class: "dynamic-common-color" }, [
+                              vue.createTextVNode(vue.toDisplayString(reply_user.name) + " ", 1),
+                              reply_user.having_reply_obj ? (vue.openBlock(), vue.createElementBlock("text", { key: 0 }, [
+                                vue.createElementVNode("text", { class: "text-dark" }, "\u56DE\u590D"),
+                                vue.createTextVNode(" " + vue.toDisplayString(reply_user.having_reply_obj), 1)
+                              ])) : vue.createCommentVNode("v-if", true),
+                              vue.createTextVNode(" : ")
+                            ]),
+                            vue.createElementVNode("view", { class: "text-dark ml-1" }, vue.toDisplayString(reply_user.replay_content), 1)
+                          ]);
+                        }), 128)) : vue.createCommentVNode("v-if", true)
+                      ])) : vue.createCommentVNode("v-if", true)
+                    ])
+                  ]),
+                  _: 2
+                }, 1032, ["img"])
+              ]);
+            }), 128))
+          ], 32),
+          vue.createCommentVNode(" \u56DE\u590D\u8BC4\u8BBA\u65F6\u8C03\u7528 "),
+          vue.createElementVNode("view", {
+            class: "position-fixed bg-danger",
+            style: vue.normalizeStyle([{ "width": "100%" }, $options.commentInputStyle])
+          }, [
+            vue.createElementVNode("textarea", {
+              class: "bg-common",
+              focus: $data.isComment,
+              style: { "width": "100%", "max-height": "100rpx" },
+              placeholder: "\u6211\u662Ftea"
+            }, null, 8, ["focus"])
+          ], 4)
+        ]),
+        _: 1
+      })
+    ]);
   }
   var PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);

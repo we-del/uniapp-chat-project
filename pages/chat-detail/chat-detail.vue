@@ -4,7 +4,7 @@
 	<yx-common-wrapper>
 		
 		 <!-- 导航栏 ,需要对点击的聊天框做判断，判断为用户还是群组，他们去往的路由不同-->
-		<yx-nav-bar :title="this.name" :requireOccupy="false" :isChat="true" :routerPath="`/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${this.name}`"/>
+		<yx-nav-bar :title="name" :requireOccupy="false" :isChat="true" :routerPath="`/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${name}`"/>
 		<!-- 滑动内容 -->
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
 		class="position-fixed " :style="`top:${95+fixedTop}rpx;bottom:${scrollViewHeight}rpx`">

@@ -1,17 +1,20 @@
 <template>
 	<yx-common-wrapper>
 		<yx-nav-bar title="朋友权限" :existMore="false"></yx-nav-bar>
-		<view class="mt-2" v-for="list in listData">
-			<view class="font-small my-1 mx-2 text-common-font">{{list.title}}</view>
-			<yx-list v-for="data in list.list" :title="data.title" @click="handleObjEvent(data)" class="bg-white px-2" :key="data.id">
-				<template #suffix>
-					<switch v-if="data.sign === 'switch'" checked="true" @change="()=>{}" />
-					<view v-if="data.sign === 'auth' && data.radio">
-						<text class="main-text-color"> √ </text>
-					</view>
-				</template>
-			</yx-list>
-		</view>
+		
+		<yx-flexible-wrapper>
+			<view class="mt-2" v-for="list in listData">
+				<view class="font-small my-1 mx-2 text-common-font">{{list.title}}</view>
+				<yx-list v-for="data in list.list" :title="data.title" @click="handleObjEvent(data)" class="bg-white px-2" :key="data.id">
+					<template #suffix>
+						<switch v-if="data.sign === 'switch'" checked="true" @change="()=>{}" />
+						<view v-if="data.sign === 'auth' && data.radio">
+							<text class="main-text-color"> √ </text>
+						</view>
+					</template>
+				</yx-list>
+			</view>
+		</yx-flexible-wrapper>
 	</yx-common-wrapper>
 </template>
 
@@ -19,12 +22,13 @@
 	import YxNavBar from '@/components/yx-nav-bar.vue'
 	import YxList from '@/components/yx-list.vue'
 	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	export default {
 		onLoad(query){
 			// console.log('@id',query)
 		},
 		components:{
-			YxNavBar,YxList,YxCommonWrapper
+			YxNavBar,YxList,YxCommonWrapper,YxFlexibleWrapper
 		},
 		mounted(){
 			this.listData = [

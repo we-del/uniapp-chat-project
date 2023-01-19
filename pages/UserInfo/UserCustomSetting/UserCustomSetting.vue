@@ -1,17 +1,18 @@
 <template>
 	<view class="fill-screen bg-common">
 		<yx-nav-bar title="资料设置" class="mb-4" :existMore="false"></yx-nav-bar>
-		<view class="pt-5"></view>
-		<view v-for="(list,i) in listData" class="mb-2 bg-white" :key="i">
-			<yx-list v-for="data in list" @click="handleObjEvent(data)" :title="data.title" :isCell="data.isCell" :key="data.id">
-				<template #suffix v-if="data.suffix || data.sign">
-					<view v-if="data.sign === 'switch'">
-						<switch @change="(e)=>switchToggle(e,data)" />
-					</view>
-				</template>
-			</yx-list>
-		</view>
-		<view class="text-center font-md   bg-white p-2 text-danger" >删除</view>
+		<yx-flexible-wrapper>
+			<view v-for="(list,i) in listData" class="mb-2 bg-white" :key="i">
+				<yx-list v-for="data in list" @click="handleObjEvent(data)" :title="data.title" :isCell="data.isCell" :key="data.id">
+					<template #suffix v-if="data.suffix || data.sign">
+						<view v-if="data.sign === 'switch'">
+							<switch @change="(e)=>switchToggle(e,data)" />
+						</view>
+					</template>
+				</yx-list>
+			</view>
+			<view class="text-center font-md   bg-white p-2 text-danger" >删除</view>
+		</yx-flexible-wrapper>
 	</view>
 </template>
 
@@ -19,12 +20,13 @@
 	import YxNavBar from '@/components/yx-nav-bar.vue'
 	import YxList from '@/components/yx-list.vue'
 	
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	export default {
 		onLoad(query){
 			// console.log('@id',query)
 		},
 		components:{
-			YxNavBar,YxList
+			YxNavBar,YxList,YxFlexibleWrapper
 		},
 		mounted(){
 			this.listData = [

@@ -1,5 +1,5 @@
 <template>
-	<view class="bg-common fill-screen font-sm position-fixed " :class="bgColor" :style="`top:${fixedTop}rpx;`">
+	<view class="bg-common fill-screen font-sm position-fixed overflow-hidden" :class="bgColor" :style="`top:${fixedTop}rpx;`">
 		<slot></slot>
 	</view>
 </template>

@@ -702,6 +702,10 @@
 .main-text-color{
 	color: #08C060;
 }
+/* // 动态文字颜色 */
+.dynamic-common-color{
+	color:#667395;
+}
 .border-main{
 	border-color: #08C060!important;
 }
@@ -718,9 +722,9 @@
 }
 @font-face {
   font-family: "iconfont"; /* Project id 3828712 */
-  src: url('https://at.alicdn.com/t/c/font_3828712_jttiwxssvvj.woff2?t=1673340875922') format('woff2'),
-       url('https://at.alicdn.com/t/c/font_3828712_jttiwxssvvj.woff?t=1673340875922') format('woff'),
-       url('https://at.alicdn.com/t/c/font_3828712_jttiwxssvvj.ttf?t=1673340875922') format('truetype');
+  src: url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.woff2?t=1674107186926') format('woff2'),
+       url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.woff?t=1674107186926') format('woff'),
+       url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.ttf?t=1674107186926') format('truetype');
 }
 .iconfont {
   font-family: "iconfont" !important;
@@ -728,6 +732,12 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.icon-love:before {
+  content: "\e66b";
+}
+.icon-aixin-xian:before {
+  content: "\e64d";
 }
 .icon-qrcode:before {
   content: "\e76e";

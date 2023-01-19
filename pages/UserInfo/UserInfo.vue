@@ -1,32 +1,34 @@
 <template>
 	<view class="fill-screen bg-common">
 		<yx-nav-bar :routerPath="`/pages/UserInfo/UserCustomSetting/UserCustomSetting?id=${targetId}`"></yx-nav-bar>
-		<yx-card img="/static/logo.png" class="bg-white font-weight-bold mt-5"  title="测试">
-			<template #desc>
-				<view class="m-1">昵称: 我是昵称</view>
-				<view class="m-1">微信号: qiDaiTianChong</view>
-				<view class="m-1">地区：湖北 武汉</view>
-			</template>
-			<template #right>
-				<!-- 如果是关心用户则进行显示，通过后台字段返回 -->
-				<text style="color:#ffbf01" class="font-lg">♥</text>
-				<!-- ♥⭐🧡🌟⭐🌟 -->
-			</template>
-		</yx-card>
-		<view v-for="list in listData" class="mb-2 bg-white">
-			<yx-list v-for="data in list" @click="handleEvent(data)" :title="data.title" :isCell="data.isCell" :key="data.id">
-				<template #suffix v-if="data.suffix || data.sign">
-					<view v-if="data.suffix" style="width: 550rpx;" :class="data.sign==='tel' ? 'text-danger':''">{{data.suffix}}</view>
-					<view v-if="data.sign === 'image'" style="width: 520rpx;">
-						<image style="width: 75rpx;height: 75rpx;" src="/static/images/demo/cate_09.png" mode="aspectFit"></image>
-						<image style="width: 75rpx;height: 75rpx;" src="/static//logo.png" mode="aspectFit"></image>
-					</view>
+		<yx-flexible-wrapper>
+			<yx-card img="/static/logo.png" class="bg-white font-weight-bold "  title="测试">
+				<template #desc>
+					<view class="m-1">昵称: 我是昵称</view>
+					<view class="m-1">微信号: qiDaiTianChong</view>
+					<view class="m-1">地区：湖北 武汉</view>
 				</template>
-			</yx-list>
-		</view>
-		<view class="text-center font-md  bg-white p-2" style="color:#6b859a" @click="toChat">发送消息</view>
-		<!-- 根据后台字段查看是否被添加到黑名单 -->
-		<view class="mt-2 font-small text-common-font text-center">已加入黑名单，你将无法接受到它的消息</view>
+				<template #right>
+					<!-- 如果是关心用户则进行显示，通过后台字段返回 -->
+					<text style="color:#ffbf01" class="font-lg iconfont icon-aixin-xian"></text>
+					<!-- ♥⭐🧡🌟⭐🌟 -->
+				</template>
+			</yx-card>
+			<view v-for="list in listData" class="mb-2 bg-white">
+				<yx-list v-for="data in list" @click="handleEvent(data)" :title="data.title" :isCell="data.isCell" :key="data.id">
+					<template #suffix v-if="data.suffix || data.sign">
+						<view v-if="data.suffix" style="width: 550rpx;" :class="data.sign==='tel' ? 'text-danger':''">{{data.suffix}}</view>
+						<view v-if="data.sign === 'image'" style="width: 520rpx;">
+							<image style="width: 75rpx;height: 75rpx;" src="/static/images/demo/cate_09.png" mode="aspectFit"></image>
+							<image style="width: 75rpx;height: 75rpx;" src="/static//logo.png" mode="aspectFit"></image>
+						</view>
+					</template>
+				</yx-list>
+			</view>
+			<view class="text-center font-md  bg-white p-2" style="color:#6b859a" @click="toChat">发送消息</view>
+			<!-- 根据后台字段查看是否被添加到黑名单 -->
+			<view class="mt-2 font-small text-common-font text-center">已加入黑名单，你将无法接受到它的消息</view>
+		</yx-flexible-wrapper>
 	</view>
 </template>
 
@@ -34,13 +36,14 @@
 	import YxNavBar from '@/components/yx-nav-bar.vue'
 	import YxList from '@/components/yx-list.vue'
 	import YxCard from '@/components/yx-card.vue'
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	export default {
 		onLoad(query){
 			console.log('query',query)
 			this.targetId = query.id
 		},
 		components:{
-			YxNavBar,YxList,YxCard
+			YxNavBar,YxList,YxCard,YxFlexibleWrapper
 		},
 		mounted(){
 			this.listData = [

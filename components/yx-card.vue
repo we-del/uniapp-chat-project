@@ -1,6 +1,6 @@
 <template>
 	<view class="flex justify-between  p-3"
-	hover-class="bg-common" @click="handleClick">
+	:hover-class="isCover ? 'bg-common':''" >
 		<image class="rounded size-1" :src="img" mode="aspectFill"></image>
 		<view  class="flex flex-1 ml-2 flex-column justify-between">
 			<view class="text-ellipsis font-md text-dark text-primary">{{title}}</view>
@@ -22,6 +22,10 @@
 			img:[String],
 			title:[String],
 			desc:[String],
+			isCover:{
+				type:[Boolean],
+				default:true
+			}
 		},
 		data() {
 			return {

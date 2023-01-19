@@ -1,43 +1,44 @@
 <template>
 	<view>
 		<yx-nav-bar title="" :existMore="false" :isOpacity="true" :requireOccupy="false"  v-if="!expandBackground"></yx-nav-bar>
-		<view @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
-			<!-- 为了适配屏幕而单位需要统一，这里使用vh作为单位则下面的外边距也要使用vh（不适用vh则无法达到适配）,使用device拿到当前屏幕的信息根据移动距离换算出vw | vh -->
-			<!-- <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> -->
-			<view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}vh`">
-				<image src="/static/images/friendCircleBg.png" style="width:100%;height:100%"></image>
-				<view class="zTop position-relative" >
-					<view class="position-absolute p-1 rounded-circle border font-sm text-white text-center" style="right:30rpx;top:-80rpx;border-color: white;width: 80rpx;" v-if="expandBackground">❤ 赞</view>
-				</view>
-			</view>
-
-			<!-- 展示用户图片和姓名 -->
-			<!-- 上面布局使用了absolute脱离了文档流，因此我们这里的盒子会出现在第一行，因此需要使用外边距来进行移动达到正确的位置 -->
-			<!-- <view class="flex  justify-end p-2 align-center " :style="`padding-top: ${350+sliderHeight}rpx;`"> -->
-			<view class="flex  justify-end p-2 align-center " :style="`padding-top: ${25+sliderHeight}vh;`">
-				<view class="mr-2 zTop text-common-font font-sm">我是mera</view>
-				<view class="rounded overflow-hidden" style="width: 100rpx;height:100rpx"> 
-					<image src="/static/logo.png" style="width: 100%;height: 100%;"></image>
-				</view>
-			</view>
-			<!-- 展示具体信息 -->
-			<view class="mt-5 pt-5">
-				<view class="flex align-start p-2" v-for="data in showList" :key="data.id">
-					<view class="font-lg font-weight-bold ">{{data.publish_time}}</view>
-					<view class="rounded overflow-hidden mx-2" style="width: 140rpx;height:140rpx">
-						<image :src="data.img" style="width: 100%;height: 100%;"></image>
+		<yx-flexible-wrapper>
+			<view @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+				<!-- 为了适配屏幕而单位需要统一，这里使用vh作为单位则下面的外边距也要使用vh（不适用vh则无法达到适配）,使用device拿到当前屏幕的信息根据移动距离换算出vw | vh -->
+				<!-- <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> -->
+				<view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}vh`">
+					<image src="/static/images/friendCircleBg.png" style="width:100%;height:100%"></image>
+					<view class="zTop position-relative" >
+						<view class="position-absolute p-1 rounded-circle border font-sm text-white text-center" style="right:30rpx;top:-80rpx;border-color: white;width: 80rpx;" v-if="expandBackground">❤ 赞</view>
 					</view>
-					<view class="flex-1 text-overflow-line-2">{{data.message}}</view>
 				</view>
-				<view class="  font-sm text-common text-center" v-if="commentCount>3">点击查看更多信息 ></view>
+
+				<!-- 展示用户图片和姓名 -->
+				<!-- 上面布局使用了absolute脱离了文档流，因此我们这里的盒子会出现在第一行，因此需要使用外边距来进行移动达到正确的位置 -->
+				<!-- <view class="flex  justify-end p-2 align-center " :style="`padding-top: ${350+sliderHeight}rpx;`"> -->
+				<view class="flex  justify-end p-2 align-center " :style="`padding-top: ${25+sliderHeight}vh;`">
+					<view class="mr-2 zTop text-common-font font-sm">我是mera</view>
+					<view class="rounded overflow-hidden" style="width: 100rpx;height:100rpx"> 
+						<image src="/static/logo.png" style="width: 100%;height: 100%;"></image>
+					</view>
+				</view>
+				<!-- 展示具体信息 -->
+				<view class="mt-5 pt-5">
+					<view class="flex align-start p-2" v-for="data in showList" :key="data.id">
+						<view class="font-lg font-weight-bold ">{{data.publish_time}}</view>
+						<view class="rounded overflow-hidden mx-2" style="width: 140rpx;height:140rpx">
+							<image :src="data.img" style="width: 100%;height: 100%;"></image>
+						</view>
+						<view class="flex-1 text-overflow-line-2">{{data.message}}</view>
+					</view>
+					<view class="  font-sm text-common text-center" v-if="commentCount>3">点击查看更多信息 ></view>
+				</view>
+				<view class="p-5 font-small flex text-common align-center">
+					<view class="flex-1" style="border: 1rpx solid #ccc"></view>
+					<view class="mx-2">朋友仅展示{{true?'三天':'一个月'}}的朋友圈</view>
+					<view class="flex-1" style="border: 1rpx solid #ccc"></view>
+				</view>
 			</view>
-			<view class="p-5 font-small flex text-common align-center">
-				<view class="flex-1" style="border: 1rpx solid #ccc"></view>
-				<view class="mx-2">朋友仅展示{{true?'三天':'一个月'}}的朋友圈</view>
-				<view class="flex-1" style="border: 1rpx solid #ccc"></view>
-			</view>
-		</view>
-		
+		</yx-flexible-wrapper>
 	</view>
 </template>
 
@@ -45,13 +46,15 @@
 	import YxNavBar from '@/components/yx-nav-bar.vue'
 	import YxList from '@/components/yx-list.vue'
 	
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
+	
 	export default {
 		onLoad(query){
 			// console.log('@id',query)
 			
 		},
 		components:{
-			YxNavBar,YxList
+			YxNavBar,YxList,YxFlexibleWrapper
 		},
 		mounted(){
 			this.listData = [

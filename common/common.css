@@ -21,6 +21,11 @@
 	color: #08C060;
 }
 
+/* // 动态文字颜色 */
+.dynamic-common-color{
+	color:#667395;
+}
+
 .border-main{
 	border-color: #08C060!important;
 }

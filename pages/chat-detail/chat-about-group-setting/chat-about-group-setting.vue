@@ -2,8 +2,8 @@
 	<yx-common-wrapper>
 	<!-- <view class="bg-common fill-screen font-md"> -->
 		<yx-nav-bar :existMore="false" :title="title"></yx-nav-bar>
-		<scroll-view scroll-y="true" class="position-fixed font-sm"  :style="`top:${fixedTop+90}rpx;height:88vh`">
-		
+		<!-- <scroll-view scroll-y="true" class="position-fixed font-sm"  :style="`top:${fixedTop+90}rpx;height:88vh`"> -->
+		<yx-flexible-wrapper height="93vh">
 			<view id="group-member" class="bg-white p-1">
 				
 				<!-- 最多显示19个角色头像，每行5个，最末尾的一个使用添加符号占位(如只有两个则，两个用户正常显示，气候跟着一个添加号占位（显示一行），如大于20个用户，显示19个最后一个使用添加符号占位) -->
@@ -36,7 +36,8 @@
 				</view>
 			</view>
 			<view class="text-center font-md text-danger bg-white p-2">退出群聊</view>
-		</scroll-view>
+		<!-- </scroll-view> -->
+		</yx-flexible-wrapper>
 	<!-- </view> -->
 	</yx-common-wrapper>
 </template>
@@ -48,13 +49,14 @@
 	import YxListCompo from '@/components/yx-list-compo.vue'
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	export default {
 		onLoad(query){
 			console.log('query',query)
 			this.title = query.title
 		},
 		components:{
-			YxNavBar,YxList,YxCommonWrapper,YxListCompo
+			YxNavBar,YxList,YxCommonWrapper,YxListCompo,YxFlexibleWrapper
 		},
 		mounted(){
 			// 后缀定制标准 ， 查看suffix是否存在后缀或 查看特殊标识(sign （qrCode -> 二维码 | switch -> 开关组件switch）)是否需要定制后缀

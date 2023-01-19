@@ -21,7 +21,8 @@
 			<slot name="custom"></slot>
 		</view>
 	</view>
-	<view @click="hide" :style="show ? 'display:block':'display:none'" :class="isCustom ? 'bg-dark lucency-5':''"  id="mask" class="fill-screen   position-absolute" style="left:0;top:0;"></view>
+	<!-- 点击取消 -->
+	<view @click="hide" :style="show ? 'display:block':'display:none'" :class="maskClass"  id="mask" class="fill-screen    position-absolute " style="left:0;top:0;"></view>
 </template>
 
 <script>
@@ -88,7 +89,12 @@
 			// bottom显示下的模式 ，  util | emo
 			bottomMode:[String],
 			// 功能框点击过渡
-			bottomClickTransition:[Boolean]
+			bottomClickTransition:[Boolean],
+			// 是否需要给遮罩层进行深层覆盖
+			isCoverTop:{
+				type:Boolean,
+				default:false
+			}
 		},
 		data() {
 			return {
@@ -134,6 +140,16 @@
 				}else{
 					
 					res +=this.isDark ? ' bg-dark text-white ':'bg-white text-dark '
+				}
+				return res
+			},
+			maskClass(){
+				let res = ''
+				if(this.isCoverTop){
+					res+='zTop'
+				}
+				if(this.isCustom){
+					res+='bg-dark lucency-5'
 				}
 				return res
 			}

@@ -1,21 +1,19 @@
 <template>
 	<view>
 		<yx-tool-bar title="通讯录"></yx-tool-bar>
-		<!-- <scroll-view scroll-y="true" style="width: 100vw;height: 100vh;" :scroll-into-view="`hash-abc-1-${sliderTarget}`"  > -->
+		<!-- 无法包装为滑动块，导航会丢失 -->
 		<scroll-view scroll-y="true" class="position-fixed font-sm"  :style="`top:${fixedTop+100}rpx;height:88vh`" :scroll-into-view="`hash-abc-1-${sliderTarget}`"  >
 
 			<block v-for="item in base_com" :key="item.id">
-				<yx-list  :img="item.img" :title="item.title"></yx-list>  
+				<yx-list @click="toast" :img="item.img" :title="item.title"></yx-list>  
 			</block>
-			<!-- <view >好友列表</view> -->
-			<view v-for="friends in friendList"  class="font-md " >
+			<view v-for="(friends,i) in friendList"  class="font-md " :key="i" >
 				<view class="bg-common pl-2" style="width:100vw" :id="`hash-abc-1-${friends.group}`">{{friends.group}}</view>
 				<yx-list  v-for="data in friends.userList" :img="data.img" :title="data.title" :key="data.id"></yx-list>  
 			</view>
 		</scroll-view>
-		<!-- 快速移动到对应得分组上 -->
 		<view class="flex flex-column position-fixed text-center font-sm text-dark" style="right:10rpx;top:200rpx;">
-			<view v-for="prefix in friendPrefixPosition" @click="startSlide(prefix)">
+			<view v-for="prefix in friendPrefixPosition" @click="startSlide(prefix)" :key="prefix">
 				{{prefix}}
 			</view>
 		</view>
@@ -28,8 +26,9 @@
 	import friendList from '@/static/testData/friendList.js'
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
+	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	export default {
-		components:{YxToolBar,YxList},
+		components:{YxToolBar,YxList,YxFlexibleWrapper},
 		mounted(){
 			console.log('@rrrr',friendList)
 			this.friendList = friendList
@@ -75,6 +74,9 @@
 				}else{
 					this.slsiderTarget = ''
 				}
+			},
+			toast(){
+				console.log('click')
 			}
 		},
 		computed:{

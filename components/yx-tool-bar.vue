@@ -8,7 +8,7 @@
 		</view>
 	</view>
 	<!-- <view style="margin-top: 100rpx;"></view> -->
-	<yx-popup v-if="!isSelf" :popItem="popData" :popPosittion="popPosition" :show="popShow" :isDark="true" 
+	<yx-popup v-if="!isSelf" :popItem="popData" :popPosittion="popPosition" :show="popShow" :isDark="true"  :isChat="true" :isCoverTop="true"
 	@hide="popShow=false"></yx-popup>
 	<!-- 占位墙 -->
 	<!-- <view style="margin-top: 100rpx;"> </view> -->
@@ -33,6 +33,7 @@
 		mounted(){
 			if(!this.isSelf){
 				this.initPopup()
+				console.log('初始化')
 			}
 			console.log('@tool',this)
 		},
@@ -49,7 +50,7 @@
 				const device = uni.getSystemInfoSync()
 				const maxX = device.screenWidth
 				const maxY = device.screenHeight
-				this.popPosition={x:maxX-160,y:60}
+				this.popPosition={x:maxX-170,y:100}
 				this.popIsDark = true
 				this.popShow = false
 				this.popData = [
