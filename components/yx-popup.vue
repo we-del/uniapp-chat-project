@@ -151,6 +151,7 @@
 				if(this.isCustom){
 					res+='bg-dark lucency-5'
 				}
+				console.log('@pop',res)
 				return res
 			}
 		}

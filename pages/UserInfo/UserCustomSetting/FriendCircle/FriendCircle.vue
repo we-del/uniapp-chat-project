@@ -2,7 +2,7 @@
 	<view>
 		<yx-nav-bar title="" :existMore="false" :isOpacity="true" :requireOccupy="false"  v-if="!expandBackground"></yx-nav-bar>
 		<yx-flexible-wrapper>
-			<view @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+			<view @touchstart.stop="handleTouchStart" @touchmove.stop="handleTouchMove" @touchend.stop="handleTouchEnd">
 				<!-- 为了适配屏幕而单位需要统一，这里使用vh作为单位则下面的外边距也要使用vh（不适用vh则无法达到适配）,使用device拿到当前屏幕的信息根据移动距离换算出vw | vh -->
 				<!-- <view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}rpx`"> -->
 				<view class="position-absolute bg-common "   style="left:0;height:80vh;width:100vw" :style="`top:${sliderBgDistance}vh`">

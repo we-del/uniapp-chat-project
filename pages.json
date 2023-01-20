@@ -75,6 +75,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

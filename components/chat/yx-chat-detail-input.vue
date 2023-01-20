@@ -130,26 +130,6 @@
 				  plus.android.requestPermissions(['android.permission.RECORD_AUDIO'], function (e) {
 				  console.log('权限对象',e)
 				  // 权限判断
-				  
-				 //  if (e.deniedAlways.length > 0) { // 权限被永久拒绝
-					// uni.showToast({
-					// 	title:'录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。',
-						     
-					// })
-					// vm.$dialog.alert({
-					//   message: '录音权限被永久拒绝，请到设置权限里找到应用手动开启权限，否则将不能使用此功能。'
-					// })
-				 //  }
-				 //  if (e.deniedPresent.length > 0) { // 权限被临时拒绝
-					// vm.$dialog.confirm({
-					//   message: '拒绝开启录音权限，将不能使用此功能！确定拒绝开启吗？',
-					//   confirmButtonText: '确定',
-					//   cancelButtonText: '取消'
-					// }).then(() => {})
-					//   .catch(() => {
-					// 	vm.requestPermission()
-					//   })
-				 //  }
 				 if (e.deniedAlways.length > 0 || e.deniedPresent.length > 0) { // 权限被永久拒绝
 					uni.showModal({
 						title:'关于录音权限',

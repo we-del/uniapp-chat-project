@@ -208,12 +208,6 @@
 						}, (err)=>{
 							console.log(err)
 						});
-						// uni.chooseVideo({
-						// 	sourceType: ['camera', 'album'],
-						// 	success: function (res) {
-						// 		self.addMessage(res.tempFilePath,'video')
-						// 	}
-						// });
 						break;
 						
 					default:

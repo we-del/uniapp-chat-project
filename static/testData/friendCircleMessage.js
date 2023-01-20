@@ -15,13 +15,13 @@ export default [
 			id:'1',
 			name:'喜欢',
 			having_reply_obj:'',
-			replay_content:'出去玩啊'
+			reply_content:'出去玩啊'
 			},
 			{
 			id:2,
 			name:'星晴',
 			having_reply_obj:'1',
-			replay_content:'可以啊，我找你'
+			reply_content:'可以啊，我找你'
 			},
 		
 		]
@@ -51,7 +51,7 @@ export default [
 			id:'1',
 			name:'喜欢',
 			having_reply_obj:'',
-			replay_content:'好啊，我可以'
+			reply_content:'好啊，我可以'
 			}
 		
 		]
@@ -81,7 +81,7 @@ export default [
 			id:'1',
 			name:'星晴',
 			having_reply_obj:'',
-			replay_content:'我去找你，你等我'
+			reply_content:'我去找你，你等我'
 			}
 		
 		]
