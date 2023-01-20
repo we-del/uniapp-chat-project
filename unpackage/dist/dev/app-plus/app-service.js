@@ -1,28 +1,12 @@
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 if (typeof Promise !== "undefined" && !Promise.prototype.finally) {
   Promise.prototype.finally = function(callback) {
     const promise = this.constructor;
-    return this.then((value) => promise.resolve(callback()).then(() => value), (reason) => promise.resolve(callback()).then(() => {
-      throw reason;
-    }));
+    return this.then(
+      (value) => promise.resolve(callback()).then(() => value),
+      (reason) => promise.resolve(callback()).then(() => {
+        throw reason;
+      })
+    );
   };
 }
 ;
@@ -219,7 +203,7 @@ if (uni.restoreGlobal) {
     }
   }
   /*!
-    * pinia v2.0.14
+    * pinia v2.0.26
     * (c) 2022 Eduardo San Martin Morote
     * @license MIT
     */
@@ -236,6 +220,7 @@ if (uni.restoreGlobal) {
     MutationType2["patchFunction"] = "patch function";
   })(MutationType || (MutationType = {}));
   const IS_CLIENT = typeof window !== "undefined";
+  const USE_DEVTOOLS = IS_CLIENT;
   const _global = /* @__PURE__ */ (() => typeof window === "object" && window.window === window ? window : typeof self === "object" && self.self === self ? self : typeof global === "object" && global.global === global ? global : typeof globalThis === "object" ? globalThis : { HTMLElement: null })();
   function bom(blob, { autoBom = false } = {}) {
     if (autoBom && /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
@@ -624,6 +609,23 @@ if (uni.restoreGlobal) {
             },
             tooltip: "Import the state from a JSON file"
           }
+        ],
+        nodeActions: [
+          {
+            icon: "restore",
+            tooltip: "Reset the state (option store only)",
+            action: (nodeId) => {
+              const store = pinia2._s.get(nodeId);
+              if (!store) {
+                toastMessage(`Cannot reset "${nodeId}" store because it wasn't found.`, "warn");
+              } else if (!store._isOptionsAPI) {
+                toastMessage(`Cannot reset "${nodeId}" store because it's a setup store.`, "warn");
+              } else {
+                store.$reset();
+                toastMessage(`Store "${nodeId}" reset.`);
+              }
+            }
+          }
         ]
       });
       api.on.inspectComponent((payload, ctx) => {
@@ -637,7 +639,7 @@ if (uni.restoreGlobal) {
               editable: true,
               value: store._isOptionsAPI ? {
                 _custom: {
-                  value: store.$state,
+                  value: vue.toRaw(store.$state),
                   actions: [
                     {
                       icon: "restore",
@@ -646,7 +648,10 @@ if (uni.restoreGlobal) {
                     }
                   ]
                 }
-              } : store.$state
+              } : Object.keys(store.$state).reduce((state, key) => {
+                state[key] = store.$state[key];
+                return state;
+              }, {})
             });
             if (store._getters && store._getters.length) {
               payload.instanceData.state.push({
@@ -828,9 +833,10 @@ Only state can be modified.`);
         const eventData = {
           time: now2(),
           title: formatMutationType(type),
-          data: __spreadValues({
-            store: formatDisplay(store.$id)
-          }, formatEventData(events)),
+          data: {
+            store: formatDisplay(store.$id),
+            ...formatEventData(events)
+          },
           groupId: activeAction
         };
         activeAction = void 0;
@@ -921,14 +927,20 @@ Only state can be modified.`);
       store._isOptionsAPI = true;
     }
     if (typeof options.state === "function") {
-      patchActionForGrouping(store, Object.keys(options.actions));
+      patchActionForGrouping(
+        store,
+        Object.keys(options.actions)
+      );
       const originalHotUpdate = store._hotUpdate;
       vue.toRaw(store)._hotUpdate = function(newStore) {
         originalHotUpdate.apply(this, arguments);
         patchActionForGrouping(store, Object.keys(newStore._hmrPayload.actions));
       };
     }
-    addStoreToDevtools(app, store);
+    addStoreToDevtools(
+      app,
+      store
+    );
   }
   function createPinia() {
     const scope = vue.effectScope(true);
@@ -942,7 +954,7 @@ Only state can be modified.`);
           pinia2._a = app;
           app.provide(piniaSymbol, pinia2);
           app.config.globalProperties.$pinia = pinia2;
-          if (IS_CLIENT) {
+          if (USE_DEVTOOLS) {
             registerPiniaDevtools(app, pinia2);
           }
           toBeInstalled.forEach((plugin) => _p.push(plugin));
@@ -963,7 +975,7 @@ Only state can be modified.`);
       _s: /* @__PURE__ */ new Map(),
       state
     });
-    if (IS_CLIENT && true) {
+    if (USE_DEVTOOLS && typeof Proxy !== "undefined") {
       pinia2.use(devtoolsPlugin);
     }
     return pinia2;
@@ -996,8 +1008,8 @@ Only state can be modified.`);
         onCleanup();
       }
     };
-    if (!detached && vue.getCurrentInstance()) {
-      vue.onUnmounted(removeSubscription);
+    if (!detached && vue.getCurrentScope()) {
+      vue.onScopeDispose(removeSubscription);
     }
     return removeSubscription;
   }
@@ -1007,6 +1019,12 @@ Only state can be modified.`);
     });
   }
   function mergeReactiveObjects(target2, patchToApply) {
+    if (target2 instanceof Map && patchToApply instanceof Map) {
+      patchToApply.forEach((value, key) => target2.set(key, value));
+    }
+    if (target2 instanceof Set && patchToApply instanceof Set) {
+      patchToApply.forEach(target2.add, target2);
+    }
     for (const key in patchToApply) {
       if (!patchToApply.hasOwnProperty(key))
         continue;
@@ -1040,6 +1058,9 @@ Only state can be modified.`);
       }
       const localState = hot ? vue.toRefs(vue.ref(state ? state() : {}).value) : vue.toRefs(pinia2.state.value[id]);
       return assign(localState, actions, Object.keys(getters || {}).reduce((computedGetters, name) => {
+        if (name in localState) {
+          console.warn(`[\u{1F34D}]: A getter cannot have the same name as another state property. Rename one of them. Found with "${name}" in store "${id}".`);
+        }
         computedGetters[name] = vue.markRaw(vue.computed(() => {
           setActivePinia(pinia2);
           const store2 = pinia2._s.get(id);
@@ -1124,7 +1145,7 @@ Only state can be modified.`);
       triggerSubscriptions(subscriptions, subscriptionMutation, pinia2.state.value[$id]);
     }
     const $reset = () => {
-      throw new Error(`\u{1F34D}: Store "${$id}" is build using the setup syntax and does not implement $reset().`);
+      throw new Error(`\u{1F34D}: Store "${$id}" is built using the setup syntax and does not implement $reset().`);
     };
     function $dispose() {
       scope.stop();
@@ -1198,10 +1219,15 @@ Only state can be modified.`);
       },
       $dispose
     };
-    const store = vue.reactive(assign(IS_CLIENT ? {
-      _customProperties: vue.markRaw(/* @__PURE__ */ new Set()),
-      _hmrPayload
-    } : {}, partialStore));
+    const store = vue.reactive(
+      assign(
+        {
+          _hmrPayload,
+          _customProperties: vue.markRaw(/* @__PURE__ */ new Set())
+        },
+        partialStore
+      )
+    );
     pinia2._s.set($id, store);
     const setupStore = pinia2._e.run(() => {
       scope = vue.effectScope();
@@ -1314,21 +1340,22 @@ Only state can be modified.`);
         store._getters = newStore._getters;
         store._hotUpdating = false;
       });
+    }
+    if (USE_DEVTOOLS) {
       const nonEnumerable = {
         writable: true,
         configurable: true,
         enumerable: false
       };
-      if (IS_CLIENT) {
-        ["_p", "_hmrPayload", "_getters", "_customProperties"].forEach((p) => {
-          Object.defineProperty(store, p, __spreadValues({
-            value: store[p]
-          }, nonEnumerable));
+      ["_p", "_hmrPayload", "_getters", "_customProperties"].forEach((p) => {
+        Object.defineProperty(store, p, {
+          value: store[p],
+          ...nonEnumerable
         });
-      }
+      });
     }
     pinia2._p.forEach((extender) => {
-      if (IS_CLIENT) {
+      if (USE_DEVTOOLS) {
         const extensions = scope.run(() => extender({
           store,
           app: pinia2._a,
@@ -1461,14 +1488,14 @@ This will fail in production.`);
       fixedTop
     };
   });
-  var _export_sfc = (sfc, props) => {
+  const _export_sfc = (sfc, props) => {
     const target2 = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
       target2[key] = val;
     }
     return target2;
   };
-  const _sfc_main$t = {
+  const _sfc_main$w = {
     name: "yx-common-wrapper",
     props: {
       bg: {
@@ -1482,7 +1509,8 @@ This will fail in production.`);
       return {};
     },
     methods: {},
-    computed: __spreadProps(__spreadValues({}, mapState(useDeviceStore, ["fixedTop"])), {
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"]),
       bgColor() {
         switch (this.bg) {
           case "common":
@@ -1494,9 +1522,9 @@ This will fail in production.`);
             break;
         }
       }
-    })
+    }
   };
-  function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: vue.normalizeClass(["bg-common fill-screen font-sm position-fixed overflow-hidden", $options.bgColor]),
       style: vue.normalizeStyle(`top:${_ctx.fixedTop}rpx;`)
@@ -1504,8 +1532,8 @@ This will fail in production.`);
       vue.renderSlot(_ctx.$slots, "default")
     ], 6);
   }
-  var YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-common-wrapper.vue"]]);
-  const _sfc_main$s = {
+  const YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-common-wrapper.vue"]]);
+  const _sfc_main$v = {
     name: "yx-popup",
     emits: ["hide", "action"],
     props: {
@@ -1610,10 +1638,10 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
-        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex position-fixed rounded font-md"]),
+        class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex t position-fixed rounded font-md"]),
         style: vue.normalizeStyle($props.show ? `display:block;${$options.position}` : `display:none;${$options.position};`)
       }, [
         vue.createCommentVNode(" \u666E\u901A\u529F\u80FD\u63D0\u793A\u6846 "),
@@ -1658,8 +1686,8 @@ This will fail in production.`);
       }, null, 6)
     ], 64);
   }
-  var YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-popup.vue"]]);
-  const _sfc_main$r = {
+  const YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$u], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
+  const _sfc_main$u = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
     props: {
@@ -1732,9 +1760,11 @@ This will fail in production.`);
         }
       }
     },
-    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_popup = vue.resolveComponent("yx-popup");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(' <view class="fixed-top flex justify-between p-2 align-center pr-4 " :style="`top:${fixedTop}rpx`" style="background-color: #efefeb;"> '),
@@ -1766,7 +1796,7 @@ This will fail in production.`);
       vue.createCommentVNode(' <view style="margin-top: 100rpx;"> </view> ')
     ], 64);
   }
-  var YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-tool-bar.vue"]]);
+  const YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -1792,7 +1822,7 @@ This will fail in production.`);
       }, p: function(t2) {
         return { M: f, y: c, w: o, d: a, D: d, h: u, m: s, s: i2, ms: r, Q: h }[t2] || String(t2 || "").toLowerCase().replace(/s$/, "");
       }, u: function(t2) {
-        return t2 === void 0;
+        return void 0 === t2;
       } }, g = "en", D = {};
       D[g] = M;
       var p = function(t2) {
@@ -1801,7 +1831,7 @@ This will fail in production.`);
         var i3;
         if (!e2)
           return g;
-        if (typeof e2 == "string") {
+        if ("string" == typeof e2) {
           var s2 = e2.toLowerCase();
           D[s2] && (i3 = s2), n2 && (D[s2] = n2, i3 = s2);
           var u2 = e2.split("-");
@@ -1815,7 +1845,7 @@ This will fail in production.`);
       }, w = function(t2, e2) {
         if (p(t2))
           return t2.clone();
-        var n2 = typeof e2 == "object" ? e2 : {};
+        var n2 = "object" == typeof e2 ? e2 : {};
         return n2.date = t2, n2.args = arguments, new _(n2);
       }, O = v;
       O.l = S, O.i = p, O.w = function(t2, e2) {
@@ -1829,13 +1859,13 @@ This will fail in production.`);
         return m2.parse = function(t2) {
           this.$d = function(t3) {
             var e2 = t3.date, n2 = t3.utc;
-            if (e2 === null)
+            if (null === e2)
               return new Date(NaN);
             if (O.u(e2))
               return new Date();
             if (e2 instanceof Date)
               return new Date(e2);
-            if (typeof e2 == "string" && !/Z$/i.test(e2)) {
+            if ("string" == typeof e2 && !/Z$/i.test(e2)) {
               var r2 = e2.match($);
               if (r2) {
                 var i3 = r2[2] - 1 || 0, s2 = (r2[7] || "0").substring(0, 3);
@@ -1976,8 +2006,8 @@ This will fail in production.`);
       }, w.en = D[g], w.Ls = D, w.p = {}, w;
     });
   })(dayjs_min);
-  var dayjs = dayjs_min.exports;
-  const _sfc_main$q = {
+  const dayjs = dayjs_min.exports;
+  const _sfc_main$t = {
     name: "yx-badge",
     props: {
       messageCount: {
@@ -1994,14 +2024,14 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       id: "badge",
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  var YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-7d12dd30"], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-badge.vue"]]);
-  const _sfc_main$p = {
+  const YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-ab87c323"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
+  const _sfc_main$s = {
     name: "chat-item",
     components: { YxBadge },
     props: {
@@ -2020,7 +2050,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_badge = vue.resolveComponent("yx-badge");
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-2",
@@ -2054,8 +2084,8 @@ This will fail in production.`);
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  var chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat-item.vue"]]);
-  var userList = [
+  const chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
+  const userList = [
     {
       id: 1,
       image_src: "/static/logo.png",
@@ -2129,7 +2159,7 @@ This will fail in production.`);
       is_top: false
     }
   ];
-  const _sfc_main$o = {
+  const _sfc_main$r = {
     name: "yx-flexible-wrapperer",
     emits: ["scroll"],
     props: {
@@ -2235,7 +2265,8 @@ This will fail in production.`);
         }
       }
     },
-    computed: __spreadProps(__spreadValues({}, mapState(useDeviceStore, ["fixedTop"])), {
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"]),
       contentShowBorder() {
         if (this.scrollDirection === "bottom" || this.contentLackToTop) {
           return `top:${this.fixedTop + 100 - this.movingDistance}rpx;bottom:${this.bottom};height:${this.height}`;
@@ -2244,9 +2275,9 @@ This will fail in production.`);
         }
         return `top:${this.fixedTop + 100}rpx;bottom:${this.bottom};height:${this.height}`;
       }
-    })
+    }
   };
-  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(" \u589E\u52A0\u72B6\u6001\u680F\u906E\u6321\u5C42\uFF0C\u9632\u6B62\u5143\u7D20\u66B4\u9732 "),
       vue.createElementVNode("view", {
@@ -2293,8 +2324,8 @@ This will fail in production.`);
       vue.createCommentVNode(" </view> ")
     ], 64);
   }
-  var YxFlexibleWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-flexible-wrapperer.vue"]]);
-  const _sfc_main$n = {
+  const YxFlexibleWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-flexible-wrapperer.vue"]]);
+  const _sfc_main$q = {
     components: {
       YxToolBar,
       chatItem,
@@ -2382,7 +2413,7 @@ This will fail in production.`);
             return;
           case "setTop":
             this.curUser.is_top = true;
-            this.userTopList.unshift(__spreadValues({}, this.curUser));
+            this.userTopList.unshift({ ...this.curUser });
             this.userList.forEach((user) => {
               if (user.id === this.curUser.id)
                 user.is_top = true;
@@ -2429,13 +2460,14 @@ This will fail in production.`);
         ];
       }
     },
-    computed: __spreadValues({
+    computed: {
       userCount() {
         return this.userList.length;
-      }
-    }, mapState(useDeviceStore, ["fixedTop"]))
+      },
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_chat_item = vue.resolveComponent("chat-item");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -2495,8 +2527,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/chat/chat.vue"]]);
-  const _sfc_main$m = {
+  const PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
+  const _sfc_main$p = {
     name: "yx-list",
     props: {
       item: {
@@ -2518,7 +2550,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between align-center pl-2 border-bottom font-md",
       style: { "height": "100rpx" }
@@ -2551,18 +2583,18 @@ This will fail in production.`);
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  var YxList = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$l], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list.vue"]]);
-  const _sfc_main$l = {
+  const YxList = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
+  const _sfc_main$o = {
     name: "yx-divider",
     data() {
       return {};
     }
   };
-  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  var YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$k], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-divider.vue"]]);
-  const _sfc_main$k = {
+  const YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
+  const _sfc_main$n = {
     components: { YxList, YxDivider, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
@@ -2638,7 +2670,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
@@ -2677,8 +2709,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/find.vue"]]);
-  const _sfc_main$j = {
+  const PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
+  const _sfc_main$m = {
     name: "yx-card",
     props: {
       img: [String],
@@ -2693,7 +2725,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-3",
       "hover-class": $props.isCover ? "bg-common" : ""
@@ -2715,8 +2747,8 @@ This will fail in production.`);
       ])
     ], 8, ["hover-class"]);
   }
-  var YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$i], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-card.vue"]]);
-  const _sfc_main$i = {
+  const YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$l], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
+  const _sfc_main$l = {
     components: { YxCard, YxDivider, YxList, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
@@ -2763,9 +2795,15 @@ This will fail in production.`);
         ]
       };
     },
-    methods: {}
+    methods: {
+      toUserInfo() {
+        uni.navigateTo({
+          url: "/pages/tabbar/user/UserInfo/UserInfo"
+        });
+      }
+    }
   };
-  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
@@ -2790,7 +2828,8 @@ This will fail in production.`);
               img: "/static/logo.png",
               class: "bg-white",
               title: "\u695A\u4E91",
-              desc: "\u6D4B\u8BD5\u6570\u636E"
+              desc: "\u6D4B\u8BD5\u6570\u636E",
+              onClick: $options.toUserInfo
             }, {
               right: vue.withCtx(() => [
                 vue.createElementVNode("view", { class: "mt-3" }, [
@@ -2799,7 +2838,7 @@ This will fail in production.`);
                 ])
               ]),
               _: 1
-            }),
+            }, 8, ["onClick"]),
             vue.createVNode(_component_yx_divider),
             (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.data, (group, i2) => {
               return vue.openBlock(), vue.createElementBlock("view", {
@@ -2830,7 +2869,7 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/user/user.vue"]]);
+  const PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$k], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
   let groups = [];
   for (let i2 = "A".charCodeAt(0); i2 <= "Z".charCodeAt(0); i2++) {
     if (Math.floor(Math.random() * 3) === 0)
@@ -2850,7 +2889,7 @@ This will fail in production.`);
     groups.push(group);
   }
   formatAppLog("log", "at static/testData/friendList.js:26", "@group", groups);
-  const _sfc_main$h = {
+  const _sfc_main$k = {
     components: { YxToolBar, YxList, YxFlexibleWrapper },
     mounted() {
       formatAppLog("log", "at pages/tabbar/friend/friend.vue:33", "@rrrr", groups);
@@ -2898,9 +2937,11 @@ This will fail in production.`);
         formatAppLog("log", "at pages/tabbar/friend/friend.vue:79", "click");
       }
     },
-    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
@@ -2953,8 +2994,8 @@ This will fail in production.`);
       ])
     ]);
   }
-  var PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$g], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/friend/friend.vue"]]);
-  const _sfc_main$g = {
+  const PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
+  const _sfc_main$j = {
     name: "yx-nav-bar",
     props: {
       title: {
@@ -3004,9 +3045,11 @@ This will fail in production.`);
         });
       }
     },
-    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: vue.normalizeClass(["flex justify-between align-center p-2 fixed-top", $props.isOpacity ? "bg-transparent" : "bg-white"]),
@@ -3039,8 +3082,8 @@ This will fail in production.`);
       })) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-nav-bar.vue"]]);
-  const _sfc_main$f = {
+  const YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$i], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
+  const _sfc_main$i = {
     name: "yx-chat-item-content",
     inject: ["validPreviewOfImage", "touchMessageOfChat", "touchLeaveMessageOfChat"],
     props: {
@@ -3097,7 +3140,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       onClick: _cache[2] || (_cache[2] = (...args) => $options.handleAudio && $options.handleAudio(...args)),
       onTouchstart: _cache[3] || (_cache[3] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
@@ -3171,8 +3214,8 @@ This will fail in production.`);
       ])) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  var YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__scopeId", "data-v-16b5a012"], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-content.vue"]]);
-  const _sfc_main$e = {
+  const YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__scopeId", "data-v-24a89cde"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
+  const _sfc_main$h = {
     name: "yx-chat-item-detail",
     components: {
       YxChatItemContent
@@ -3208,7 +3251,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_chat_item_content = vue.resolveComponent("yx-chat-item-content");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       $props.chatMessage.showTime && !$props.chatMessage.isDel ? (vue.openBlock(), vue.createElementBlock("text", {
@@ -3216,7 +3259,7 @@ This will fail in production.`);
         class: "ele-center mb-2 font-sm text-common"
       }, [
         vue.createCommentVNode(" 2022\u5E7412\u670813\u65E5 13:21 "),
-        vue.createTextVNode(vue.toDisplayString($options.time), 1)
+        vue.createTextVNode(" " + vue.toDisplayString($options.time), 1)
       ])) : vue.createCommentVNode("v-if", true),
       vue.createCommentVNode(" \u6211\u65B9\u4FE1\u606F "),
       $props.chatMessage.user_id == 0 && !$props.chatMessage.isDel && !$props.chatMessage.isUndone ? (vue.openBlock(), vue.createElementBlock("view", {
@@ -3274,7 +3317,7 @@ This will fail in production.`);
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  var YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-item-detail.vue"]]);
+  const YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$g], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
   var isIos;
   isIos = plus.os.name == "iOS";
   function gotoAppPermissionSetting() {
@@ -3299,7 +3342,7 @@ This will fail in production.`);
       mainActivity.startActivity(intent);
     }
   }
-  const _sfc_main$d = {
+  const _sfc_main$g = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
     props: {},
@@ -3607,7 +3650,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: "fixed-bottom transition-ease-fast-plus bg-white-four-deep flex justify-between align-center p-1",
@@ -3690,8 +3733,8 @@ This will fail in production.`);
       ])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  var YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/\u804A\u5929/components/chat/yx-chat-detail-input.vue"]]);
-  var chatMesssage = [
+  const YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
+  const chatMesssage = [
     {
       id: "a1",
       user_id: 0,
@@ -3809,7 +3852,7 @@ This will fail in production.`);
       showTime: true
     }
   ];
-  var chatUtils = [
+  const chatUtils = [
     [
       {
         id: "001",
@@ -3872,7 +3915,7 @@ This will fail in production.`);
     };
     data.push(obj);
   }
-  const _sfc_main$c = {
+  const _sfc_main$f = {
     components: {
       YxNavBar,
       YxChatItemDetail,
@@ -4117,7 +4160,7 @@ This will fail in production.`);
         this.scrollBottom();
       }
     },
-    computed: __spreadValues({
+    computed: {
       userChatMessage() {
         if (!this.isCompleteConvert) {
           this.userMessage[0].data = this.convertln(this.userMessage[0].data);
@@ -4140,10 +4183,11 @@ This will fail in production.`);
           }
         });
         return imageUrlStore;
-      }
-    }, mapState(useDeviceStore, ["fixedTop"]))
+      },
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_chat_item_detail = vue.resolveComponent("yx-chat-item-detail");
     const _component_yx_chat_detail_input = vue.resolveComponent("yx-chat-detail-input");
@@ -4279,23 +4323,26 @@ This will fail in production.`);
       })
     ], 2112);
   }
-  var PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-detail.vue"]]);
-  const _sfc_main$b = {
+  const PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
+  const _sfc_main$e = {
     name: "yx-list-compo",
     props: {
       listData: [Object]
     },
     mounted() {
-      setTimeout(() => {
-        formatAppLog("log", "at components/yx-list-compo.vue:28", "list_----", this.listData);
-      }, 100);
+      setTimeout(
+        () => {
+          formatAppLog("log", "at components/yx-list-compo.vue:28", "list_----", this.listData);
+        },
+        100
+      );
     },
     components: { YxList },
     data() {
       return {};
     }
   };
-  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.listData, (list) => {
@@ -4319,7 +4366,8 @@ This will fail in production.`);
                       onChange: (e) => _ctx.switchToggle(e, data2)
                     }, null, 40, ["onChange"])
                   ])) : vue.createCommentVNode("v-if", true)
-                ])
+                ]),
+                key: "0"
               } : void 0
             ]), 1032, ["title", "isCell"]);
           }), 128))
@@ -4327,8 +4375,8 @@ This will fail in production.`);
       }), 256))
     ]);
   }
-  var YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/\u804A\u5929/components/yx-list-compo.vue"]]);
-  const _sfc_main$a = {
+  const YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list-compo.vue"]]);
+  const _sfc_main$d = {
     onLoad(query) {
       formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:55", "query", query);
       this.title = query.title;
@@ -4438,9 +4486,11 @@ This will fail in production.`);
         formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:155", "switch\u5207\u6362", e, target2);
       }
     },
-    computed: __spreadValues({}, mapState(useDeviceStore, ["fixedTop"]))
+    computed: {
+      ...mapState(useDeviceStore, ["fixedTop"])
+    }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -4503,7 +4553,8 @@ This will fail in production.`);
                               onChange: (e) => $options.switchToggle(e, data2)
                             }, null, 40, ["onChange"])
                           ])) : vue.createCommentVNode("v-if", true)
-                        ])
+                        ]),
+                        key: "0"
                       } : void 0
                     ]), 1032, ["title", "isCell"]);
                   }), 128))
@@ -4520,8 +4571,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/\u804A\u5929/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
-  const _sfc_main$9 = {
+  const PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
+  const _sfc_main$c = {
     onLoad(query) {
       formatAppLog("log", "at pages/UserInfo/UserInfo.vue:42", "query", query);
       this.targetId = query.id;
@@ -4605,7 +4656,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_list = vue.resolveComponent("yx-list");
@@ -4668,7 +4719,8 @@ This will fail in production.`);
                           mode: "aspectFit"
                         })
                       ])) : vue.createCommentVNode("v-if", true)
-                    ])
+                    ]),
+                    key: "0"
                   } : void 0
                 ]), 1032, ["onClick", "title", "isCell"]);
               }), 128))
@@ -4686,8 +4738,8 @@ This will fail in production.`);
       })
     ]);
   }
-  var PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserInfo.vue"]]);
-  const _sfc_main$8 = {
+  const PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserInfo.vue"]]);
+  const _sfc_main$b = {
     onLoad(query) {
     },
     components: {
@@ -4769,7 +4821,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -4801,7 +4853,8 @@ This will fail in production.`);
                           onChange: (e) => _ctx.switchToggle(e, data2)
                         }, null, 40, ["onChange"])
                       ])) : vue.createCommentVNode("v-if", true)
-                    ])
+                    ]),
+                    key: "0"
                   } : void 0
                 ]), 1032, ["onClick", "title", "isCell"]);
               }), 128))
@@ -4813,8 +4866,8 @@ This will fail in production.`);
       })
     ]);
   }
-  var PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
-  const _sfc_main$7 = {
+  const PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
+  const _sfc_main$a = {
     components: {
       YxNavBar,
       YxFlexibleWrapper
@@ -4830,7 +4883,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_YxFlexibleWrapper = vue.resolveComponent("YxFlexibleWrapper");
     return vue.openBlock(), vue.createElementBlock("view", { class: "bg-white" }, [
@@ -4889,14 +4942,18 @@ This will fail in production.`);
       })
     ]);
   }
-  var PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
-  const _sfc_main$6 = {
+  const PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
+  const _sfc_main$9 = {
     components: {
       YxNavBar,
       YxCommonWrapper
     },
     mounted() {
-      this.tagList.push({ id: Math.random() * 1e3, title: "+ \u65B0\u5EFA\u6807\u7B7E", oftenExist: true }, { id: Math.random() * 1e3, title: "\u4FC4\u5F0F", isSelected: false }, { id: Math.random() * 1e3, title: "+ \u5927\u54E5", isSelected: false });
+      this.tagList.push(
+        { id: Math.random() * 1e3, title: "+ \u65B0\u5EFA\u6807\u7B7E", oftenExist: true },
+        { id: Math.random() * 1e3, title: "\u4FC4\u5F0F", isSelected: false },
+        { id: Math.random() * 1e3, title: "+ \u5927\u54E5", isSelected: false }
+      );
     },
     data() {
       return {
@@ -4953,7 +5010,7 @@ This will fail in production.`);
     },
     computed: {}
   };
-  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, { class: "position-relative" }, {
@@ -5035,8 +5092,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue"]]);
-  const _sfc_main$5 = {
+  const PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue"]]);
+  const _sfc_main$8 = {
     onLoad(query) {
     },
     components: {
@@ -5118,7 +5175,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -5164,8 +5221,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesUserInfoUserCustomSettingUserAuthUserAuth = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue"]]);
-  const _sfc_main$4 = {
+  const PagesUserInfoUserCustomSettingUserAuthUserAuth = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue"]]);
+  const _sfc_main$7 = {
     onLoad(query) {
     },
     components: {
@@ -5287,7 +5344,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
@@ -5525,8 +5582,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  var PagesUserInfoUserCustomSettingShareFriendShareFriend = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue"]]);
-  const _sfc_main$3 = {
+  const PagesUserInfoUserCustomSettingShareFriendShareFriend = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue"]]);
+  const _sfc_main$6 = {
     onLoad(query) {
     },
     components: {
@@ -5646,7 +5703,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock("view", null, [
@@ -5742,8 +5799,8 @@ This will fail in production.`);
       })
     ]);
   }
-  var PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/\u804A\u5929/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
-  var friendDynamicList = [
+  const PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
+  const friendDynamicList = [
     {
       id: Math.random() * 2e3,
       user_img: "/static/logo.png",
@@ -5845,7 +5902,7 @@ This will fail in production.`);
     }
     return "\u4F20\u5165\u7684\u65F6\u95F4\u4E0D\u6B63\u786E";
   }
-  const _sfc_main$2 = {
+  const _sfc_main$5 = {
     components: { YxNavBar, YxFlexibleWrapper, YxCard },
     mounted() {
       this.friendDynamicList = this.friendDynamicList.map((dynamic) => {
@@ -5872,13 +5929,19 @@ This will fail in production.`);
     },
     methods: {
       publishTimeConvert,
+      previewImg(img) {
+        uni.previewImage({
+          current: img,
+          urls: [img]
+        });
+      },
       toPublishDynamic() {
         uni.navigateTo({
           url: "/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic"
         });
       },
       touchStart() {
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:130", "\u5F00\u59CB\u89E6\u6478\u4E86");
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:136", "\u5F00\u59CB\u89E6\u6478\u4E86");
         this.friendDynamicList.forEach((dynamic) => dynamic.expandComment = false);
         this.isComment = false;
         this.replyVal = "";
@@ -5894,14 +5957,14 @@ This will fail in production.`);
           const index = dynamic.like_list.findIndex((like) => like == "me");
           dynamic.like_list.splice(index, 1);
         }
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:147", "\u70B9\u8D5E");
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:153", "\u70B9\u8D5E");
       },
       recordClickDynamic(dynamic) {
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:150", "\u5192\u6CE1\u8BB0\u5F55\u5F53\u524D\u7528\u6237");
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:156", "\u5192\u6CE1\u8BB0\u5F55\u5F53\u524D\u7528\u6237");
         this.replyDynamic = dynamic;
       },
       clickComment(reply_user) {
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:154", "\u8BC4\u8BBA");
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:160", "\u8BC4\u8BBA");
         this.isComment = true;
         if (reply_user) {
           this.replyObj = reply_user.name;
@@ -5918,19 +5981,19 @@ This will fail in production.`);
         });
         this.isComment = false;
         this.replyVal = "";
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:174", "\u53D1\u5E03\u56DE\u5E94");
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:180", "\u53D1\u5E03\u56DE\u5E94");
       }
     },
     computed: {
       commentInputStyle() {
         let style = this.isComment ? "opacity:1;" : "opacity:0;";
         style += `bottom:${this.keyboardHeight ? this.keyboardHeight * 2 : 500}rpx`;
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:182", "@style", style);
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue:188", "@style", style);
         return style;
       }
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -6008,6 +6071,7 @@ This will fail in production.`);
                         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(dynamic.image_list, (img, i2) => {
                           return vue.openBlock(), vue.createElementBlock("view", {
                             class: "size-2 m-1 flex-1",
+                            onClick: ($event) => $options.previewImg(img),
                             key: i2
                           }, [
                             vue.createElementVNode("image", {
@@ -6015,7 +6079,7 @@ This will fail in production.`);
                               mode: "aspectFit",
                               class: "el-full"
                             }, null, 8, ["src"])
-                          ]);
+                          ], 8, ["onClick"]);
                         }), 128))
                       ])) : vue.createCommentVNode("v-if", true),
                       vue.createCommentVNode(" \u53D1\u5E03\u65F6\u95F4-\u70B9\u8D5E "),
@@ -6110,12 +6174,105 @@ This will fail in production.`);
       })
     ]);
   }
-  var PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
-  const _sfc_main$1 = {
+  const PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
+  const _sfc_main$4 = {
+    name: "yx-picture-select",
+    inject: ["setShow", "getPicture"],
+    props: {
+      show: {
+        type: Boolean
+      },
+      maxSelecPic: {
+        type: [Number, String],
+        default: "Infinity"
+      }
+    },
+    components: {
+      YxPopup
+    },
+    mounted() {
+      formatAppLog("log", "at components/yx-picture-select.vue:33", this);
+    },
+    data() {
+      return {};
+    },
+    methods: {
+      getSrcFromAlbum() {
+        formatAppLog("log", "at components/yx-picture-select.vue:41", "\u76F8\u518C");
+        plus.gallery.pick(({ files }) => {
+          files.forEach((path) => {
+            formatAppLog("log", "at components/yx-picture-select.vue:45", "path", path);
+            this.getPicture(path);
+          });
+        }, (err) => {
+          formatAppLog("log", "at components/yx-picture-select.vue:50", err);
+        }, {
+          multiple: true,
+          permissionAlert: true,
+          filter: "none",
+          maximum: this.maxSelecPic
+        });
+        this.setShow(false);
+      },
+      cameraAction() {
+        formatAppLog("log", "at components/yx-picture-select.vue:61", "\u5F00\u59CB\u62CD\u7167");
+        const camera = plus.camera.getCamera();
+        camera.captureImage((path) => {
+          plus.gallery.save(path, (path2) => {
+            formatAppLog("log", "at components/yx-picture-select.vue:67", "@success", path2);
+            this.getPicture(path2);
+          });
+        }, (err) => {
+          formatAppLog("log", "at components/yx-picture-select.vue:73", err);
+        });
+        this.setShow(false);
+      }
+    }
+  };
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_YxPopup = vue.resolveComponent("YxPopup");
+    return vue.openBlock(), vue.createBlock(_component_YxPopup, {
+      isBottom: "",
+      show: $props.show,
+      onHide: _cache[3] || (_cache[3] = ($event) => $options.setShow(false)),
+      popPosittion: { x: 0, y: 0 }
+    }, {
+      custom: vue.withCtx(() => [
+        vue.createElementVNode("view", {
+          class: "grid grid-center-by-grid-and-ele main-bg-color text-white rounded font-md",
+          style: { "grid-auto-rows": "100rpx" }
+        }, [
+          vue.createElementVNode("view", {
+            onClick: _cache[0] || (_cache[0] = vue.withModifiers((...args) => $options.cameraAction && $options.cameraAction(...args), ["stop"]))
+          }, "\u62CD\u6444"),
+          vue.createElementVNode("view", {
+            onClick: _cache[1] || (_cache[1] = vue.withModifiers((...args) => $options.getSrcFromAlbum && $options.getSrcFromAlbum(...args), ["stop"])),
+            class: "zTop"
+          }, "\u4ECE\u76F8\u518C\u9009\u62E9"),
+          vue.createCommentVNode(' <view style="height: 10rpx;width:100vw" class="bg-white"></view> '),
+          vue.createElementVNode("view", {
+            style: { "border-top": "10rpx solid white", "width": "100vw" },
+            class: "text-center py-2",
+            onClick: _cache[2] || (_cache[2] = ($event) => $options.setShow(false))
+          }, "\u53D6\u6D88")
+        ])
+      ]),
+      _: 1
+    }, 8, ["show"]);
+  }
+  const YxPictureSelect = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-picture-select.vue"]]);
+  const _sfc_main$3 = {
     components: {
       YxNavBar,
       YxFlexibleWrapper,
-      YxPopup
+      YxPopup,
+      YxPictureSelect
+    },
+    provide() {
+      return {
+        setShow: this.setPopShow,
+        getPicture: this.getPictureFromDevice
+      };
     },
     mounted() {
     },
@@ -6123,11 +6280,47 @@ This will fail in production.`);
       return {
         friendDynamicList,
         content: "",
-        srcList: ["/static/logo.png", "/static/logo1.png", "/static/logo1.png", "/static/logo1.png"],
-        show: true
+        srcList: [],
+        show: false,
+        utilCloseTimer: null
       };
     },
     methods: {
+      setPopShow(flag) {
+        this.show = flag;
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:79", "show", this.show);
+      },
+      showUtilOfImg(img) {
+        this.srcList.forEach((srcObj) => {
+          srcObj.showUtil = srcObj.src == img;
+        });
+        if (this.utilCloseTimer)
+          clearTimeout(this.utilCloseTimer);
+        this.utilCloseTimer = setTimeout(() => {
+          this.srcList.forEach((srcObj) => {
+            srcObj.showUtil = false;
+          });
+        }, 3e3);
+      },
+      previewRes(img) {
+        uni.previewImage({
+          current: img,
+          urls: [img]
+        });
+      },
+      delRes(img) {
+        const self2 = this;
+        uni.showModal({
+          title: "\u5220\u9664\u56FE\u7247",
+          content: "\u4F60\u786E\u5B9A\u8981\u79FB\u9664\u8BE5\u56FE\u7247\u5417?",
+          success(res) {
+            if (res.confirm) {
+              const index = self2.srcList.findIndex((srcObj) => srcObj.src == img);
+              self2.srcList.splice(index, 1);
+            }
+          }
+        });
+      },
       publishDynamic() {
         if (this.content) {
           const publishDynmaicObj = {
@@ -6135,50 +6328,61 @@ This will fail in production.`);
             user_img: "/static/logo.png",
             user_name: "me",
             content: this.content,
-            image_list: this.srcList,
+            image_list: this.srcList.map((srcObj) => srcObj.src),
             publish_time: Date.now(),
             like_list: [],
             reply_list: []
           };
-          this.friendDynamicList.push(publishDynmaicObj);
+          this.friendDynamicList.unshift(publishDynmaicObj);
           this.content = "";
+          this.srcList = [];
+          uni.navigateTo({
+            url: "/pages/tabbar/find/FriendCIrcle/FriendCIrcle"
+          });
         }
       },
       addImage() {
         this.show = true;
       },
-      getSrcFromAlbul() {
-        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:81", "\u76F8\u518C");
+      getPictureFromDevice(path) {
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:140", "@ddd-p", path);
+        this.srcList.push({ src: path, showUtil: false });
+      },
+      getSrcFromAlbum() {
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:144", "\u76F8\u518C");
         const self2 = this;
         plus.gallery.pick(({ files }) => {
           files.forEach((path) => {
-            self2.srcList.push(path);
+            self2.srcList.push({ src: path, showUtil: false });
           });
         }, (err) => {
-          formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:88", err);
+          formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:151", err);
         }, {
           multiple: true,
           permissionAlert: true,
           filter: "none"
         });
+        this.show = false;
       },
       cameraAction() {
+        formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:161", "\u5F00\u59CB\u62CD\u7167");
         const camera = plus.camera.getCamera();
         const self2 = this;
         camera.captureImage((path) => {
           plus.gallery.save(path, (path2) => {
-            formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:101", "@success", path2);
-            self2.srcList.push(path2.file);
+            formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:167", "@success", path2);
+            self2.srcList.push({ src: path2.file, showUtil: false });
           });
         }, (err) => {
-          formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:105", err);
+          formatAppLog("log", "at pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue:171", err);
         });
+        this.show = false;
       }
     }
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
-    const _component_YxPopup = vue.resolveComponent("YxPopup");
+    const _component_YxPictureSelect = vue.resolveComponent("YxPictureSelect");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createVNode(_component_yx_nav_bar, {
@@ -6196,6 +6400,7 @@ This will fail in production.`);
       }, 8, ["routerPath"]),
       vue.createVNode(_component_yx_flexible_wrapper, null, {
         default: vue.withCtx(() => [
+          vue.createCommentVNode(' <view class="p-3" @click="clearImgUtilState"> '),
           vue.createElementVNode("view", { class: "p-3" }, [
             vue.createCommentVNode(' <view class="bg-common el-full"> '),
             vue.createCommentVNode(" \u5728\u6587\u672C\u57DF\u6ED1\u52A8\u65F6\u7981\u6B62\uFF08\u56E0\u89E6\u5E95\u6216\u89E6\u9876\uFF09\u4EA7\u751F\u4E8B\u4EF6\u5192\u6CE1\u4EA7\u751F\u7684\u5168\u5C40\u6ED1\u52A8 "),
@@ -6217,16 +6422,37 @@ This will fail in production.`);
             ]),
             vue.createCommentVNode(" \u53EF\u6DFB\u52A0\u56FE\u7247\u8FDB\u884C\u63CF\u8FF0 "),
             vue.createElementVNode("view", { class: "flex my-3 flex-wrap" }, [
-              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.srcList, (img, i2) => {
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.srcList, (imgOBj, i2) => {
                 return vue.openBlock(), vue.createElementBlock("view", {
-                  class: "size-2 rounded bg-common overflow-hidden mr-1 mb-1",
+                  class: "size-2 rounded bg-common overflow-hidden mr-1 mb-1 position-relative",
+                  onClick: ($event) => $options.showUtilOfImg(imgOBj.src),
                   key: i2
                 }, [
                   vue.createElementVNode("image", {
-                    src: img,
-                    mode: "aspectFill"
-                  }, null, 8, ["src"])
-                ]);
+                    src: imgOBj.src,
+                    class: "el-full"
+                  }, null, 8, ["src"]),
+                  vue.createCommentVNode(" \u56FE\u7247\u906E\u7F69\u5C42\uFF0C\u7528\u4E8E\u9009\u62E9\u662F\u5220\u9664\u8FD8\u662F\u9884\u89C8\u56FE\u7247 "),
+                  vue.createCommentVNode(` <view :style="imgOBj.showUtil ? 'display:block':'display:none'" class="el-full bg-dark lucency-5 zTop position-absolute grid-2 grid-center-by-el" style="left:0;top:0"> `),
+                  vue.createElementVNode("view", {
+                    style: vue.normalizeStyle([imgOBj.showUtil ? "display:block" : "display:none", { "left": "0", "top": "0" }]),
+                    class: "el-full bg-dark lucency-5 zTop position-absolute"
+                  }, [
+                    vue.createElementVNode("view", {
+                      class: "text-center",
+                      style: { "line-height": "200rpx" }
+                    }, [
+                      vue.createElementVNode("text", {
+                        class: "iconfont icon-preview text-white font-lg mr-1",
+                        onClick: vue.withModifiers(($event) => $options.previewRes(imgOBj.src), ["stop"])
+                      }, null, 8, ["onClick"]),
+                      vue.createElementVNode("text", {
+                        class: "iconfont icon-ashbin text-white font-lg ml-1",
+                        onClick: vue.withModifiers(($event) => $options.delRes(imgOBj.src), ["stop"])
+                      }, null, 8, ["onClick"])
+                    ])
+                  ], 4)
+                ], 8, ["onClick"]);
               }), 128)),
               vue.createElementVNode("view", {
                 class: "size-2 rounded bg-common font-lg grid grid-center-by-grid-and-ele",
@@ -6235,29 +6461,199 @@ This will fail in production.`);
             ]),
             vue.createCommentVNode(" </view> ")
           ]),
-          vue.createVNode(_component_YxPopup, {
-            isBottom: "",
-            show: $data.show,
-            onHide: _cache[9] || (_cache[9] = ($event) => $data.show = false),
-            popPosittion: { x: 0, y: 0 }
+          vue.createCommentVNode(' 	<YxPopup isBottom :show="show" @hide="show = false" :popPosittion="{x:0,y:0}">\n			<template #custom>\n				<view class="grid  grid-center-by-grid-and-ele main-bg-color text-white rounded font-md" style="grid-auto-rows: 100rpx;">\n					<view @click.stop="cameraAction">\u62CD\u6444</view>\n					<view @click.stop="getSrcFromAlbum" class="zTop">\u4ECE\u76F8\u518C\u9009\u62E9</view>\n					<view style="border-top: 10rpx solid white;width:100vw;"  class=" text-center py-2" @click="show=false">\u53D6\u6D88</view>\n				</view>\n			</template>\n		</YxPopup> '),
+          vue.createVNode(_component_YxPictureSelect, { show: $data.show }, null, 8, ["show"])
+        ]),
+        _: 1
+      })
+    ], 64);
+  }
+  const PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue"]]);
+  const _sfc_main$2 = {
+    name: "yx-dialog",
+    emits: ["hide"],
+    props: ["show"],
+    data() {
+      return {};
+    }
+  };
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+      vue.createElementVNode("view", {
+        class: "position-absolute fill-screen rounded bg-dark zTop",
+        style: vue.normalizeStyle([$props.show ? "display:block" : "display:none", { "left": "50%", "top": "20%", "transform": "translate(-50%,-50%)", "width": "80vw", "height": "40vh" }])
+      }, [
+        vue.renderSlot(_ctx.$slots, "custom")
+      ], 4),
+      vue.createCommentVNode(" \u70B9\u51FB\u53D6\u6D88 "),
+      vue.createElementVNode("view", {
+        onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("hide")),
+        style: vue.normalizeStyle([$props.show ? "display:block" : "display:none", { "left": "0", "top": "0" }]),
+        class: "fill-screen position-absolute"
+      }, null, 4)
+    ], 64);
+  }
+  const YxDialog = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-dialog.vue"]]);
+  const _sfc_main$1 = {
+    components: {
+      YxNavBar,
+      YxFlexibleWrapper,
+      YxList,
+      YxPictureSelect,
+      YxDialog
+    },
+    provide() {
+      return {
+        setShow: this.setShow,
+        getPicture: this.getPicture
+      };
+    },
+    mounted() {
+      this.list = [
+        {
+          id: this.avatarId,
+          title: "\u5934\u50CF",
+          suffix: "image",
+          data: this.avatar,
+          event: "avatar"
+        },
+        {
+          id: this.nameId,
+          title: "\u540D\u5B57",
+          suffix: "text",
+          data: this.name,
+          event: "name"
+        },
+        {
+          id: Math.random() * 2e3,
+          title: "\u5FAE\u4FE1\u53F7",
+          suffix: "text",
+          data: "my_123"
+        },
+        {
+          id: Math.random() * 2e3,
+          title: "\u4E8C\u7EF4\u7801\u540D\u7247",
+          suffix: "QRcode"
+        }
+      ];
+    },
+    data() {
+      return {
+        list: [],
+        show: false,
+        avatar: "/static/logo.png",
+        avatarId: Math.random() * 2e3,
+        name: "Zz",
+        nameId: Math.random() * 2e3,
+        dialogShow: true
+      };
+    },
+    methods: {
+      setShow(flag) {
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:98", "\u6539\u53D8\u72B6\u6001\u4E3A");
+        this.show = flag;
+      },
+      rename() {
+        const self2 = this;
+        const target2 = this.list.find((obj) => obj.id == self2.nameId);
+        target2.data = this.name;
+      },
+      getPicture(path) {
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:107", "\u8BBE\u7F6E\u56FE\u7247\u4E3A");
+        this.avatar = path;
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:109", "avat", this.avatar);
+      },
+      handleClick(data2) {
+        switch (data2.event) {
+          case "avatar":
+            this.setShow(true);
+            break;
+          case "name":
+            this.dialogShow = true;
+        }
+        if (data2.suffix != "image")
+          return;
+      }
+    },
+    watch: {
+      avatar() {
+        const self2 = this;
+        const target2 = this.list.find((obj) => obj.id == self2.avatarId);
+        target2.data = this.avatar;
+      }
+    }
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
+    const _component_yx_list = vue.resolveComponent("yx-list");
+    const _component_YxPictureSelect = vue.resolveComponent("YxPictureSelect");
+    const _component_YxDialog = vue.resolveComponent("YxDialog");
+    const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
+    return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+      vue.createVNode(_component_yx_nav_bar, {
+        title: "\u4E2A\u4EBA\u4FE1\u606F",
+        existMore: false,
+        routerPath: `/pages/tabbar/user/user?${$data.name}`
+      }, null, 8, ["routerPath"]),
+      vue.createVNode(_component_yx_flexible_wrapper, null, {
+        default: vue.withCtx(() => [
+          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($data.list, (t) => {
+            return vue.openBlock(), vue.createBlock(_component_yx_list, {
+              key: t.id,
+              title: t.title,
+              isCell: "",
+              onClick: ($event) => $options.handleClick(t)
+            }, {
+              suffix: vue.withCtx(() => [
+                t.suffix == "image" ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+                  vue.createElementVNode("image", {
+                    src: t.data,
+                    class: "size-1"
+                  }, null, 8, ["src"])
+                ])) : vue.createCommentVNode("v-if", true),
+                t.suffix == "text" ? (vue.openBlock(), vue.createElementBlock("view", { key: 1 }, vue.toDisplayString(t.data), 1)) : vue.createCommentVNode("v-if", true),
+                t.suffix == "QRcode" ? (vue.openBlock(), vue.createElementBlock("view", { key: 2 }, [
+                  vue.createElementVNode("text", { class: "icon-qrcode iconfont" })
+                ])) : vue.createCommentVNode("v-if", true)
+              ]),
+              _: 2
+            }, 1032, ["title", "onClick"]);
+          }), 128)),
+          vue.createVNode(_component_YxPictureSelect, {
+            maxSelecPic: 1,
+            show: $data.show
+          }, null, 8, ["show"]),
+          vue.createVNode(_component_YxDialog, {
+            show: $data.dialogShow,
+            onHide: _cache[3] || (_cache[3] = ($event) => $data.dialogShow = false)
           }, {
             custom: vue.withCtx(() => [
-              vue.createElementVNode("view", {
-                class: "grid grid-center-by-grid-and-ele main-bg-color text-white rounded font-md",
-                style: { "grid-auto-rows": "100rpx" }
-              }, [
+              vue.createCommentVNode(' <view class="position-relative p-3 font-md text-white  el-full overflow-hidden"> '),
+              vue.createElementVNode("view", { class: "position-relative p-3 text-white" }, [
+                vue.createElementVNode("view", { class: "text-center" }, "\u8BBE\u7F6E\u6635\u79F0"),
+                vue.createCommentVNode(' <textarea maxlength="15" class="bg-white" style="margin-top: 100rpx;"\r\n						 v-model="name" auto-height placeholder="\u8F93\u5165\u4F60\u559C\u6B22\u7684\u6635\u79F0\u5427"></textarea> '),
+                vue.withDirectives(vue.createElementVNode("textarea", {
+                  maxlength: "15",
+                  class: "bg-white main-text-color p-2 ml-5",
+                  "auto-focus": "",
+                  "auto-height": "",
+                  style: { "margin-top": "100rpx", "min-height": "40rpx", "width": "400rpx" },
+                  "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.name = $event),
+                  placeholder: "\u8F93\u5165\u4F60\u559C\u6B22\u7684\u6635\u79F0\u5427"
+                }, null, 512), [
+                  [vue.vModelText, $data.name]
+                ]),
                 vue.createElementVNode("view", {
-                  onClick: _cache[6] || (_cache[6] = (...args) => $options.cameraAction && $options.cameraAction(...args))
-                }, "\u62CD\u6444"),
-                vue.createElementVNode("view", {
-                  onClcik: _cache[7] || (_cache[7] = (...args) => $options.getSrcFromAlbul && $options.getSrcFromAlbul(...args))
-                }, "\u4ECE\u76F8\u518C\u9009\u62E9", 32),
-                vue.createCommentVNode(' <view style="height: 10rpx;width:100vw" class="bg-white"></view> '),
-                vue.createElementVNode("view", {
-                  style: { "border-top": "10rpx solid white", "width": "100vw" },
-                  class: "text-center py-2",
-                  onClick: _cache[8] || (_cache[8] = ($event) => $data.show = false)
-                }, "\u53D6\u6D88")
+                  class: "grid grid-2 grid-center-by-el",
+                  style: { "margin-top": "16vh" }
+                }, [
+                  vue.createElementVNode("view", {
+                    onClick: _cache[1] || (_cache[1] = ($event) => $options.setShow(false))
+                  }, "\u53D6\u6D88"),
+                  vue.createElementVNode("view", {
+                    onClick: _cache[2] || (_cache[2] = (...args) => $options.rename && $options.rename(...args))
+                  }, "\u786E\u8BA4")
+                ])
               ])
             ]),
             _: 1
@@ -6267,7 +6663,7 @@ This will fail in production.`);
       })
     ], 64);
   }
-  var PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/\u804A\u5929/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue"]]);
+  const PagesTabbarUserUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/UserInfo/UserInfo.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
@@ -6283,6 +6679,7 @@ This will fail in production.`);
   __definePage("pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle", PagesUserInfoUserCustomSettingFriendCircleFriendCircle);
   __definePage("pages/tabbar/find/FriendCIrcle/FriendCIrcle", PagesTabbarFindFriendCIrcleFriendCIrcle);
   __definePage("pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic", PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic);
+  __definePage("pages/tabbar/user/UserInfo/UserInfo", PagesTabbarUserUserInfoUserInfo);
   const _sfc_main = {
     onLaunch: function() {
       formatAppLog("log", "at App.vue:6", "App Launch");
@@ -6301,9 +6698,12 @@ This will fail in production.`);
       }
       formatAppLog("log", "at App.vue:26", "device", uni.getSystemInfoSync());
     },
-    computed: __spreadValues(__spreadValues({}, mapWritableState(useDeviceStore, ["statusBarHeight"])), mapWritableState(useDeviceStore, ["device"]))
+    computed: {
+      ...mapWritableState(useDeviceStore, ["statusBarHeight"]),
+      ...mapWritableState(useDeviceStore, ["device"])
+    }
   };
-  var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/\u804A\u5929/App.vue"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/aLearning/project/uniapp-chat-project/App.vue"]]);
   const pinia = createPinia();
   function createApp() {
     const app = vue.createVueApp(App);

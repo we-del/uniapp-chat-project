@@ -1,6 +1,6 @@
 <template>
 	<view :class="styleCustom" 
-	class="zTop border-dark  p-2 flex   position-fixed  rounded font-md" 
+	class="zTop border-dark  p-2 flex t  position-fixed  rounded font-md" 
 	:style="show ? `display:block;${position}`:`display:none;${position};`">
 		<!-- 普通功能提示框 -->
 		<view v-if="isChat">

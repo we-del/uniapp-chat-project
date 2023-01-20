@@ -6,7 +6,7 @@
 			<view class="position-relative" style="width: 100%;height:150rpx;background-color: white;">
 				<text class="iconfont icon-help position-absolute" style="right:20rpx;top:30rpx"></text>
 			</view>
-			<yx-card img="/static/logo.png" class="bg-white" title="楚云" desc="测试数据">
+			<yx-card img="/static/logo.png" class="bg-white" title="楚云" desc="测试数据" @click="toUserInfo">
 				<template #right>
 					<view class="mt-3">
 							<text class="iconfont icon-saoyisao  font-lg"></text>
@@ -87,7 +87,11 @@
 			}
 		},
 		methods: {
-			
+			toUserInfo(){
+				uni.navigateTo({
+					url:'/pages/tabbar/user/UserInfo/UserInfo'
+				})
+			}
 		}
 	}
 </script>

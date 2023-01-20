@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3828712 */
-  src: url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.woff2?t=1674107186926') format('woff2'),
-       url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.woff?t=1674107186926') format('woff'),
-       url('https://at.alicdn.com/t/c/font_3828712_7g4mu0t668.ttf?t=1674107186926') format('truetype');
+  src: url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.woff2?t=1674201452101') format('woff2'),
+       url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.woff?t=1674201452101') format('woff'),
+       url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.ttf?t=1674201452101') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-preview:before {
+  content: "\e609";
+}
+
+.icon-bin:before {
+  content: "\e611";
+}
+
+.icon-preview1:before {
+  content: "\e626";
+}
+
+.icon-ashbin:before {
+  content: "\e665";
+}
+
+.icon-yulan-dakai_preview-open:before {
+  content: "\e61c";
 }
 
 .icon-love:before {

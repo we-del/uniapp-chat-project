@@ -33,7 +33,7 @@
 								<view class=" mb-1 font-md text-dark">{{dynamic.content}}</view>
 								<!-- 动态图片 -->
 								<view class="mb-2 flex flex-wrap" v-if="dynamic.image_list.length > 0">
-									<view class="size-2 m-1 flex-1" v-for="(img,i) in dynamic.image_list" :key="i">
+									<view class="size-2 m-1 flex-1" @click="previewImg(img)" v-for="(img,i) in dynamic.image_list" :key="i">
 										<image :src="img" mode="aspectFit" class="el-full"></image>
 									</view>
 								</view>
@@ -121,6 +121,12 @@
 		},
 		methods: {
 			publishTimeConvert,
+			previewImg(img){
+				uni.previewImage({
+					current:img,
+					urls:[img]
+				})
+			},
 			toPublishDynamic(){
 				uni.navigateTo({
 					url:'/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic'

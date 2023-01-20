@@ -84,6 +84,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/tabbar/user/UserInfo/UserInfo",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
