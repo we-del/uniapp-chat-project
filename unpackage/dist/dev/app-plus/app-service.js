@@ -1495,7 +1495,7 @@ This will fail in production.`);
     }
     return target2;
   };
-  const _sfc_main$w = {
+  const _sfc_main$x = {
     name: "yx-common-wrapper",
     props: {
       bg: {
@@ -1524,7 +1524,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$w(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: vue.normalizeClass(["bg-common fill-screen font-sm position-fixed overflow-hidden", $options.bgColor]),
       style: vue.normalizeStyle(`top:${_ctx.fixedTop}rpx;`)
@@ -1532,8 +1532,8 @@ This will fail in production.`);
       vue.renderSlot(_ctx.$slots, "default")
     ], 6);
   }
-  const YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-common-wrapper.vue"]]);
-  const _sfc_main$v = {
+  const YxCommonWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$w], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-common-wrapper.vue"]]);
+  const _sfc_main$w = {
     name: "yx-popup",
     emits: ["hide", "action"],
     props: {
@@ -1638,7 +1638,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: vue.normalizeClass([$options.styleCustom, "zTop border-dark p-2 flex t position-fixed rounded font-md"]),
@@ -1686,8 +1686,8 @@ This will fail in production.`);
       }, null, 6)
     ], 64);
   }
-  const YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$u], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
-  const _sfc_main$u = {
+  const YxPopup = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-popup.vue"]]);
+  const _sfc_main$v = {
     name: "yx-tool-bar",
     emits: ["clickNav"],
     props: {
@@ -1764,7 +1764,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_popup = vue.resolveComponent("yx-popup");
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(' <view class="fixed-top flex justify-between p-2 align-center pr-4 " :style="`top:${fixedTop}rpx`" style="background-color: #efefeb;"> '),
@@ -1796,7 +1796,7 @@ This will fail in production.`);
       vue.createCommentVNode(' <view style="margin-top: 100rpx;"> </view> ')
     ], 64);
   }
-  const YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
+  const YxToolBar = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$u], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-tool-bar.vue"]]);
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   var dayjs_min = { exports: {} };
   (function(module, exports) {
@@ -2007,7 +2007,7 @@ This will fail in production.`);
     });
   })(dayjs_min);
   const dayjs = dayjs_min.exports;
-  const _sfc_main$t = {
+  const _sfc_main$u = {
     name: "yx-badge",
     props: {
       messageCount: {
@@ -2024,14 +2024,14 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       id: "badge",
       class: "rounded-circle bg-danger font-sm p-1 position-absolute"
     }, vue.toDisplayString($options.count), 1);
   }
-  const YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-ab87c323"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
-  const _sfc_main$s = {
+  const YxBadge = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__scopeId", "data-v-ab87c323"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-badge.vue"]]);
+  const _sfc_main$t = {
     name: "chat-item",
     components: { YxBadge },
     props: {
@@ -2050,7 +2050,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_badge = vue.resolveComponent("yx-badge");
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-2",
@@ -2084,7 +2084,7 @@ This will fail in production.`);
       }, vue.toDisplayString($options.time), 1)
     ]);
   }
-  const chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
+  const chatItem = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat-item.vue"]]);
   const userList = [
     {
       id: 1,
@@ -2159,7 +2159,7 @@ This will fail in production.`);
       is_top: false
     }
   ];
-  const _sfc_main$r = {
+  const _sfc_main$s = {
     name: "yx-flexible-wrapperer",
     emits: ["scroll"],
     props: {
@@ -2277,7 +2277,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createCommentVNode(" \u589E\u52A0\u72B6\u6001\u680F\u906E\u6321\u5C42\uFF0C\u9632\u6B62\u5143\u7D20\u66B4\u9732 "),
       vue.createElementVNode("view", {
@@ -2324,8 +2324,8 @@ This will fail in production.`);
       vue.createCommentVNode(" </view> ")
     ], 64);
   }
-  const YxFlexibleWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-flexible-wrapperer.vue"]]);
-  const _sfc_main$q = {
+  const YxFlexibleWrapper = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-flexible-wrapperer.vue"]]);
+  const _sfc_main$r = {
     components: {
       YxToolBar,
       chatItem,
@@ -2467,7 +2467,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_chat_item = vue.resolveComponent("chat-item");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -2527,8 +2527,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
-  const _sfc_main$p = {
+  const PagesTabbarChatChat = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/chat/chat.vue"]]);
+  const _sfc_main$q = {
     name: "yx-list",
     props: {
       item: {
@@ -2550,7 +2550,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between align-center pl-2 border-bottom font-md",
       style: { "height": "100rpx" }
@@ -2583,18 +2583,18 @@ This will fail in production.`);
       })) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const YxList = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
-  const _sfc_main$o = {
+  const YxList = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list.vue"]]);
+  const _sfc_main$p = {
     name: "yx-divider",
     data() {
       return {};
     }
   };
-  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { style: { "height": "30rpx", "width": "100%", "background-color": "#f1eced" } });
   }
-  const YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
-  const _sfc_main$n = {
+  const YxDivider = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$o], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-divider.vue"]]);
+  const _sfc_main$o = {
     components: { YxList, YxDivider, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
@@ -2670,7 +2670,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
@@ -2709,8 +2709,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
-  const _sfc_main$m = {
+  const PagesTabbarFindFind = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$n], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/find.vue"]]);
+  const _sfc_main$n = {
     name: "yx-card",
     props: {
       img: [String],
@@ -2725,7 +2725,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "flex justify-between p-3",
       "hover-class": $props.isCover ? "bg-common" : ""
@@ -2747,8 +2747,8 @@ This will fail in production.`);
       ])
     ], 8, ["hover-class"]);
   }
-  const YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$l], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
-  const _sfc_main$l = {
+  const YxCard = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$m], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-card.vue"]]);
+  const _sfc_main$m = {
     components: { YxCard, YxDivider, YxList, YxCommonWrapper, YxFlexibleWrapper, YxToolBar },
     data() {
       return {
@@ -2791,6 +2791,16 @@ This will fail in production.`);
               icon: "icon-iconfontzhizuobiaozhunbduan36",
               isCell: true
             }
+          ],
+          [
+            {
+              id: 3,
+              title: "\u9000\u51FA\u767B\u5F55",
+              type: "danger",
+              icon: "",
+              event: "exit",
+              isCell: false
+            }
           ]
         ]
       };
@@ -2800,10 +2810,20 @@ This will fail in production.`);
         uni.navigateTo({
           url: "/pages/tabbar/user/UserInfo/UserInfo"
         });
+      },
+      handleEvent(data2) {
+        switch (data2.event) {
+          case "exit":
+            uni.navigateTo({
+              url: "/pages/Login/Login"
+            });
+            uni.clearStorageSync();
+            break;
+        }
       }
     }
   };
-  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_divider = vue.resolveComponent("yx-divider");
@@ -2849,6 +2869,8 @@ This will fail in production.`);
                   return vue.openBlock(), vue.createBlock(_component_yx_list, {
                     key: d.id,
                     "hover-class": "bg-common",
+                    class: vue.normalizeClass(d.type === "danger" ? "text-center text-danger " : ""),
+                    onClick: ($event) => $options.handleEvent(d),
                     title: d.title,
                     isCell: d.isCell,
                     icon: d.icon
@@ -2857,7 +2879,7 @@ This will fail in production.`);
                       vue.createTextVNode(vue.toDisplayString(d.suffix && d.suffix.content), 1)
                     ]),
                     _: 2
-                  }, 1032, ["title", "isCell", "icon"]);
+                  }, 1032, ["class", "onClick", "title", "isCell", "icon"]);
                 }), 128)),
                 vue.createVNode(_component_yx_divider)
               ]);
@@ -2869,7 +2891,7 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$k], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
+  const PagesTabbarUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$l], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/user.vue"]]);
   let groups = [];
   for (let i2 = "A".charCodeAt(0); i2 <= "Z".charCodeAt(0); i2++) {
     if (Math.floor(Math.random() * 3) === 0)
@@ -2889,7 +2911,7 @@ This will fail in production.`);
     groups.push(group);
   }
   formatAppLog("log", "at static/testData/friendList.js:26", "@group", groups);
-  const _sfc_main$k = {
+  const _sfc_main$l = {
     components: { YxToolBar, YxList, YxFlexibleWrapper },
     mounted() {
       formatAppLog("log", "at pages/tabbar/friend/friend.vue:33", "@rrrr", groups);
@@ -2941,7 +2963,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_tool_bar = vue.resolveComponent("yx-tool-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
@@ -2994,8 +3016,8 @@ This will fail in production.`);
       ])
     ]);
   }
-  const PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
-  const _sfc_main$j = {
+  const PagesTabbarFriendFriend = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$k], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/friend/friend.vue"]]);
+  const _sfc_main$k = {
     name: "yx-nav-bar",
     props: {
       title: {
@@ -3049,7 +3071,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: vue.normalizeClass(["flex justify-between align-center p-2 fixed-top", $props.isOpacity ? "bg-transparent" : "bg-white"]),
@@ -3082,8 +3104,8 @@ This will fail in production.`);
       })) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  const YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$i], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
-  const _sfc_main$i = {
+  const YxNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$j], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-nav-bar.vue"]]);
+  const _sfc_main$j = {
     name: "yx-chat-item-content",
     inject: ["validPreviewOfImage", "touchMessageOfChat", "touchLeaveMessageOfChat"],
     props: {
@@ -3140,7 +3162,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       onClick: _cache[2] || (_cache[2] = (...args) => $options.handleAudio && $options.handleAudio(...args)),
       onTouchstart: _cache[3] || (_cache[3] = (e) => $options.touchMessageOfChat($props.chatMessage, e)),
@@ -3214,8 +3236,8 @@ This will fail in production.`);
       ])) : vue.createCommentVNode("v-if", true)
     ], 32);
   }
-  const YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__scopeId", "data-v-24a89cde"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
-  const _sfc_main$h = {
+  const YxChatItemContent = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$i], ["__scopeId", "data-v-24a89cde"], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-content.vue"]]);
+  const _sfc_main$i = {
     name: "yx-chat-item-detail",
     components: {
       YxChatItemContent
@@ -3251,7 +3273,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_chat_item_content = vue.resolveComponent("yx-chat-item-content");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       $props.chatMessage.showTime && !$props.chatMessage.isDel ? (vue.openBlock(), vue.createElementBlock("text", {
@@ -3317,7 +3339,7 @@ This will fail in production.`);
       vue.createCommentVNode(" \u6D88\u606F\u5185\u5BB9\u7C7B\u578B(\u6587\u672C\uFF0C\u8BED\u97F3\uFF0C\u56FE\u7247\uFF0C\u89C6\u9891) ")
     ]);
   }
-  const YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$g], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
+  const YxChatItemDetail = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$h], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-item-detail.vue"]]);
   var isIos;
   isIos = plus.os.name == "iOS";
   function gotoAppPermissionSetting() {
@@ -3342,7 +3364,7 @@ This will fail in production.`);
       mainActivity.startActivity(intent);
     }
   }
-  const _sfc_main$g = {
+  const _sfc_main$h = {
     name: "yx-chat-detail-input",
     emits: ["syn", "addMessage", "activeUtil", "hide"],
     props: {},
@@ -3650,7 +3672,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: "fixed-bottom transition-ease-fast-plus bg-white-four-deep flex justify-between align-center p-1",
@@ -3733,7 +3755,7 @@ This will fail in production.`);
       ])) : vue.createCommentVNode("v-if", true)
     ], 64);
   }
-  const YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
+  const YxChatDetailInput = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$g], ["__file", "D:/aLearning/project/uniapp-chat-project/components/chat/yx-chat-detail-input.vue"]]);
   const chatMesssage = [
     {
       id: "a1",
@@ -3915,7 +3937,7 @@ This will fail in production.`);
     };
     data.push(obj);
   }
-  const _sfc_main$f = {
+  const _sfc_main$g = {
     components: {
       YxNavBar,
       YxChatItemDetail,
@@ -4187,7 +4209,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_chat_item_detail = vue.resolveComponent("yx-chat-item-detail");
     const _component_yx_chat_detail_input = vue.resolveComponent("yx-chat-detail-input");
@@ -4323,8 +4345,8 @@ This will fail in production.`);
       })
     ], 2112);
   }
-  const PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
-  const _sfc_main$e = {
+  const PagesChatDetailChatDetail = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$f], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-detail.vue"]]);
+  const _sfc_main$f = {
     name: "yx-list-compo",
     props: {
       listData: [Object]
@@ -4342,7 +4364,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_list = vue.resolveComponent("yx-list");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.listData, (list) => {
@@ -4375,8 +4397,8 @@ This will fail in production.`);
       }), 256))
     ]);
   }
-  const YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list-compo.vue"]]);
-  const _sfc_main$d = {
+  const YxListCompo = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$e], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-list-compo.vue"]]);
+  const _sfc_main$e = {
     onLoad(query) {
       formatAppLog("log", "at pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue:55", "query", query);
       this.title = query.title;
@@ -4490,7 +4512,7 @@ This will fail in production.`);
       ...mapState(useDeviceStore, ["fixedTop"])
     }
   };
-  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -4571,8 +4593,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
-  const _sfc_main$c = {
+  const PagesChatDetailChatAboutGroupSettingChatAboutGroupSetting = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$d], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/chat-detail/chat-about-group-setting/chat-about-group-setting.vue"]]);
+  const _sfc_main$d = {
     onLoad(query) {
       formatAppLog("log", "at pages/UserInfo/UserInfo.vue:42", "query", query);
       this.targetId = query.id;
@@ -4656,7 +4678,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_list = vue.resolveComponent("yx-list");
@@ -4738,8 +4760,8 @@ This will fail in production.`);
       })
     ]);
   }
-  const PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserInfo.vue"]]);
-  const _sfc_main$b = {
+  const PagesUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$c], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserInfo.vue"]]);
+  const _sfc_main$c = {
     onLoad(query) {
     },
     components: {
@@ -4821,7 +4843,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -4866,8 +4888,8 @@ This will fail in production.`);
       })
     ]);
   }
-  const PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
-  const _sfc_main$a = {
+  const PagesUserInfoUserCustomSettingUserCustomSetting = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserCustomSetting.vue"]]);
+  const _sfc_main$b = {
     components: {
       YxNavBar,
       YxFlexibleWrapper
@@ -4883,7 +4905,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_YxFlexibleWrapper = vue.resolveComponent("YxFlexibleWrapper");
     return vue.openBlock(), vue.createElementBlock("view", { class: "bg-white" }, [
@@ -4942,8 +4964,8 @@ This will fail in production.`);
       })
     ]);
   }
-  const PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
-  const _sfc_main$9 = {
+  const PagesUserInfoUserCustomSettingSetUserTagSetUserTag = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/SetUserTag.vue"]]);
+  const _sfc_main$a = {
     components: {
       YxNavBar,
       YxCommonWrapper
@@ -5010,7 +5032,7 @@ This will fail in production.`);
     },
     computed: {}
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_common_wrapper = vue.resolveComponent("yx-common-wrapper");
     return vue.openBlock(), vue.createBlock(_component_yx_common_wrapper, { class: "position-relative" }, {
@@ -5092,8 +5114,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue"]]);
-  const _sfc_main$8 = {
+  const PagesUserInfoUserCustomSettingSetUserTagTagPickTagPick = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/SetUserTag/TagPick/TagPick.vue"]]);
+  const _sfc_main$9 = {
     onLoad(query) {
     },
     components: {
@@ -5175,7 +5197,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -5221,8 +5243,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesUserInfoUserCustomSettingUserAuthUserAuth = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue"]]);
-  const _sfc_main$7 = {
+  const PagesUserInfoUserCustomSettingUserAuthUserAuth = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/UserAuth/UserAuth.vue"]]);
+  const _sfc_main$8 = {
     onLoad(query) {
     },
     components: {
@@ -5344,7 +5366,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_yx_popup = vue.resolveComponent("yx-popup");
@@ -5582,8 +5604,8 @@ This will fail in production.`);
       _: 1
     });
   }
-  const PagesUserInfoUserCustomSettingShareFriendShareFriend = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue"]]);
-  const _sfc_main$6 = {
+  const PagesUserInfoUserCustomSettingShareFriendShareFriend = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/ShareFriend/ShareFriend.vue"]]);
+  const _sfc_main$7 = {
     onLoad(query) {
     },
     components: {
@@ -5703,7 +5725,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
     return vue.openBlock(), vue.createElementBlock("view", null, [
@@ -5799,7 +5821,7 @@ This will fail in production.`);
       })
     ]);
   }
-  const PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
+  const PagesUserInfoUserCustomSettingFriendCircleFriendCircle = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/UserInfo/UserCustomSetting/FriendCircle/FriendCircle.vue"]]);
   const friendDynamicList = [
     {
       id: Math.random() * 2e3,
@@ -5902,7 +5924,7 @@ This will fail in production.`);
     }
     return "\u4F20\u5165\u7684\u65F6\u95F4\u4E0D\u6B63\u786E";
   }
-  const _sfc_main$5 = {
+  const _sfc_main$6 = {
     components: { YxNavBar, YxFlexibleWrapper, YxCard },
     mounted() {
       this.friendDynamicList = this.friendDynamicList.map((dynamic) => {
@@ -5993,7 +6015,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_card = vue.resolveComponent("yx-card");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -6174,8 +6196,8 @@ This will fail in production.`);
       })
     ]);
   }
-  const PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
-  const _sfc_main$4 = {
+  const PagesTabbarFindFriendCIrcleFriendCIrcle = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/FriendCIrcle.vue"]]);
+  const _sfc_main$5 = {
     name: "yx-picture-select",
     inject: ["setShow", "getPicture"],
     props: {
@@ -6229,7 +6251,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_YxPopup = vue.resolveComponent("YxPopup");
     return vue.openBlock(), vue.createBlock(_component_YxPopup, {
       isBottom: "",
@@ -6260,8 +6282,8 @@ This will fail in production.`);
       _: 1
     }, 8, ["show"]);
   }
-  const YxPictureSelect = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-picture-select.vue"]]);
-  const _sfc_main$3 = {
+  const YxPictureSelect = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-picture-select.vue"]]);
+  const _sfc_main$4 = {
     components: {
       YxNavBar,
       YxFlexibleWrapper,
@@ -6380,7 +6402,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_YxPictureSelect = vue.resolveComponent("YxPictureSelect");
     const _component_yx_flexible_wrapper = vue.resolveComponent("yx-flexible-wrapper");
@@ -6468,8 +6490,8 @@ This will fail in production.`);
       })
     ], 64);
   }
-  const PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue"]]);
-  const _sfc_main$2 = {
+  const PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic.vue"]]);
+  const _sfc_main$3 = {
     name: "yx-dialog",
     emits: ["hide"],
     props: ["show"],
@@ -6477,7 +6499,7 @@ This will fail in production.`);
       return {};
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
       vue.createElementVNode("view", {
         class: "position-absolute fill-screen rounded bg-dark zTop",
@@ -6493,8 +6515,8 @@ This will fail in production.`);
       }, null, 4)
     ], 64);
   }
-  const YxDialog = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-dialog.vue"]]);
-  const _sfc_main$1 = {
+  const YxDialog = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/aLearning/project/uniapp-chat-project/components/yx-dialog.vue"]]);
+  const _sfc_main$2 = {
     components: {
       YxNavBar,
       YxFlexibleWrapper,
@@ -6545,23 +6567,27 @@ This will fail in production.`);
         avatarId: Math.random() * 2e3,
         name: "Zz",
         nameId: Math.random() * 2e3,
-        dialogShow: true
+        dialogShow: false
       };
     },
     methods: {
       setShow(flag) {
-        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:98", "\u6539\u53D8\u72B6\u6001\u4E3A");
         this.show = flag;
       },
+      setDialogShow(flag) {
+        this.dialogShow = flag;
+      },
       rename() {
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:105", "rename");
         const self2 = this;
         const target2 = this.list.find((obj) => obj.id == self2.nameId);
         target2.data = this.name;
+        this.dialogShow = false;
       },
       getPicture(path) {
-        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:107", "\u8BBE\u7F6E\u56FE\u7247\u4E3A");
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:112", "\u8BBE\u7F6E\u56FE\u7247\u4E3A");
         this.avatar = path;
-        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:109", "avat", this.avatar);
+        formatAppLog("log", "at pages/tabbar/user/UserInfo/UserInfo.vue:114", "avat", this.avatar);
       },
       handleClick(data2) {
         switch (data2.event) {
@@ -6583,7 +6609,7 @@ This will fail in production.`);
       }
     }
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_yx_nav_bar = vue.resolveComponent("yx-nav-bar");
     const _component_yx_list = vue.resolveComponent("yx-list");
     const _component_YxPictureSelect = vue.resolveComponent("YxPictureSelect");
@@ -6648,10 +6674,10 @@ This will fail in production.`);
                   style: { "margin-top": "16vh" }
                 }, [
                   vue.createElementVNode("view", {
-                    onClick: _cache[1] || (_cache[1] = ($event) => $options.setShow(false))
+                    onClick: _cache[1] || (_cache[1] = vue.withModifiers(($event) => $options.setDialogShow(false), ["stop"]))
                   }, "\u53D6\u6D88"),
                   vue.createElementVNode("view", {
-                    onClick: _cache[2] || (_cache[2] = (...args) => $options.rename && $options.rename(...args))
+                    onClick: _cache[2] || (_cache[2] = vue.withModifiers((...args) => $options.rename && $options.rename(...args), ["stop"]))
                   }, "\u786E\u8BA4")
                 ])
               ])
@@ -6663,7 +6689,74 @@ This will fail in production.`);
       })
     ], 64);
   }
-  const PagesTabbarUserUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/UserInfo/UserInfo.vue"]]);
+  const PagesTabbarUserUserInfoUserInfo = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/tabbar/user/UserInfo/UserInfo.vue"]]);
+  const _sfc_main$1 = {
+    data() {
+      return {
+        userInfo: {
+          user: "",
+          password: ""
+        }
+      };
+    },
+    methods: {
+      toLogin() {
+        const verify = {
+          user: "user",
+          password: "123456a"
+        };
+        const lock = JSON.stringify(verify);
+        const key = JSON.stringify(this.userInfo);
+        formatAppLog("log", "at pages/Login/Login.vue:35", lock);
+        formatAppLog("log", "at pages/Login/Login.vue:36", key);
+        formatAppLog("log", "at pages/Login/Login.vue:37", key == lock);
+        if (lock == key) {
+          uni.setStorageSync("token", key);
+          uni.switchTab({
+            url: "/pages/tabbar/chat/chat"
+          });
+        }
+      }
+    }
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", {
+      class: "ele-center",
+      style: { "width": "100vw", "height": "80vh" }
+    }, [
+      vue.createElementVNode("view", {
+        id: "login-wrapper",
+        class: "p-2 font-lg bg-common"
+      }, [
+        vue.createElementVNode("view", { class: "text-center mt-4" }, "title"),
+        vue.createElementVNode("view", { class: "py-4" }, [
+          vue.withDirectives(vue.createElementVNode("textarea", {
+            maxlength: "13",
+            class: "bg-white p-2 my-2",
+            style: { "max-height": "60rpx", "width": "60vw" },
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.userInfo.user = $event),
+            placeholder: "\u8BF7\u8F93\u5165\u7528\u6237\u540D"
+          }, null, 512), [
+            [vue.vModelText, $data.userInfo.user]
+          ]),
+          vue.withDirectives(vue.createElementVNode("textarea", {
+            maxlength: "13",
+            class: "bg-white p-2 my-2",
+            style: { "max-height": "60rpx", "width": "60vw" },
+            placeholder: "\u8BF7\u8F93\u5165\u5BC6\u7801",
+            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.userInfo.password = $event)
+          }, null, 512), [
+            [vue.vModelText, $data.userInfo.password]
+          ])
+        ]),
+        vue.createElementVNode("view", {
+          class: "py-2 main-bg-color text-white text-center font-md",
+          onClick: _cache[2] || (_cache[2] = (...args) => $options.toLogin && $options.toLogin(...args))
+        }, "\u767B\u5F55")
+      ])
+    ]);
+  }
+  const PagesLoginLogin = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/aLearning/project/uniapp-chat-project/pages/Login/Login.vue"]]);
   __definePage("pages/tabbar/chat/chat", PagesTabbarChatChat);
   __definePage("pages/tabbar/find/find", PagesTabbarFindFind);
   __definePage("pages/tabbar/user/user", PagesTabbarUserUser);
@@ -6680,15 +6773,27 @@ This will fail in production.`);
   __definePage("pages/tabbar/find/FriendCIrcle/FriendCIrcle", PagesTabbarFindFriendCIrcleFriendCIrcle);
   __definePage("pages/tabbar/find/FriendCIrcle/PublishDynamic/PublishDynamic", PagesTabbarFindFriendCIrclePublishDynamicPublishDynamic);
   __definePage("pages/tabbar/user/UserInfo/UserInfo", PagesTabbarUserUserInfoUserInfo);
+  __definePage("pages/Login/Login", PagesLoginLogin);
   const _sfc_main = {
     onLaunch: function() {
       formatAppLog("log", "at App.vue:6", "App Launch");
+      const token = uni.getStorageSync("token");
+      formatAppLog("log", "at App.vue:9", "@token", token);
+      if (!token) {
+        uni.navigateTo({
+          url: "/pages/Login/Login"
+        });
+      } else {
+        uni.switchTab({
+          url: "/pages/tabbar/chat/chat"
+        });
+      }
     },
     onShow: function() {
-      formatAppLog("log", "at App.vue:9", "App Show");
+      formatAppLog("log", "at App.vue:21", "App Show");
     },
     onHide: function() {
-      formatAppLog("log", "at App.vue:12", "App Hide");
+      formatAppLog("log", "at App.vue:24", "App Hide");
     },
     mounted() {
       const { statusBarHeight, brand } = uni.getSystemInfoSync();
@@ -6696,7 +6801,7 @@ This will fail in production.`);
       if (brand) {
         this.device = "android";
       }
-      formatAppLog("log", "at App.vue:26", "device", uni.getSystemInfoSync());
+      formatAppLog("log", "at App.vue:38", "device", uni.getSystemInfoSync());
     },
     computed: {
       ...mapWritableState(useDeviceStore, ["statusBarHeight"]),

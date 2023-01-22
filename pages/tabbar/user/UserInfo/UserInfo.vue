@@ -23,11 +23,12 @@
 					<view class="text-center">设置昵称</view>
 						<!-- <textarea maxlength="15" class="bg-white" style="margin-top: 100rpx;"
 						 v-model="name" auto-height placeholder="输入你喜欢的昵称吧"></textarea> -->
-						 <textarea maxlength="15" class="bg-white main-text-color p-2 ml-5" auto-focus  auto-height style="margin-top: 100rpx;min-height: 40rpx;width:400rpx"
+					 <textarea maxlength="15" class="bg-white main-text-color p-2 ml-5" auto-focus  auto-height 
+					 style="margin-top: 100rpx;min-height: 40rpx;width:400rpx"
 						  v-model="name"  placeholder="输入你喜欢的昵称吧"></textarea>
 					<view class="grid grid-2 grid-center-by-el" style="margin-top: 16vh;"  >
-						<view @click="setShow(false)">取消</view>
-						<view @click="rename">确认</view>
+						<view @click.stop="setDialogShow(false)">取消</view>
+						<view @click.stop="rename">确认</view>
 					</view>
 				</view>
 			</template>
@@ -90,18 +91,22 @@
 				avatarId: Math.random()*2000,
 				name:'Zz',
 				nameId: Math.random()*2000,
-				dialogShow: true
+				dialogShow: false
 			}
 		},
 		methods: {
 			setShow(flag){
-				console.log('改变状态为')
 				this.show = flag
 			},
+			setDialogShow(flag){
+				this.dialogShow = flag
+			},
 			rename(){
+				console.log('rename')
 				const self = this
 				const target = this.list.find(obj=>obj.id== self.nameId)
 				target.data = this.name
+				this.dialogShow= false
 			},
 			getPicture(path){
 				console.log('设置图片为')

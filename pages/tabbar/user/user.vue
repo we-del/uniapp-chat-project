@@ -17,6 +17,7 @@
 			<yx-divider></yx-divider>
 			<view v-for="(group,i) in data" :key="i" class="bg-white">
 				<yx-list v-for="d in group" :key="d.id" hover-class="bg-common"
+				:class="d.type === 'danger'? 'text-center text-danger ':''" @click="handleEvent(d)"
 				:title="d.title" :isCell="d.isCell" :icon="d.icon">
 				 <!-- 做成属性传入更好，插槽无法独立展示数据(需要组件内部做判断) -->
 				 <template #suffix>
@@ -81,7 +82,19 @@
 								icon:'icon-iconfontzhizuobiaozhunbduan36',
 								isCell:true
 							},
+							
+							
 						],
+						[
+							{
+								id:3,
+								title:'退出登录',
+								type:'danger',
+								icon:'',
+								event:'exit',
+								isCell:false
+							}
+						]
 					]
 				
 			}
@@ -91,6 +104,18 @@
 				uni.navigateTo({
 					url:'/pages/tabbar/user/UserInfo/UserInfo'
 				})
+			},
+			handleEvent(data){
+				switch (data.event){
+					case 'exit':
+						uni.navigateTo({
+							url:'/pages/Login/Login'
+						})
+						uni.clearStorageSync()
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	}

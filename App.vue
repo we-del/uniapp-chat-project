@@ -4,6 +4,18 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			// 在此对用户鉴权，通过权限去判断用户可访问的数据
+			const token = uni.getStorageSync('token')
+			console.log('@token',token)
+			if(!token){ // 没有登陆过
+				uni.navigateTo({
+					url:'/pages/Login/Login'
+				})
+			}else{
+				uni.switchTab({
+					url:'/pages/tabbar/chat/chat'
+				})
+			}
 		},
 		onShow: function() {
 			console.log('App Show')
