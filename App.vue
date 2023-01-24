@@ -2,6 +2,9 @@
 	import {mapActions,mapWritableState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
 	export default {
+		onReady(){
+			console.log('app render')
+		},
 		onLaunch: function() {
 			console.log('App Launch')
 			// 在此对用户鉴权，通过权限去判断用户可访问的数据
