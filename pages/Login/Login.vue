@@ -30,7 +30,10 @@
 				userAccount:[{
 						user: 'user',
 						password:'123456a'
-					}]
+					},{
+						user: 'admin',
+						password:'admin'
+					},]
 			}
 		},
 		methods: {
