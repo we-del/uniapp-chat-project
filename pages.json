@@ -94,7 +94,7 @@
             
         }
         ,{
-            "path" : "pages/Login/Login",
+            "path" : "pages/login/login",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",

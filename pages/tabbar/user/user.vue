@@ -38,6 +38,8 @@
 	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	import YxToolBar from '@/components/yx-tool-bar.vue'
+	import {loginout} from '@/api/user.js'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		components:{YxCard,YxDivider,YxList,YxCommonWrapper,YxFlexibleWrapper,YxToolBar},
 		data() {
@@ -105,12 +107,15 @@
 					url:'/pages/tabbar/user/UserInfo/UserInfo'
 				})
 			},
-			handleEvent(data){
+			async handleEvent(data){
 				switch (data.event){
 					case 'exit':
 						uni.navigateTo({
-							url:'/pages/Login/Login'
+							url:'/pages/login/login'
 						})
+						await loginout()
+						sessionStorage.clearStorage()
+						
 						uni.clearStorageSync()
 						break;
 					default:

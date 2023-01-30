@@ -4,7 +4,7 @@
 			<view class=" text-center mt-4">title</view>
 			<view class="py-4">
 				<textarea maxlength="13" class="bg-white p-2 my-2" style="max-height: 60rpx;width:60vw"
-				 v-model="userInfo.user" placeholder="请输入用户名"></textarea>
+				 v-model="userInfo.username" placeholder="请输入用户名"></textarea>
 				<textarea maxlength="13" class="bg-white p-2 my-2" style="max-height: 60rpx;width:60vw"
 				 placeholder="请输入密码" v-model="userInfo.password"></textarea>
 				<textarea maxlength="13" v-if="isRegister" class="bg-white p-2 my-2" style="max-height: 60rpx;width:60vw"
@@ -17,12 +17,14 @@
 </template>
 
 <script>
+	import {login,register} from '@/api/user.js'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		data() {
 			return {
 				userInfo:{
 					// user:user; password:'123456a'
-					user:'',
+					username:'',
 					password:'',
 					repeatPassword:''
 				},
@@ -37,17 +39,18 @@
 			}
 		},
 		methods: {
-			toLogin(){
+			async toLogin(){
 				if(this.isRegister){
 					// 账号验证 
 					// 密码验证
-					if(this.userInfo.user && this.userInfo.password == this.userInfo.repeatPassword){
+					if(this.userInfo.username && this.userInfo.password == this.userInfo.repeatPassword){
+						await register(this.userInfo)
 						uni.showToast({
 							title:'注册成功',
 							icon:'success'
 						})
 						this.isRegister = false
-						this.userAccount.push({user:this.userInfo.user,password:this.userInfo.password})
+						// this.userAccount.push({user:this.userInfo.username,password:this.userInfo.password})
 						this.clearInput()
 					}else{
 						uni.showToast({
@@ -56,26 +59,20 @@
 						})
 					}
 				} else{
-					let exist = 0 
-					const key = JSON.stringify({user:this.userInfo.user,password:this.userInfo.password})
-					
-					exist = this.userAccount.findIndex(account=> {
-						const data = JSON.stringify(account)
-						if(key == data) return true
-						return false
-					})
-					if(exist !=-1){
-						uni.setStorageSync('token',key)
-						uni.switchTab({
-							url:'/pages/tabbar/chat/chat'
-						})
-						this.clearInput()
-					}else{
-						uni.showToast({
-							title:'账号或密码错误',
-							icon:'error'
-						})
-					}	
+					console.log('开始登录')
+						const res  = await login({username:this.userInfo.username,password:this.userInfo.password})
+						if(typeof res === 'string'){
+							uni.showToast({
+								title:res,
+								icon:'none'
+							})
+						}else{
+							sessionStorage.setStorage('user',res)
+							sessionStorage.setStorage('token',res.token)
+							uni.switchTab({
+								url:'/pages/tabbar/chat/chat'
+							})
+						}
 				}				
 			},
 			goRegister(){
@@ -85,7 +82,7 @@
 			},
 			clearInput(){
 				this.userInfo.password = ''
-				this.userInfo.user = ''
+				this.userInfo.username = ''
 				this.userInfo.repeatPassword = ''
 			}
 		}

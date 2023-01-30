@@ -1,6 +1,7 @@
 <script>
 	import {mapActions,mapWritableState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		onReady(){
 			console.log('app render')
@@ -9,10 +10,11 @@
 			console.log('App Launch')
 			// 在此对用户鉴权，通过权限去判断用户可访问的数据
 			const token = uni.getStorageSync('token')
+			if(!token) sessionStorage.getStorage('token')
 			console.log('@token',token)
 			if(!token){ // 没有登陆过
 				uni.navigateTo({
-					url:'/pages/Login/Login'
+					url:'/pages/login/login'
 				})
 			}else{
 				uni.switchTab({
