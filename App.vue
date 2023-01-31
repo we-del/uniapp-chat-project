@@ -9,8 +9,8 @@
 		onLaunch: function() {
 			console.log('App Launch')
 			// 在此对用户鉴权，通过权限去判断用户可访问的数据
-			const token = uni.getStorageSync('token')
-			if(!token) sessionStorage.getStorage('token')
+			let token = uni.getStorageSync('token')
+			if(!token) token = sessionStorage.getStorage('token')
 			console.log('@token',token)
 			if(!token){ // 没有登陆过
 				uni.navigateTo({

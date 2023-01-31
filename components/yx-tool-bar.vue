@@ -3,7 +3,7 @@
 	<view class="fixed-top flex justify-between p-2 align-center pr-4 " :style="`top:${fixedTop}rpx`" style="background-color: #efefeb;">
 		<view class="font-lg">{{title}}</view>
 		<view>
-			<text class="iconfont icon-search font-lg pr-5 font-lg" ></text>
+			<text class="iconfont icon-search font-lg pr-5 font-lg" @click="goSearch"></text>
 			<text class="iconfont icon-add font-lg " @click="handleClick"> </text>
 		</view>
 	</view>
@@ -45,6 +45,11 @@
 			};
 		},
 		methods:{
+			goSearch(){
+				uni.navigateTo({
+					url:'/pages/search-user/search-user'
+				})
+			},
 			// 写死tool-bar的数据()
 			initPopup(){
 				const device = uni.getSystemInfoSync()

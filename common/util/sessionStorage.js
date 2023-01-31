@@ -8,9 +8,13 @@ export default {
         } else {
             data = uni.getStorageSync(key)
         }
-		if(typeof JSON.parse(data) === 'object'){
-			data = typeof JSON.parse(data)
-		}
+		try{
+			// 如果是可以正常结构则说明是一个对象，如果不结构说明是一个字符串
+			if(typeof JSON.parse(data) === 'object'){
+				data =  JSON.parse(data)
+			}
+		}catch(e){} // 捕获异常
+		console.log('返回的token',data)
         return data
     },
     // 设置存储

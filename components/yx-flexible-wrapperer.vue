@@ -3,7 +3,7 @@
 	<view class="zTop bg-common  position-fixed" :style="`height:${fixedTop}rpx;top:0;width:100%`"></view>
 	<!-- <view class="fill-screen overflow-hidden "> -->
 	<!-- scroll-top 用于初始化加载一次滚动 -->
-		<scroll-view  @scrolltoupper="scrollToTop" @scroll="scrolling" @scrolltolower="scrollToBottom" scroll-y="true" :scroll-top="scrollTop" :scrollinto-view="scrollIntoView"
+	<scroll-view  @scrolltoupper="scrollToTop" @scroll="scrolling" @scrolltolower="scrollToBottom" scroll-y="true" :scroll-top="scrollTop" :scrollinto-view="scrollIntoView"
 			class="position-fixed font-md "  :style="contentShowBorder">
 			
 		<!-- 内容区域 -->
@@ -34,7 +34,7 @@
 			
 			<!-- 底部占位 -->
 			<!-- <view  class="bg-transparent" :style="bottomBox"></view> -->
-		</scroll-view>
+	</scroll-view>
 	<!-- </view> -->
 </template>
 

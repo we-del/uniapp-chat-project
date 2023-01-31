@@ -1,5 +1,5 @@
 <template>
-	<view class="flex justify-between align-center  pl-2 border-bottom font-md" style="height:100rpx">
+	<view class="flex justify-between align-center  pl-2  font-md" :class="havingBottomBorder ? 'border-bottom':'' "  style="height:100rpx">
 		<view >
 			<slot name="prefix"></slot>
 		</view>
@@ -31,6 +31,10 @@
 			title:[String],
 			img:[String],
 			icon:[String],
+			havingBottomBorder:{
+				type:Boolean,
+				default:true
+			},
 			isCell:{
 				type:Boolean,
 				default: false
