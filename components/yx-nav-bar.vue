@@ -10,7 +10,7 @@
 	</view>
 	
 	<!-- 遮挡填充 -->
-	<view v-if="requireOccupy" style="padding-top: 90rpx;"></view>
+	<!-- <view v-if="requireOccupy" style="padding-top: 90rpx;"></view> -->
 </template>
 
 <script>
@@ -24,7 +24,7 @@
 			},
 			existMore:{
 				type:Boolean,
-				default:true
+				default:false
 			},
 			requireOccupy:{
 				type:Boolean,

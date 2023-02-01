@@ -5,7 +5,7 @@
 		<scroll-view scroll-y="true" class="position-fixed font-sm"  :style="`top:${fixedTop+100}rpx;height:88vh`" :scroll-into-view="`hash-abc-1-${sliderTarget}`"  >
 
 			<block v-for="item in base_com" :key="item.id">
-				<yx-list @click="toast" :img="item.img" :title="item.title"></yx-list>  
+				<yx-list @click="handleEvent(item)" :img="item.img" :title="item.title"></yx-list>  
 			</block>
 			<view v-for="(friends,i) in friendList"  class="font-md " :key="i" >
 				<view class="bg-common pl-2" style="width:100vw" :id="`hash-abc-1-${friends.group}`">{{friends.group}}</view>
@@ -41,6 +41,12 @@
 			return {
 				base_com:[
 					{
+							id:3,
+							img:'/static/images/mail/friend.png',
+							title:'新的朋友',
+							event:'friend'
+					},
+					{
 							id:1,
 							img:'/static/images/mail/group.png',
 							title:'群聊'
@@ -49,11 +55,6 @@
 							id:2,
 							img:'/static/images/mail/tag.png',
 							title:'标签'
-					},
-					{
-							id:3,
-							img:'/static/images/mail/friend.png',
-							title:'新增朋友'
 					},
 				],
 				friendList:[],
@@ -75,8 +76,20 @@
 					this.slsiderTarget = ''
 				}
 			},
-			toast(){
-				console.log('click')
+			handleEvent(data){
+				switch (data.event){
+					case 'friend':
+					this.routerGo('/pages/tabbar/friend/FriendApplyList/FriendApplyList')
+					
+						break;
+					default:
+						break;
+				}
+			},
+			routerGo(path){
+				uni.navigateTo({
+					url:path
+				})
 			}
 		},
 		computed:{

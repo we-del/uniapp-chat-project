@@ -1,3 +1,4 @@
+import sessionStorage from '@/common/util/sessionStorage.js'
 export default {
     // 全局配置
     common:{
@@ -24,6 +25,11 @@ export default {
         // token验证
         if ( options.token) {
             let token = uni.getStorageSync('token')
+			
+			// 测试环境正在sessionStorag读取数据
+			if(!token){
+				token = sessionStorage.getStorage('token')
+			}
             // 二次验证
             if (!token) {
                 uni.showToast({ title: '请先登录', icon: 'none' });
@@ -33,7 +39,7 @@ export default {
                 });
             }
             // 往header头中添加token
-            options.header.token = token
+            options.header.Authorization = token
         }
 
         // 请求

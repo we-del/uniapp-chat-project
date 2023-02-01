@@ -14,7 +14,6 @@ export default {
 				data =  JSON.parse(data)
 			}
 		}catch(e){} // 捕获异常
-		console.log('返回的token',data)
         return data
     },
     // 设置存储

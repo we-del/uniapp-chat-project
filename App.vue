@@ -11,7 +11,6 @@
 			// 在此对用户鉴权，通过权限去判断用户可访问的数据
 			let token = uni.getStorageSync('token')
 			if(!token) token = sessionStorage.getStorage('token')
-			console.log('@token',token)
 			if(!token){ // 没有登陆过
 				uni.navigateTo({
 					url:'/pages/login/login'

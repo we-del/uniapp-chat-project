@@ -1,7 +1,7 @@
 <template>
 
 	<yx-common-wrapper>
-		<yx-tool-bar title=""></yx-tool-bar>
+		<!-- <yx-tool-bar title=""></yx-tool-bar> -->
 		<yx-flexible-wrapper>
 			<view class="position-relative" style="width: 100%;height:150rpx;background-color: white;">
 				<text class="iconfont icon-help position-absolute" style="right:20rpx;top:30rpx"></text>
