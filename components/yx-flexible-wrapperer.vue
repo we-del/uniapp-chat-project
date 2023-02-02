@@ -3,7 +3,8 @@
 	<view class="zTop bg-common  position-fixed" :style="`height:${fixedTop}rpx;top:0;width:100%`"></view>
 	<!-- <view class="fill-screen overflow-hidden "> -->
 	<!-- scroll-top 用于初始化加载一次滚动 -->
-	<scroll-view  @scrolltoupper="scrollToTop" @scroll="scrolling" @scrolltolower="scrollToBottom" scroll-y="true" :scroll-top="scrollTop" :scrollinto-view="scrollIntoView"
+	<scroll-view  @scrolltoupper="scrollToTop" @scroll="scrolling" @scrolltolower="scrollToBottom" scroll-y="true" 
+	:scroll-top="scrollTop" :scrollinto-view="scrollIntoView"
 			class="position-fixed font-md "  :style="contentShowBorder">
 			
 		<!-- 内容区域 -->
@@ -58,7 +59,7 @@
 			},
 			scrollTop:{
 				type:Number,
-				default:1
+				default:4
 			}
 		},
 		data() {
@@ -75,65 +76,90 @@
 				// 内容不足以开启滑动时，两边内容都可以进行滑动
 				contentLack:true,
 				// 内容缺失时进行上拉
-				contentLackToTop:false
+				contentLackToTop:false,
+				// 记录首屏加载，如果是首屏加载则双重判断，否则反之
+				isFirstLoad : true
+				// 滑动定时器，定时器个数解决滑动bug
+				// timer:null
 			};
 		},
 		methods:{
 			scrolling(e){
-				if(!this.havingContentScrolling) return
-				this.contentLack = false
-				this.reachBorder = false
-				this.isReachingBorder  = false
-				this.scrollDirection = ''
-				this.$emit('scroll')
+				// 使用执行任务优先级达到限制效果
+				// if(this.timer){
+				// 	clearTimeout(this.timer)
+				// }
+				// this.timer = setTimeout(()=>{
+					// 用于首屏加载判断内容是否溢出可视范围，溢出了则会执行此
+					if(this.isFirstLoad ){
+						this.isFirstLoad = false
+						this.contentLack = false
+					}
+					if(!this.havingContentScrolling ||this.isFirstLoad && this.scrollDirection ) return
+					console.log('滑动中',this.havingContentScrolling)
+					this.contentLack = false
+					this.reachBorder = false
+					this.isReachingBorder  = false
+					this.scrollDirection = ''
+					this.isFirstLoad = false
+				// },10)
+				// this.$emit('scroll')
 			},
 			scrollToTop(e){
-				console.log('滚动到顶部',e)
+				
+				this.havingContentScrolling = false
+				console.log('滚动到顶部',this.havingContentScrolling)
 				this.reachBorder = true
 				this.scrollDirection = e.detail.direction
-				this.havingContentScrolling = false
 			},
 			scrollToBottom(e){
+				
+				this.havingContentScrolling = false
 				console.log('滚动到底部',e)
 				this.reachBorder = true
 				this.scrollDirection = e.detail.direction
-				this.havingContentScrolling = false
 			},
 			handleTouchStart(e){
-				if(this.reachBorder){
+				// 每次点击的时候的值都应该记录，避免出现NaN | undefined情况
+				// if(this.reachBorder){
 					let x = e.changedTouches[0].clientX
 					let y =  e.changedTouches[0].clientY
 					this.movingPosition = {x,y}
 					// 触摸边界，开始变化
 					// this.reachBorder = true
 					console.log('开始触摸',e)
-				}
+				// }
 			},
 			handleTouchMove(e){
 				// console.log('moving')
 				if(this.reachBorder){
 					let x = e.changedTouches[0].clientX
 					let y =  e.changedTouches[0].clientY
+					// 无法触顶或触底原因：在触摸顶部时，要记录第一次touch的值
 					let distance
-					// 再次需要判断是否为正确的移动方向，如果是则进行整体移动，如触顶时，允许向下移动，触底时允许向上移动，否则触发滚动
+					// 此属性用于判断当前内容是否溢出了可视范围，如果溢出了则进行上下拉
 					if(this.contentLack){
 						distance = this.movingPosition.y - y 
 						this.contentLackToTop = distance > 0
 						this.movingDistance =  distance
 						this.isReachingBorder = true
-					}
-					else if(this.scrollDirection === 'top'){
+						console.log('内容缺失')
+					}else if(this.scrollDirection === 'top'){
 						// 允许下拉(origin-y < 0)
 						distance = this.movingPosition.y - y 
 						if(distance< 0){
 							// 下拉
 							this.movingDistance = distance
 							this.isReachingBorder = true
-						}else{
+							console.log('成功的下拉')
+						}else if(distance){
 							// 正常的滚动
 							this.havingContentScrolling =true
 							this.reachBorder = false
 							this.isReachingBorder = false
+							this.scrollDirection = ''
+							this.isFirstLoad = false
+							console.log('下拉结束，开始滑动')
 						}
 					}else if(this.scrollDirection === 'bottom'){
 						// 允许上拉(origin-y > 0)
@@ -143,14 +169,21 @@
 							this.movingDistance = distance
 							console.log(this.movingDistance)
 							this.isReachingBorder = true
-						}else{
+							console.log('成功的上拉')
+						}else if(distance){
 							// 正常的滚动
 							this.havingContentScrolling =true
 							this.reachBorder = false
 							this.isReachingBorder = false
+							this.scrollDirection = ''
+							
+							this.isFirstLoad = false
+							console.log('上拉结束，开始滑动')
 						}
 						
 					}
+					
+					console.log('distance',distance)
 				}
 			},
 			handleTouchEnd(e){
@@ -165,6 +198,8 @@
 					this.reachBorder = true
 					this.isReachingBorder  = false
 					this.movingDistance = 0
+					// 重置距离
+					this.movingPosition  = {}
 				}
 			}
 		},

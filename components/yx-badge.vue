@@ -1,5 +1,6 @@
 <template>
-	<view id="badge"  class="rounded-circle bg-danger font-sm p-1 position-absolute">
+	<view id="badge" :style="!count ? 'display:none':'display:block' "  
+	class="rounded-circle bg-danger font-sm p-1 position-absolute">
 		{{count}}
 	</view>
 </template>

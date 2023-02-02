@@ -27,6 +27,8 @@
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
+	// 每天继续晚上申请好友显示
+	import {} from '@/api/friend.js'
 	export default {
 		components:{YxToolBar,YxList,YxFlexibleWrapper},
 		mounted(){

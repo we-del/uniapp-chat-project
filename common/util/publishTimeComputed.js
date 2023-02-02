@@ -25,3 +25,10 @@ export function publishTimeConvert(time){
 	
 	return '传入的时间不正确';
 }
+
+// 对比目标时间到当前时间的天数差
+export function timeToDay(time){
+	let now = dayjs();
+	let day = dayjs(now).diff(time,'day');
+	return day
+}

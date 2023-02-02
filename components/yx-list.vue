@@ -4,8 +4,9 @@
 			<slot name="prefix"></slot>
 		</view>
 		<text v-if="icon" :class="`iconfont font-md ${icon}` "></text>
-		<view v-if="img" class="rounded overflow-hidden" style="width: 75rpx;height:75rpx;">
+		<view v-if="img" class="rounded  position-relative" style="width: 75rpx;height:75rpx;">
 			<image :src="img" style="width:100%;height:100%" mode="aspectFill"></image>
+			<YxBadge style="top:0;right:-10rpx" :messageCount="count"></YxBadge>
 		</view>
 		<view class="flex-1  ml-2 ">
 		{{title}}
@@ -18,8 +19,10 @@
 </template>
 
 <script>
+	import YxBadge from '@/components/yx-badge.vue'
 	export default {
 		name:"yx-list",
+		components:{YxBadge},
 		props:{
 			item:{
 				type:Object,
@@ -38,6 +41,11 @@
 			isCell:{
 				type:Boolean,
 				default: false
+			},
+			// badge的消息个数
+			count:{
+				type:Number,
+				default:0
 			}
 		},
 		data() {

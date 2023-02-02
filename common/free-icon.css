@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3828712 */
-  src: url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.woff2?t=1674201452101') format('woff2'),
-       url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.woff?t=1674201452101') format('woff'),
-       url('https://at.alicdn.com/t/c/font_3828712_fkp9r9289vb.ttf?t=1674201452101') format('truetype');
+  src: url('https://at.alicdn.com/t/c/font_3828712_1nmfg4gd6gi.woff2?t=1675326196791') format('woff2'),
+       url('https://at.alicdn.com/t/c/font_3828712_1nmfg4gd6gi.woff?t=1675326196791') format('woff'),
+       url('https://at.alicdn.com/t/c/font_3828712_1nmfg4gd6gi.ttf?t=1675326196791') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-arrow_down_fat:before {
+  content: "\e62a";
+}
+
+.icon-jiantou_youshang:before {
+  content: "\eb0b";
 }
 
 .icon-preview:before {

@@ -1,16 +1,22 @@
 <template>
-		<yx-common-wrapper bg="white">	
+		<yx-common-wrapper bg="white" >	
 			<yx-tool-bar @clickNav="clickNav" :title="`微信(${userCount})`" isSelf></yx-tool-bar>
 			<!-- <yx-tool-bar  :title="`微信(${userCount})`"></yx-tool-bar> -->
 			<!-- 置顶聊天 -->
 			<!-- <scroll-view @scrolltolower="scrollBottom" scroll-y="true" class="position-fixed font-md"  :style="`top:${fixedTop+100}rpx;bottom:100rpx`"> -->
-			<yx-flexible-wrapper>
+			<yx-flexible-wrapper height="87vh">
 				<block  v-for="user in userTopList" :key="user.id">
 					<chat-item :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
 				 @touchend="(e)=>handleLeave(user,e)" class="bg-common" hover-class="bg-dark"></chat-item>
 				</block>
 				<!-- 常规聊天 -->
 				<block  v-for="user in userList" :key="user.id">
+					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
+					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
+					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
 					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
 				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
 				</block>
