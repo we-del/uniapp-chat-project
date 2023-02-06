@@ -39,12 +39,20 @@
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
+	// import {useWebsocketStore} from '@/store/webSocket.js'
+	import ChatSocket from '@/common/util/ChatSocket.js'
 	export default {
 		components:{
 			YxToolBar,chatItem,YxPopup,YxCommonWrapper,YxFlexibleWrapper
 		},
 		mounted(){
 			this.userTopList =  this.userList.filter(user=>user.is_top)
+			
+			// 开启websocket连接
+			// useWebsocketStore()
+			if(!ChatSocket.socketTask){
+				ChatSocket._init()
+			}
 		}
 		,
 		data() {

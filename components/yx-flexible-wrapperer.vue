@@ -96,7 +96,6 @@
 						this.contentLack = false
 					}
 					if(!this.havingContentScrolling ||this.isFirstLoad && this.scrollDirection ) return
-					console.log('滑动中',this.havingContentScrolling)
 					this.contentLack = false
 					this.reachBorder = false
 					this.isReachingBorder  = false
@@ -108,14 +107,12 @@
 			scrollToTop(e){
 				
 				this.havingContentScrolling = false
-				console.log('滚动到顶部',this.havingContentScrolling)
 				this.reachBorder = true
 				this.scrollDirection = e.detail.direction
 			},
 			scrollToBottom(e){
 				
 				this.havingContentScrolling = false
-				console.log('滚动到底部',e)
 				this.reachBorder = true
 				this.scrollDirection = e.detail.direction
 			},
@@ -127,7 +124,7 @@
 					this.movingPosition = {x,y}
 					// 触摸边界，开始变化
 					// this.reachBorder = true
-					console.log('开始触摸',e)
+				
 				// }
 			},
 			handleTouchMove(e){
@@ -143,7 +140,6 @@
 						this.contentLackToTop = distance > 0
 						this.movingDistance =  distance
 						this.isReachingBorder = true
-						console.log('内容缺失')
 					}else if(this.scrollDirection === 'top'){
 						// 允许下拉(origin-y < 0)
 						distance = this.movingPosition.y - y 
@@ -151,7 +147,6 @@
 							// 下拉
 							this.movingDistance = distance
 							this.isReachingBorder = true
-							console.log('成功的下拉')
 						}else if(distance){
 							// 正常的滚动
 							this.havingContentScrolling =true
@@ -159,7 +154,6 @@
 							this.isReachingBorder = false
 							this.scrollDirection = ''
 							this.isFirstLoad = false
-							console.log('下拉结束，开始滑动')
 						}
 					}else if(this.scrollDirection === 'bottom'){
 						// 允许上拉(origin-y > 0)
@@ -167,9 +161,7 @@
 						if(distance> 0){
 							// 上拉
 							this.movingDistance = distance
-							console.log(this.movingDistance)
 							this.isReachingBorder = true
-							console.log('成功的上拉')
 						}else if(distance){
 							// 正常的滚动
 							this.havingContentScrolling =true
@@ -178,17 +170,14 @@
 							this.scrollDirection = ''
 							
 							this.isFirstLoad = false
-							console.log('上拉结束，开始滑动')
 						}
 						
 					}
 					
-					console.log('distance',distance)
 				}
 			},
 			handleTouchEnd(e){
 				if(this.reachBorder){
-					console.log('结束移动',e)
 					
 					
 					// 恢复初始状态

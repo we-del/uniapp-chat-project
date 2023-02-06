@@ -2,6 +2,7 @@
 	import {mapActions,mapWritableState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
 	import sessionStorage from '@/common/util/sessionStorage.js'
+
 	export default {
 		onReady(){
 			console.log('app render')

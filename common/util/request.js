@@ -55,11 +55,16 @@ export default {
                     // 服务端失败
                     if(result.statusCode !== 200){
                         if (options.toast !== false) {
-							console.log('检测错误')
+							
+							console.log('检测错误（包含token失败）')
                             uni.showToast({
                                 title: result.data.data || '服务端失败',
                                 icon: 'none'
                             });
+							sessionStorage.clearStorage()
+							uni.navigateTo({
+								url:'/pages/login/login'
+							})
                         }
                         return rej(result.data) 
                     }
