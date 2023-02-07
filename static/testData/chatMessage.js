@@ -5,7 +5,7 @@ export default [
 	{
 		id:'a1',
 		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
-		user_id:0,
+		user_id:4,
 		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
 		type:'text',
 		// type:'image',
@@ -27,7 +27,7 @@ export default [
 	{
 		id:'a1',
 		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
-		user_id:0,
+		user_id:3,
 		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
 		// type:'text',
 		type:'image',
@@ -173,7 +173,7 @@ export default [
 	{
 		id:'a10',
 		// user_id标识是那个用户发送得信息，0为本人，其他为其他人
-		user_id:1,
+		user_id:4,
 		// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
 		// type:'text',
 		type:'audio',

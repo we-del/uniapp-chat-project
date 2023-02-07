@@ -10,13 +10,13 @@
 		style="min-width: 130rpx;max-width: 440rpx;" :style="`width:${recordWidth}rpx`" >
 			<!-- 判断是哪一方的信息，便于在正确的位置上显示 -->
 			<!-- 我方录音消息 -->
-			<view v-if="chatMessage.user_id == 0"   class="flex justify-end  ">
+			<view v-if="chatMessage.user_id == user_id"   class="flex justify-end  ">
 				{{chatMessage.record_time}}"
 				<image v-if="playAudio" src="/static/audio/play.gif" class="play-icon" ></image>
 				<text v-else class=" iconfont icon-wifi rotate-right-90 ml-2"></text>
 			</view>
 			<!-- 对方录音消息 -->
-			<view v-if="chatMessage.user_id != 0" class="flex justify-start ">
+			<view v-if="chatMessage.user_id != user_id" class="flex justify-start ">
 				<image v-if="playAudio" class="play-icon" src="/static/audio/play.gif" ></image>
 				<text v-else class="iconfont icon-wifi rotate-left-90 mr-2"></text>
 				{{chatMessage.record_time}}"
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		name:"yx-chat-item-content",
 		inject:["validPreviewOfImage","touchMessageOfChat","touchLeaveMessageOfChat"],
@@ -37,7 +38,8 @@
 			chatMessage:[Object]
 		},
 		mounted(){
-			// this.getVideoPoster()
+			this.user_id = sessionStorage.getStorage('user').id
+			console.log('uuu',this.user_id )
 		},
 		data() {
 			return {
@@ -46,7 +48,8 @@
 				audioManager: plus.audio.createPlayer({}),
 				// #endif
 				playAudio:false,
-				videoImage:''
+				videoImage:'',
+				user_id:''
 			}
 		},
 		methods: {

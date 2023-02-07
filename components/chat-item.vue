@@ -14,6 +14,7 @@
 <script>
 	import dayjs from 'dayjs'
 	import YxBadge from '@/components/yx-badge.vue'
+	import {timeToConvert} from '@/common/util/publishTimeComputed.js'
 	export default {
 		name:"chat-item",
 		components:{YxBadge},
@@ -44,7 +45,9 @@
 		},
 		computed:{
 			time(){
-				return dayjs(this.user.message_time).format('HH:mm')
+				if(!this.user.message_time) return undefined
+				
+				return timeToConvert(this.user.message_time)
 			}
 		}
 	}

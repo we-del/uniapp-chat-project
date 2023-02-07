@@ -35,8 +35,8 @@
 			return {
 				userInfo:{
 					// user:user; password:'123456a'
-					username:'',
-					password:'',
+					username:'轻井泽惠',
+					password:'1234155',
 					repeatPassword:''
 				},
 				isRegister:false,

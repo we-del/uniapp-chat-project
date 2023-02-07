@@ -4,28 +4,25 @@
 			<!-- <yx-tool-bar  :title="`微信(${userCount})`"></yx-tool-bar> -->
 			<!-- 置顶聊天 -->
 			<!-- <scroll-view @scrolltolower="scrollBottom" scroll-y="true" class="position-fixed font-md"  :style="`top:${fixedTop+100}rpx;bottom:100rpx`"> -->
-			<yx-flexible-wrapper height="87vh">
-				<block  v-for="user in userTopList" :key="user.id">
-					<chat-item :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-				 @touchend="(e)=>handleLeave(user,e)" class="bg-common" hover-class="bg-dark"></chat-item>
-				</block>
-				<!-- 常规聊天 -->
-				<block  v-for="user in userList" :key="user.id">
-					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
-					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
-					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
-					<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
-				 @touchend="(e)=>handleLeave(user,e)"></chat-item>
-				</block>
+			<yx-flexible-wrapper height="87%">
+				<view v-if="!userCount" class="text-center pt-2 font-sm text-common">你还没有朋友说过话，快去和它们聊天吧~</view>
+				<view v-if="userCount">
+					<block  v-for="user in userTopList" :key="user.id">
+						<chat-item :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+					 @touchend="(e)=>handleLeave(user,e)" class="bg-common" hover-class="bg-dark"></chat-item>
+					</block>
+					<!-- 常规聊天 -->
+					<block  v-for="user in userList" :key="user.id">
+						<chat-item v-if="!(user.is_top)" :user="user" @click="goChat(user)"  @touchstart="(e)=>handleTouch(user,e)"
+					 @touchend="(e)=>handleLeave(user,e)"></chat-item>
+					</block>
+				</view>
 			</yx-flexible-wrapper>
 			<!-- </scroll-view> -->
 			
 			<yx-popup :show="popShow" :popPosittion="popPosition" 
 			:isDark="popIsDark"  :isChat="true"
-			:popItem="popData" @action="popAction"
+			:popItem="popData" @action="popAction" :popActionParam="curUser"
 			@hide="handlePopHide"></yx-popup>
 		</yx-common-wrapper>
 </template>
@@ -35,18 +32,18 @@
 	import YxToolBar from '@/components/yx-tool-bar.vue'
 	import chatItem from '@/components/chat-item.vue'
 	import YxPopup from '@/components/yx-popup.vue'
-	import userList from '@/static/testData/userList.js'
+	// import userList from '@/static/testData/userList.js'
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
-	import {mapState} from 'pinia'
+	import {mapState,mapGetters,mapActions} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
-	// import {useWebsocketStore} from '@/store/webSocket.js'
+	import {useUserChatList} from '@/store/userChatList.js'
 	import ChatSocket from '@/common/util/ChatSocket.js'
 	export default {
 		components:{
 			YxToolBar,chatItem,YxPopup,YxCommonWrapper,YxFlexibleWrapper
 		},
 		mounted(){
-			this.userTopList =  this.userList.filter(user=>user.is_top)
+			// this.userTopList =  this.userList.filter(user=>user.is_top)
 			
 			// 开启websocket连接
 			// useWebsocketStore()
@@ -69,10 +66,12 @@
 			  }
 			*/
 			return {
-				//聊天用户占位信息
+				//聊天用户占位信息，用于设置是否置顶
 				curUser:{},
-				userList,
-				userTopList:[],
+				// 存储当前临时对话框列表(将数据保存到localstorage中，在删除对应聊天时删除其数据)
+				// userList:[],
+				// 将userList和userTopList都存储到localStorage中(真实开发场景，由于是测试阶段，因此暂时存储到sessionStorage中，后期只需修改仓库类型即可)
+				// userTopList:[],
 				// pop待展示的每一项
 				popData:[],
 				popPosition:{},
@@ -83,13 +82,14 @@
 			}
 		},
 		methods: {
+			...mapActions(useUserChatList,['popAction']),
 			scrollBottom(e){
 				console.log('滚动到底部了',e)
 			},
 			// 前往聊天
 			goChat(user){
 				uni.navigateTo({
-					url:`/pages/chat-detail/chat-detail?id=${user.id}&name=${user.user_name}`
+					url:`/pages/chat-detail/chat-detail?id=${user.id}`
 				})
 			},
 			// 触摸聊天框时调用
@@ -144,31 +144,31 @@
 			handlePopHide(){
 				this.popShow = false
 			},
-			popAction(event){
-				switch(event){
-					case 'delChat':
-						this.userList = this.userList.filter(user=> user.id !=this.curUser.id)
-						this.userTopList = this.userTopList.filter(user=> user.id !=this.curUser.id)
-					return;
-					case 'undoTop':
-						this.userTopList = this.userTopList.filter(user=> user.id !=this.curUser.id)
-						this.userList.forEach(user=> {
-							if(user.id === this.curUser.id ){
-								 user.is_top = false
-							}
-						})
-					return;
-					case 'setTop':
-						this.curUser.is_top = true
-						this.userTopList.unshift({...this.curUser})
-						this.userList.forEach(user=> {
-							if(user.id === this.curUser.id) user.is_top = true
-						})
-					return
-					default:
-					console.log('错误得事件调用')
-				}
-			},
+			// popAction(event){
+			// 	switch(event){
+			// 		case 'delChat':
+			// 			this.userList = this.userList.filter(user=> user.id !=this.curUser.id)
+			// 			this.userTopList = this.userTopList.filter(user=> user.id !=this.curUser.id)
+			// 		return;
+			// 		case 'undoTop':
+			// 			this.userTopList = this.userTopList.filter(user=> user.id !=this.curUser.id)
+			// 			this.userList.forEach(user=> {
+			// 				if(user.id === this.curUser.id ){
+			// 					 user.is_top = false
+			// 				}
+			// 			})
+			// 		return;
+			// 		case 'setTop':
+			// 			this.curUser.is_top = true
+			// 			this.userTopList.unshift({...this.curUser})
+			// 			this.userList.forEach(user=> {
+			// 				if(user.id === this.curUser.id) user.is_top = true
+			// 			})
+			// 		return
+			// 		default:
+			// 		console.log('错误得事件调用')
+			// 	}
+			// },
 			// 点击的为+号图标
 			clickNav(){
 				const device = uni.getSystemInfoSync()
@@ -209,10 +209,12 @@
 			}
 		},
 		computed:{
-			userCount(){
-				return this.userList.length
-			},
+			// userCount(){
+			// 	return this.userList.length
+			// },
 			...mapState(useDeviceStore,['fixedTop']),
+			...mapState(useUserChatList,['userList']),
+			...mapGetters(useUserChatList,['userTopList','userCount']),
 		}
 	}
 </script>

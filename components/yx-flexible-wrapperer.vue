@@ -25,7 +25,7 @@
 			<!-- 策略二 -->
 			<!-- <view  style="height:90%"  @touchstart="handleTouchStart"   @touchend="handleTouchEnd" @touchmove="handleTouchMove" > -->
 			
-			<view  style="height:100vh"  @touchstart="handleTouchStart"   @touchend="handleTouchEnd" @touchmove="handleTouchMove" >
+			<view  style="height:100%"  @touchstart="handleTouchStart"   @touchend="handleTouchEnd" @touchmove="handleTouchMove" >
 			
 				
 				<slot>		

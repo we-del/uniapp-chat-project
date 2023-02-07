@@ -36,7 +36,6 @@
 </template>
 
 <script>
-	// import {plus} from 'vue-native-plus'
 	import {gotoAppPermissionSetting} from '@/js_sdk/phone-permisson/phone-permission.js'
 	export default {
 		name: "yx-chat-detail-input",

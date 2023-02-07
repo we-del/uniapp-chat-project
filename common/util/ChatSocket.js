@@ -30,7 +30,8 @@ export default class Chat{
 		
 	}
 	static sendMsg(data){
-		this.socketTask.sendMsg({
+		console.log(this.socketTask)
+		this.socketTask.send({
 			data,
 			success:(e)=>{
 				console.log(e,'成功ws')

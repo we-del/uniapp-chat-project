@@ -94,7 +94,9 @@
 			isCoverTop:{
 				type:Boolean,
 				default:false
-			}
+			},
+			// popAction调用时需要携带的参数
+			popActionParam: Object
 		},
 		data() {
 			return {
@@ -103,8 +105,8 @@
 		methods:{
 			// 执行对应的点击操作
 			handleReactive(item){
-				console.log('指令即将修改更改',item)
-				this.$emit('action',item.event)
+				console.log('指令即将修改更改',item,this.popActionParam)
+				this.$emit('action',item.event,this.popActionParam)
 				// 隐藏聊天框
 				this.$emit('hide')
 			},

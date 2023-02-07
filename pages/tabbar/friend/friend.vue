@@ -7,10 +7,14 @@
 			<block v-for="item in base_com" :key="item.id">
 				<yx-list @click="handleEvent(item)"  :count="item.applyCount" :img="item.img" :title="item.title"></yx-list>  
 			</block>
-			<view v-for="(friends,i) in friendList"  class="font-md " :key="i" >
+			<view v-for="friends in friendList"  class="font-md " :key="friends.title" >
 				<view class="bg-common pl-2" style="width:100vw" :id="`hash-abc-1-${friends.title}`">{{friends.title}}</view>
 				
-				<yx-list  v-for="data in friends.list" :img="data.avatar" :title="data.nickname ?data.nickname  : data.username " :key="data.id"></yx-list>  
+				<yx-list  v-for="data in friends.list" 
+				 :img="data.avatar" 
+				 :title="data.nickname ?data.nickname  : data.username " 
+				 :key="data.id"
+				 @click="goChat(data)"></yx-list>  
 			</view>
 		</scroll-view>
 		<view class="flex flex-column position-fixed text-center font-sm text-dark" style="right:10rpx;top:200rpx;">
@@ -24,32 +28,30 @@
 <script>
 	import YxToolBar from '@/components/yx-tool-bar.vue'
 	import YxList from '@/components/yx-list.vue'
-	import friendList from '@/static/testData/friendList.js'
+	// import friendList from '@/static/testData/friendList.js'
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	// 每天继续晚上申请好友显示
 	import {getFriendApplyAcount,getFriendList} from '@/api/friend.js'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		components:{YxToolBar,YxList,YxFlexibleWrapper},
 		 mounted(){
-			console.log('@rrrr',friendList)
+			// console.log('@rrrr',friendList)
 			// this.friendList = friendList
 			for (var i = 65; i <= 90; i++) {
 				this.friendPrefixPosition.push(String.fromCharCode(i))
 			}
 			this.friendPrefixPosition.push('#')
 			
-			
-			// 处理加载获取一次，之后每次onShow时在获取一次(可能存在添加好友的行为)
-			
 		},
+		// 避免在同意好友申请后无法同步好友页表的情况
 		async onShow(){
-			console.log('@@@',await getFriendApplyAcount())
 			this.base_com[0].applyCount = await getFriendApplyAcount()
-			console.log('onss',await getFriendList())
 			this.friendList = (await getFriendList()).newList
-			console.log('@fff',this.friendList)
+			
+			sessionStorage.setStorage('friendList',this.plainFriendList) 
 		},
 		data() {
 			return {
@@ -86,8 +88,6 @@
 			startSlide(target){
 				// 快速滑动元素
 				// 判断此组是否存在，不存在不滑动
-				console.log('点击得为',target)
-				console.log(this.friendList.find((obj)=>obj.group == target))
 				if(this.friendList.find((obj)=>obj.group == target)){
 					this.sliderTarget = target
 				}else{
@@ -108,10 +108,30 @@
 				uni.navigateTo({
 					url:path
 				})
+			},
+			goChat(data){
+				console.log('将要和',data)
+				// 直接进入好友聊天界面
+				// uni.navigateTo({
+				// 	url:`/pages/chat-detail/chat-detail?user=${JSON.stringify(data)}`
+				// })
+				// 通过好友信息中转
+				uni.navigateTo({
+					url:`/pages/UserInfo/UserInfo?id=${data.id}&isFriend=1`
+				})
 			}
 		},
 		computed:{
-			...mapState(useDeviceStore,['fixedTop'])
+			...mapState(useDeviceStore,['fixedTop']),
+			plainFriendList(){
+				const res = []
+				if(this.friendList){
+					this.friendList.forEach(friend=>{
+						res.push(...friend.list)
+					})
+				}
+				return res
+			}
 		}
 	}
 </script>

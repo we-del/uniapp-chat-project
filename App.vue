@@ -25,8 +25,16 @@
 		onShow: function() {
 			console.log('App Show')
 		},
+		
+		// onHide & onUnload测试关闭时保存数据失败，采用方案一：在数据添加时存储
 		onHide: function() {
 			console.log('App Hide')
+			console.log('页面即将关闭我来保存所有临时数据到仓库')
+			uni.setStorageSync('onHide',3333)
+		},
+		onUnload(){
+			console.log('页面即将关闭我来保存所有临时数据到仓库')	
+			uni.setStorageSync('onunload',111)
 		},
 		mounted(){
 			// console.log('app mounted')

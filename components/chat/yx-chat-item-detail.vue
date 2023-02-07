@@ -8,7 +8,7 @@
 			
 			<!-- 我方信息 -->
 			<view class="flex justify-end p-2 position-relative " 
-				v-if="chatMessage.user_id == 0 && !chatMessage.isDel && !chatMessage.isUndone" >
+				v-if="chatMessage.user_id == user_id && !chatMessage.isDel && !chatMessage.isUndone" >
 				<!-- 三角 -->
 				<view id="me-triangle" class="position-absolute left-triangle"
 					style="top:40rpx;right:81rpx;border-left-color:#08c060"></view>
@@ -23,7 +23,7 @@
 			
 			<!-- 对方信息 -->
 			<view class="flex justify-start p-2 position-relative" 
-				v-if="chatMessage.user_id != 0   && !chatMessage.isDel && !chatMessage.isUndone" >
+				v-if="chatMessage.user_id != user_id   && !chatMessage.isDel && !chatMessage.isUndone" >
 				<!-- 三角 -->
 				<view id="other-triangle" class="position-absolute right-triangle" 
 				style="top:40rpx;left:81rpx;border-right-color:white"></view>
@@ -45,10 +45,13 @@
 <script>
 	import dayjs from 'dayjs'
 	import YxChatItemContent from '@/components/chat/yx-chat-item-content.vue'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		name:"yx-chat-item-detail",
 		components:{
 			YxChatItemContent
+		},
+		mounted(){
 		},
 		props:{
 			chatMessage:{
@@ -75,6 +78,7 @@
 		
 		data() {
 			return {
+				user_id:sessionStorage.getStorage('user').id
 			};
 		},
 		methods:{

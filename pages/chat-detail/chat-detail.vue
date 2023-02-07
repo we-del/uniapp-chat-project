@@ -4,7 +4,7 @@
 	<yx-common-wrapper>
 		
 		 <!-- 导航栏 ,需要对点击的聊天框做判断，判断为用户还是群组，他们去往的路由不同-->
-		<yx-nav-bar :title="name" existMore :requireOccupy="false" :isChat="true" :routerPath="`/pages/chat-detail/chat-about-group-setting/chat-about-group-setting?${name}`"/>
+		<yx-nav-bar :title="user.nickname ? user.nickname : user.username" existMore :requireOccupy="false" :isChat="true" :routerPath="`/pages/chat-detail/chat-about-group-setting/chat-about-group-setting`"/>
 		<!-- 滑动内容 -->
 		<scroll-view scroll-y="true" @scroll="scroll" :scroll-top="scrollHeight"
 		class="position-fixed " :style="`top:${95+fixedTop}rpx;bottom:${scrollViewHeight}rpx`">
@@ -68,6 +68,10 @@
 	import chatEmo from '@/static/testData/chatEmo.js'
 	import {mapState} from 'pinia'
 	import {useDeviceStore} from '@/store/device.js'
+	import {useUserChatList} from '@/store/userChatList.js'
+	import {mapActions} from 'pinia'
+	import sessionStorage from '@/common/util/sessionStorage.js'
+	import ChatSocket from '@/common/util/ChatSocket.js'
 	export default {
 		components:{
 			YxNavBar,YxChatItemDetail,YxChatDetailInput,YxPopup,YxCommonWrapper
@@ -81,20 +85,55 @@
 			}
 		},
 		onLoad(query){
-			this.name=query.name
+			
+			// 处理从聊天框点击发送消息的场合(同时添加到chat列表中)
+			// if(query.user){
+			// 	// 解析聊天对象，将其添加到聊天列表中
+			// 	this.user = JSON.parse(query.user)
+			// 	console.log('@uu',this.user)
+			// 	const chatObj = {
+			// 		id: this.user.id,
+			// 		image_src: this.user.avatar,
+			// 		messagecount: 0,
+			// 		user_name: this.user.nickname ? this.user.nickname : this.user.username,
+			// 		user_message:'',
+			// 		message_time: 0,
+			// 		is_top:false
+			// 	}
+			// 	this.addChat(chatObj)
+			// }
+			// 处理从临时列表等其他方式进入聊天的场合,后优化处理两个请求全部传入id，通过storage进行验证查询身份
+			if(query.id){
+				
+				
+				const friendList = sessionStorage.getStorage('friendList')
+				this.user = friendList.find(fri => fri.id ==query.id)
+				this.friend_id = query.id
+				const chatObj = {
+					id: this.user.id,
+					image_src: this.user.avatar,
+					messagecount: 0,
+					user_name: this.user.nickname ? this.user.nickname : this.user.username,
+					user_message:'',
+					message_time: 0,
+					is_top:false
+				}
+				this.addChat(chatObj)
+				
+			}
 		},
 		mounted(){
 			// data,methods,computed的初始化在模板解析之前，
 			//因此在他们内部无法得到refs收集的子组件(类)信息，需要在mounted中才能访问
-			// console.log('@scrollView-mounted', this.$refs.inputBar.chatInputHeight)
-			// console.log('@键盘激活的高度', this.$refs.inputBar.activeKeyboardHeight)
-			// console.log('@wwwww',this.popupContentOfUtilInBottom)
 			this.scrollBottom()
+			console.log('this',this)
 		},
 		data() {
 			return {
 				// 聊天对象
-				name:'',
+				
+				friend_id:'',
+				user: {} ,
 				// 记录聊天信息是否已经完成格式化转换(转换换行和空格)
 				isCompleteConvert:false,
 				// 滑动消息块到底部
@@ -135,6 +174,7 @@
 			}
 		},
 		methods: {
+			...mapActions(useUserChatList,['addChat','updateChatMsg']),
 			// 预览图片
 			previewImage(path){
 				uni.previewImage({
@@ -244,10 +284,14 @@
 			
 			// 输入框添加消息信息
 			addMessage(message,type,record_time){
+				
+				const user_id = sessionStorage.getStorage('user').id
+				const friend_id = this.friend_id
 				const m = {
-					id:Date.now(),
+					id:Date.now()-(Math.floor(Math.random()*100+5)),
 					// user_id标识是那个用户发送得信息，0为本人，其他为其他人
-					user_id:0,
+					user_id,
+					friend_id, 
 					// 消息类型，为text标识文本，为image标识为图片，为audio标识为录音，为video标识为视频
 					// type:'text',
 					type,
@@ -266,6 +310,7 @@
 					showTime: true
 				}
 				
+				ChatSocket.sendMsg(JSON.stringify(m))
 				// 说明是音频数据，需要时间字段
 				if(record_time) {
 					m.record_time = record_time
@@ -279,7 +324,7 @@
 
 				// 添加信息
 				this.userMessage.push(m)
-				
+				console.log('添加的消息字段',m)
 				// 滑动到底部
 				this.scrollBottom()
 			},

@@ -64,10 +64,10 @@
 		data() {
 			return {
 				applyInfo:{
-					"friend_id": 4,
+					"friend_id": 0,
 					"lookme": 1,
 					"lookhim": 1,
-					"nickname": "我是铃音",
+					"nickname": "",
 					"apply_message":""
 				}
 			}

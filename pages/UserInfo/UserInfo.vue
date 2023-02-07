@@ -2,7 +2,7 @@
 	<view class="fill-screen bg-common" >
 		<yx-nav-bar :routerPath="`/pages/UserInfo/UserCustomSetting/UserCustomSetting?id=${targetId}`" :existMore="isFriend"></yx-nav-bar>
 		<yx-flexible-wrapper>
-			<yx-card img="/static/logo.png" class="bg-white font-weight-bold "  :title="userInfo.username">
+			<yx-card :img="userInfo.avatar" class="bg-white font-weight-bold "  :title="userInfo.username">
 				<template #desc v-if="isFriend" @click="this">
 					<view class="m-1" v-if="userInfo.nickname">昵称: {{userInfo.nickname}}</view>
 					<view class="m-1">微信号: {{userInfo.wx_id}}</view>
@@ -40,6 +40,7 @@
 	import YxCard from '@/components/yx-card.vue'
 	import YxFlexibleWrapper from '@/components/yx-flexible-wrapperer.vue'
 	import {searchUser} from '@/api/user.js'
+	import sessionStorage from '@/common/util/sessionStorage.js'
 	export default {
 		async onLoad(query){
 			// 查看用户详情时显示此路由页面，传入输入的id,用户类别(好友|非好友)
@@ -48,6 +49,13 @@
 			this.isFriend = parseInt(query.isFriend)
 			console.log('登录返回的内容',await searchUser(query.id))
 			this.userInfo = await searchUser(query.id)
+			if(this.isFriend){
+				// 获取好友备注等信息
+				const self = this
+				const friend = sessionStorage.getStorage('friendList').find(fri => fri.id == self.targetId)
+			
+				Object.keys(friend).forEach(k=> self.userInfo[k] = friend[k])
+			}
 			console.log('@this',this)
 		},
 		components:{
@@ -107,7 +115,7 @@
 				this.routerGo(`/pages/search-user/AddFriend/AddFriend?id=${this.targetId}`)
 			},
 			toChat(){
-				this.routerGo('/pages/chat-detail/chat-detail')
+				this.routerGo(`/pages/chat-detail/chat-detail?id=${this.targetId}`)
 			},
 			handleEvent(data){
 				switch (data.event){

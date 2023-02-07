@@ -32,3 +32,15 @@ export function timeToDay(time){
 	let day = dayjs(now).diff(time,'day');
 	return day
 }
+
+// 更具消息时间来返回对应字段
+export function timeToConvert(time){
+	let now = dayjs();
+	let year = dayjs(now).diff(time,'year');
+	let day = dayjs(now).diff(time,'day');
+	if(year >=1) return dayjs(time).format('YY年MM月');
+	else if(day == 1) return '昨天'
+	else if(day == 2)return '前天'
+	else if(day>2) return dayjs(time).format('MM-DD')
+	else return dayjs(time).format('HH:mm') 
+}

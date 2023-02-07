@@ -143,7 +143,8 @@
 						if (res.confirm) {
 							try{
 								// 数据操作完成添加好友成功(数据写入数据库)
-								const res = await handleFriendApply({user_id:u.user_id,status})
+								console.log('sendObj',{user_id:u.user_id,status,friend_name:u.username})
+								const res = await handleFriendApply({user_id:u.user_id,status,friend_name:u.username})
 								console.log('处理结果',res)
 								// 此时手动改变显示状态，不重新获取列表了，避免页面抖动(当下次进入页面获取的是操作完成后的状态)
 								u.status = status
