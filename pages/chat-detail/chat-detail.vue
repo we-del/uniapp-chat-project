@@ -58,20 +58,21 @@
 </template>
 
 <script>
-	import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
-	import YxNavBar from '@/components/yx-nav-bar.vue'
-	import YxChatItemDetail from '@/components/chat/yx-chat-item-detail.vue'
-	import YxChatDetailInput from '@/components/chat/yx-chat-detail-input.vue'
-	import YxPopup from '@/components/yx-popup.vue'
-	import chatMesssage from '@/static/testData/chatMessage.js'
-	import chatUtils from '@/static/testData/chatUtils.js'
-	import chatEmo from '@/static/testData/chatEmo.js'
-	import {mapState} from 'pinia'
-	import {useDeviceStore} from '@/store/device.js'
-	import {useUserChatList} from '@/store/userChatList.js'
-	import {mapActions} from 'pinia'
-	import sessionStorage from '@/common/util/sessionStorage.js'
-	import ChatSocket from '@/common/util/ChatSocket.js'
+import ChatSocket from '@/common/util/ChatSocket.js'
+import sessionStorage from '@/common/util/sessionStorage.js'
+import YxChatDetailInput from '@/components/chat/yx-chat-detail-input.vue'
+import YxChatItemDetail from '@/components/chat/yx-chat-item-detail.vue'
+import YxCommonWrapper from '@/components/yx-common-wrapper.vue'
+import YxNavBar from '@/components/yx-nav-bar.vue'
+import YxPopup from '@/components/yx-popup.vue'
+import chatEmo from '@/static/testData/chatEmo.js'
+import chatMesssage from '@/static/testData/chatMessage.js'
+import chatUtils from '@/static/testData/chatUtils.js'
+import { useDeviceStore } from '@/store/device.js'
+import { useUserChatList } from '@/store/userChatList.js'
+import { mapActions, mapState } from 'pinia'
+import {useUserChatMessage} from '@/store/userChatMessage.js'
+
 	export default {
 		components:{
 			YxNavBar,YxChatItemDetail,YxChatDetailInput,YxPopup,YxCommonWrapper
@@ -112,7 +113,7 @@
 				const chatObj = {
 					id: this.user.id,
 					image_src: this.user.avatar,
-					messagecount: 0,
+					message_count: 0,
 					user_name: this.user.nickname ? this.user.nickname : this.user.username,
 					user_message:'',
 					message_time: 0,
@@ -175,6 +176,7 @@
 		},
 		methods: {
 			...mapActions(useUserChatList,['addChat','updateChatMsg']),
+			...mapActions(useUserChatMessage,['storageReceiveMessage']),
 			// 预览图片
 			previewImage(path){
 				uni.previewImage({
@@ -310,7 +312,11 @@
 					showTime: true
 				}
 				
+				// 发送消息
 				ChatSocket.sendMsg(JSON.stringify(m))
+				
+				// chat显示的更新消息时间和消息类型
+				this.storageReceiveMessage(m.friend_id,m,true)
 				// 说明是音频数据，需要时间字段
 				if(record_time) {
 					m.record_time = record_time

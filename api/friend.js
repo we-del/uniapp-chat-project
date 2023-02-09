@@ -11,3 +11,6 @@ export const getFriendApplyAcount = () => request.get('/friend/apply/number')
 // 得到通讯录的好友
 export const getFriendList = ()=> request.get('/friend/list')
 
+// 得到好友的详细信息
+export const getFriendDetail = friend_id=> request.get(`/friend/user/deital/${friend_id}`)
+

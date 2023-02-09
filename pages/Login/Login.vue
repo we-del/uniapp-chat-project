@@ -30,6 +30,7 @@
 <script>
 	import {login,register} from '@/api/user.js'
 	import sessionStorage from '@/common/util/sessionStorage.js'
+	import ChatSocket from '@/common/util/ChatSocket.js'
 	export default {
 		data() {
 			return {
@@ -89,6 +90,8 @@
 						}else{
 							sessionStorage.setStorage('user',res)
 							sessionStorage.setStorage('token',res.token)
+							// 开启连接
+							ChatSocket._init()
 							uni.switchTab({
 								url:'/pages/tabbar/chat/chat'
 							})

@@ -41,6 +41,7 @@
 	import YxToolBar from '@/components/yx-tool-bar.vue'
 	import {loginout} from '@/api/user.js'
 	import sessionStorage from '@/common/util/sessionStorage.js'
+	import ChatSocket from '@/common/util/ChatSocket.js'
 	export default {
 		components:{YxCard,YxDivider,YxList,YxCommonWrapper,YxFlexibleWrapper,YxToolBar},
 		data() {
@@ -113,6 +114,7 @@
 				})
 			},
 			async handleEvent(data){
+				// 点击退出登录要断开websocket连接
 				switch (data.event){
 					case 'exit':
 						uni.navigateTo({
@@ -120,7 +122,7 @@
 						})
 						await loginout()
 						sessionStorage.clearStorage()
-						
+						ChatSocket.closeChatSocket()
 						uni.clearStorageSync()
 						break;
 					default:
